@@ -8,6 +8,8 @@
   outputs =
     { self, nixpkgs }:
     let
+      inherit (nixpkgs) lib;
+
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
     in
@@ -20,6 +22,10 @@
           clang
           ghidra
         ];
+
+        env = {
+          LD_LIBRARY_PATH = lib.makeLibraryPath (pkgs.pythonManylinuxPackages.manylinux1 ++ [ pkgs.zstd ]);
+        };
 
         shellHook = ''
           unset PYTHONPATH
