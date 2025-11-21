@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+# direnv
+.direnv
+.envrc
+
+# datasets
+data/
