@@ -25,6 +25,8 @@
 
         env = {
           LD_LIBRARY_PATH = lib.makeLibraryPath (pkgs.pythonManylinuxPackages.manylinux1 ++ [ pkgs.zstd ]);
+          HSA_OVERRIDE_GFX_VERSION = "10.3.0";
+          CUDA_VISIBLE_DEVICES = 0;
         };
 
         shellHook = ''
