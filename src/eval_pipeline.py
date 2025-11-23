@@ -67,7 +67,7 @@ class RevBench:
 
     def functional_check(self, generated_func, test_harness_main):
         # add common headers
-        headers = "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <math.h>\n#include <stdbool.h>\n"
+        headers = "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <math.h>\n#include <stdbool.h>\n#include <assert.h>#include <stdarg.h>\n"
 
         # inject standard ghidra typedefs
         ghidra_defs = "typedef unsigned int uint; typedef unsigned char byte; typedef unsigned long ulong;\n"
