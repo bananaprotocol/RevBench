@@ -37,8 +37,11 @@ class RevBench:
         prompt = (
             f"<s>[INST] You are an expert C decompiler. \n"
             f"Refine the following Ghidra pseudocode into valid, compilable C code.\n"
-            f"Do not write a main function. Only write the function definition.\n"
-            f"Keep the exact same function name and arguments as the input.\n\n"
+            f"STRICT RESPONSE RULES:\n"
+            f"1. Do not write a main function.\n"
+            f"2. Keep the exact same function name and arguments.\n"
+            f"3. Output ONLY the raw code. Do not use Markdown code blocks (```).\n"
+            f"4. Do not output any introductory text or explanations.\n\n"
             f"Pseudocode:\n{ghidra_pseudocode}\n"
             f"[/INST]\n"
         )
