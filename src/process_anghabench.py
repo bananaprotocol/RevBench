@@ -2,8 +2,10 @@ import concurrent.futures
 import glob
 import json
 import os
+import re
 import shutil
 import subprocess
+import tempfile
 
 from tqdm import tqdm
 
@@ -13,16 +15,38 @@ BIN_DIR = "./temp_binaries"
 OUTPUT_JSONL = "training_data.jsonl"
 GHIDRA_SCRIPT_PATH = os.path.abspath("ghidra_export.py")
 
-MAX_TOKENS = 2000
-MIN_LINES = 5
-BAD_STRINGS = [
+MIN_LINES = 6
+MAX_CHARS = 4000
+BAD_GHIDRA_STRINGS = [
     "Process: Decompiler",
     "Control Flow graph",
     "Time limit exceeded",
-    "Stack overflow",
     "Low-level Error",
-    "Function too big",
 ]
+
+
+def clean_c_code(code):
+    code = re.sub(r"/\*.*?\*/", "", code, flags=re.DOTALL)
+    code = re.sub(r"//.*", "", code)
+
+    lines = code.splitlines()
+    cleaned_lines = []
+
+    for line in lines:
+        s_line = line.strip()
+
+        if s_line.startswith("#"):
+            continue
+        if s_line.startswith("typedef "):
+            continue
+        if s_line.startswith("extern "):
+            continue
+        if not s_line:
+            continue
+
+        cleaned_lines.append(line)
+
+    return "\n".join(cleaned_lines).strip()
 
 
 def compile_file(c_file):
@@ -45,22 +69,57 @@ def compile_file(c_file):
         return None
 
 
-def is_valid_pair(ghidra_code, original_code):
-    for bad in BAD_STRINGS:
-        if bad in ghidra_code:
+def is_high_quality_pair(ghidra_code, original_code):
+    if not ghidra_code or not original_code:
+        return False
+
+    if len(original_code) > MAX_CHARS:
+        return False
+
+    if "{" not in original_code or "}" not in original_code:
+        return False
+
+    if "__asm__" in original_code or "asm(" in original_code:
+        return False
+
+    for err in BAD_GHIDRA_STRINGS:
+        if err in ghidra_code:
             return False
 
-    ghidra_lines = [l for l in ghidra_code.splitlines() if l.strip()]
-    if len(ghidra_lines) < MIN_LINES:
-        return False
-
-    # approximate tokens with 1 token ~= 4 chars heuristic
-    if len(ghidra_code) > (MAX_TOKENS * 4):
-        return False
-    if len(original_code) > (MAX_TOKENS * 4):
-        return False
-
     return True
+
+
+def is_self_contained(clean_code):
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".c", delete=False) as tmp:
+        content = (
+            "#include <stdio.h>\n"
+            "#include <stdlib.h>\n"
+            "#include <string.h>\n"
+            "#include <math.h>\n"
+            "#include <stdbool.h>\n"
+            "typedef unsigned int uint;\n"
+            "typedef unsigned long ulong;\n"
+            f"{clean_code}\n"
+        )
+        tmp.write(content)
+        tmp_name = tmp.name
+
+    cmd = ["gcc", "-c", "-O0", "-w", tmp_name, "-o", tmp_name + ".o"]
+
+    try:
+        subprocess.run(
+            cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        is_valid = True
+    except subprocess.CalledProcessError:
+        is_valid = False
+    finally:
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        if os.path.exists(tmp_name + ".o"):
+            os.remove(tmp_name + ".o")
+
+    return is_valid
 
 
 def main():
@@ -86,6 +145,8 @@ def main():
     print(f"Successfully compiled {valid_binaries} files. Starting decompilation...")
 
     tmp_proj_dir = os.path.join(os.getcwd(), "temp_ghidra_proj")
+    if os.path.exists(tmp_proj_dir):
+        shutil.rmtree(tmp_proj_dir)
     os.makedirs(tmp_proj_dir)
 
     cmd = [
@@ -129,11 +190,19 @@ def main():
                 if current_file in source_map:
                     original_c = source_map[current_file]
 
-                    if is_valid_pair(ghidra_pseudocode, original_c):
-                        entry = {"input": ghidra_pseudocode, "output": original_c}
-                        json_out.write(json.dumps(entry) + "\n")
-                        json_out.flush()
-                        stats["saved"] += 1
+                    original_clean = clean_c_code(original_c)
+
+                    if is_high_quality_pair(ghidra_pseudocode, original_clean):
+                        if is_self_contained(original_clean):
+                            entry = {
+                                "input": ghidra_pseudocode,
+                                "output": original_clean,
+                            }
+                            json_out.write(json.dumps(entry) + "\n")
+                            json_out.flush()
+                            stats["saved"] += 1
+                        else:
+                            stats["discarded"] += 1
                     else:
                         stats["discarded"] += 1
 
