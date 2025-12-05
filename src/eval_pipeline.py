@@ -6,7 +6,7 @@ import tempfile
 import torch
 from peft import PeftModel
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 MODEL_PATH = "codellama/CodeLlama-7b-Instruct-hf"
 LORA_PATH = "models/lora"
@@ -23,8 +23,13 @@ class RevBench:
         self.tokenizer = AutoTokenizer.from_pretrained(base_model)
 
         print(f"Loading model: {base_model}...")
+        quantization_config = BitsAndBytesConfig(
+            load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16
+        )
         self.model = AutoModelForCausalLM.from_pretrained(
-            base_model, dtype=torch.float16, device_map="auto"
+            base_model,
+            device_map="auto",
+            quantization_config=quantization_config,
         )
 
         if lora_path:
@@ -35,7 +40,7 @@ class RevBench:
 
     def generate_code(self, ghidra_pseudocode):
         prompt = (
-            f"<s>[INST] You are an expert C decompiler. \n"
+            f"<s>[INST] You are an expert C decompiler.\n"
             f"Refine the following Ghidra pseudocode into valid, compilable C code.\n"
             f"STRICT RESPONSE RULES:\n"
             f"1. Do not write a main function.\n"
@@ -48,16 +53,15 @@ class RevBench:
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
 
-        with torch.no_grad():
-            outputs = self.model.generate(
-                **inputs,
-                max_new_tokens=1024,
-                temperature=0.2,
-                do_sample=True,
-                pad_token_id=self.tokenizer.eos_token_id,
-            )
+        outputs = self.model.generate(
+            **inputs,
+            max_new_tokens=1024,
+            temperature=0.2,
+            do_sample=True,
+            pad_token_id=self.tokenizer.eos_token_id,
+        )
 
-        full_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        full_text = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
 
         if "[/INST]" in full_text:
             full_text = full_text.split("[/INST]")[1]
@@ -128,7 +132,7 @@ def main():
     with open(TEST_DATA_PATH, "r") as f:
         dataset = [json.loads(line) for line in f]
 
-    evaluator = RevBench(MODEL_PATH)
+    evaluator = RevBench(MODEL_PATH, LORA_PATH)
 
     passed_count = 0
     total_count = 0
