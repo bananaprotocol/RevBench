@@ -26,8 +26,6 @@ def compile_source(c_code, opt_level=TARGET_OPT):
         "gcc",
         "-c",
         f"-{opt_level}",
-        "-s",
-        "-fno-asynchronous-unwind-tables",
         "-w",
         tmp_c_path,
         "-o",

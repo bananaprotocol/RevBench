@@ -31,7 +31,7 @@ def compile_code(task_data):
         )
         f.write(code)
 
-    cmd = ["gcc", "-c", "-O2", "-s", "-w", c_path, "-o", out_path]
+    cmd = ["gcc", "-c", "-O2", "-w", c_path, "-o", out_path]
     try:
         subprocess.run(
             cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
