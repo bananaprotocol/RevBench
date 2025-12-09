@@ -12,13 +12,16 @@ BIN_DIR = "./temp_binaries"
 OUTPUT_JSONL = "training_data.jsonl"
 GHIDRA_SCRIPT_PATH = os.path.abspath("ghidra_export.py")
 
-MAX_CHARS = 4000
+MIN_CHARS = 80
+MAX_CHARS = 14000
 
 
 def compile_code(task_data):
     index, code = task_data
 
-    if not code or len(code) > MAX_CHARS:
+    clean_len = len(code.strip())
+
+    if not code or clean_len < MIN_CHARS or clean_len > MAX_CHARS:
         return None
 
     bin_name = f"func_{index}.o"
@@ -111,6 +114,7 @@ def main():
     )
 
     saved = 0
+    skipped = 0
 
     with open(OUTPUT_JSONL, "w", encoding="utf-8") as json_out:
         current_file = None
@@ -130,15 +134,24 @@ def main():
                 ghidra_pseudocode = "\n".join(current_code)
 
                 if current_file in source_map:
-                    entry = {
-                        "input": ghidra_pseudocode,
-                        "output": source_map[current_file],
-                    }
-                    json_out.write(json.dumps(entry) + "\n")
-                    json_out.flush()
-                    saved += 1
+                    clean_input_len = len(ghidra_pseudocode.strip())
+                    clean_output_len = len(source_map[current_file].strip())
+
+                    if clean_output_len <= clean_input_len * 1.2:
+                        entry = {
+                            "input": ghidra_pseudocode,
+                            "output": source_map[current_file],
+                        }
+                        json_out.write(json.dumps(entry) + "\n")
+                        json_out.flush()
+                        saved += 1
+                    else:
+                        skipped += 1
+                else:
+                    skipped += 1
 
                 pbar.update(1)
+                pbar.set_postfix({"Saved": saved, "Skipped": skipped})
             elif in_block:
                 current_code.append(line)
 
@@ -150,7 +163,7 @@ def main():
     if os.path.exists(tmp_proj_dir):
         shutil.rmtree(tmp_proj_dir)
 
-    print(f"Done! Saved {saved} pairs to {OUTPUT_JSONL}")
+    print(f"Done! Saved {saved} pairs to {OUTPUT_JSONL}. Skipped {skipped} pairs.")
 
 
 if __name__ == "__main__":
