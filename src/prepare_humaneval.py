@@ -5,7 +5,6 @@ import subprocess
 import tempfile
 
 from datasets import Dataset
-from torch.fx.node import Target
 from tqdm import tqdm
 
 GHIDRA_HEADLESS_PATH = "ghidra-analyzeHeadless"
