@@ -1,4 +1,14 @@
 #set text(size: 12pt)
+#set heading(numbering: "1.1")
+#show heading: it => {
+  if it.level == 1 {
+    pagebreak(weak: true)
+  }
+
+  v(1em)
+  it
+  v(0.5em)
+}
 
 #align(center)[
   #text(size: 12pt, weight: "bold")[Heidelberg University] \
@@ -43,31 +53,35 @@
 #pagebreak()
 
 #counter(page).update(1)
+#align(center)[
+  #page(numbering: "i")[
+    #set par(justify: false)
+    #text(size: 17pt, weight: "bold")[Abstract]\
+    #v(1mm)
+    _English_ \
+    #v(1mm)
+    #lorem(200)]
+]
+
+#align(center)[
+  #page(numbering: "i")[
+    #set par(justify: false)
+    #text(size: 17pt, weight: "bold")[Abstract]\
+    #v(1mm)
+    _Deutsch_ \
+    #v(1mm)
+    #lorem(200)]
+]
+
+#page(numbering: "i")[
+  #outline()
+]
+
+#counter(page).update(1)
 #set page(
   numbering: "1",
 )
 
-#align(center)[
-  #set par(justify: false)
-  #text(size: 17pt, weight: "bold")[Abstract]\
-  #v(1mm)
-  _English_ \
-  #v(1mm)
-  #lorem(200)
-]
-
-#pagebreak()
-
-#align(center)[
-  #set par(justify: false)
-  #text(size: 17pt, weight: "bold")[Abstract]\
-  #v(1mm)
-  _Deutsch_ \
-  #v(1mm)
-  #lorem(200)
-]
-
-#pagebreak()
 
 = Introduction
 
@@ -79,22 +93,38 @@
 
 == Neural Decompilation
 
+Converting binary code back into a high-level language, a process known as decompilation, is necessary for tasks ranging from indentifying vulnerabilities to maintaining legacy systems.
+However, because compilation erases fine-grained details like loop structures and variable names, reconstructing the original source code is complex.
+Prominent tools like Ghidra and IDA Pro use strict, rule-based algorithms, to analyze the control flow graphs of binary code to reconstruct logic.
+This can generate high-level pseudo-code which is logically correct, but often difficult for humans to read and often can't easily be re-compiled.
+Neural Decompilation is the application of neural networks to decompilation, where it is treated as a Machine Translation problem.
+
 - what is it?
 - how do standard decompilers work?
 - why do they only create pseudocode?
 
-== Large Language Models
+== Transformers and LLMs for Code
 
 - how do transformers work?
 - how does attention work?
 
-== Low-Rank Adaptation
+== Parameter-Efficient Fine-Tuning (LoRA)
+
+Low-Rank Adaptation, or LoRA, is a parameter-efficient fine-tuning method, which freezes the pretrained model weights and injects trainable rank decomposition matrices into each layer of the Transformer, reducing the number of trainable parameters by a large amount.
+As larger models are pretrained, full-finetuning, where all model parameters are updated, becomes a big challenge, as it requires huge amounts of GPU memory.
+The authors of the paper hypothesize that the change in weights during model adaptation has a low instrinstic rank, i.e. a very low rank suffices for making the model learn a new downstream task, even if the full rank of the parameters is much larger.
 
 - how does LoRA work?
 - what are the rank decomposition matrices A and B?
 - why does it save memory?
 
 == Knowledge Editing
+
+While LLMs are able to recall a large amount of common facts, even very large models can lack specialized knowledge or recall obsolete information if not updated frequently.
+The ability to efficiently maintain and customize new information is thus desirable in a lot of domains.
+Retraining large models can be computationally inaccessible, which is why methods which can update knowledge directly are desired.
+Several Knowledge Editing methods have been proposed to insert new memories into specific model parameters.
+These include constrained fine-tuning, hypernetwork knowledge editing, and rank-one model editing.
 
 - how is knowledge specified?
 - what methods exist and how do they differ?
