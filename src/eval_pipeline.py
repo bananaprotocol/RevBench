@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import tempfile
 
@@ -66,6 +67,13 @@ class RevBench:
 
         if "[/INST]" in full_text:
             full_text = full_text.split("[/INST]")[1]
+
+        patterns = [
+            r"^Here is the refined.*?code:?",
+        ]
+
+        for p in patterns:
+            full_text = re.sub(p, "", full_text, flags=re.IGNORECASE | re.MULTILINE)
 
         full_text = full_text.replace("```c", "").replace("```", "").strip()
         return full_text
