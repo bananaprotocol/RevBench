@@ -58,6 +58,7 @@
           clang
           ghidra
           cmake
+          pkg-config
           rocmtoolkit_joined
         ];
 
