@@ -66,7 +66,7 @@ class CausalTracer:
 
             print(f"Layer {layer_idx} restored. Prob: {results[layer_idx]:.4f}")
 
-            return results, clean_prob, corrupted_prob
+        return results, clean_prob, corrupted_prob
 
     def plot(self, results, clean_prob, corrupted_prob):
         plt.figure(figsize=(10, 6))
