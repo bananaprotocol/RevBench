@@ -73,6 +73,15 @@
     #lorem(200)]
 ]
 
+#align(center)[
+  #page(numbering: "i")[
+    #set par(justify: false)
+    #text(size: 17pt, weight: "bold")[Acknowledgments]\
+    #v(1mm)
+    The author acknowledges support by the state of Baden-Württemberg through bwHPC.
+  ]
+]
+
 #page(numbering: "i")[
   #outline()
 ]
