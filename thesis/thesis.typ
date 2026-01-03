@@ -82,14 +82,25 @@
   numbering: "1",
 )
 
-
 = Introduction
 
 - reverse engineering is a manual and tedious process
 - modern binaries are heavily optimized, stripping variable names, structure, ...
 - we investigate LoRA and Knowledge Editing as cheaper alternatives to improve decompilation performance and fix specific decompiler hallucinations
 
-= Background & Related Work
+== Motivation and Context
+
+== Problem Statement
+
+== Research Questions
+
+== Contributions
+
+== Thesis Outline
+
+= Background
+
+== Decompilation Fundamentals
 
 == Neural Decompilation
 
@@ -103,20 +114,28 @@ Neural Decompilation is the application of neural networks to decompilation, whe
 - how do standard decompilers work?
 - why do they only create pseudocode?
 
-== Transformers and LLMs for Code
-
-- how do transformers work?
-- how does attention work?
-
-== Parameter-Efficient Fine-Tuning (LoRA)
-
-Low-Rank Adaptation, or LoRA, is a parameter-efficient fine-tuning method, which freezes the pretrained model weights and injects trainable rank decomposition matrices into each layer of the Transformer, reducing the number of trainable parameters by a large amount.
-As larger models are pretrained, full-finetuning, where all model parameters are updated, becomes a big challenge, as it requires huge amounts of GPU memory.
-The authors of the paper hypothesize that the change in weights during model adaptation has a low instrinstic rank, i.e. a very low rank suffices for making the model learn a new downstream task, even if the full rank of the parameters is much larger.
+== Parameter-Efficient Fine-Tuning
 
 - how does LoRA work?
 - what are the rank decomposition matrices A and B?
 - why does it save memory?
+
+=== Full Fine-Tuning vs. Efficient Adaptation
+
+=== Low-Rank Adaptation (LoRA)
+
+Low-Rank Adaptation, or LoRA, is a parameter-efficient fine-tuning method, which freezes the pretrained model weights and injects trainable rank decomposition matrices into each layer of the Transformer, reducing the number of trainable parameters by a large amount. @huLoRALowRankAdaptation2021
+As larger models are pretrained, full-finetuning, where all model parameters are updated, becomes a big challenge, as it requires huge amounts of GPU memory.
+The authors of the paper hypothesize that the change in weights during model adaptation has a low instrinstic rank, i.e. a very low rank suffices for making the model learn a new downstream task, even if the full rank of the parameters is much larger.
+
+=== Variants and Extensions
+
+- QLoRA
+
+== Transformers and LLMs for Code
+
+- how do transformers work?
+- how does attention work?
 
 == Knowledge Editing
 
@@ -129,6 +148,14 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 - how is knowledge specified?
 - what methods exist and how do they differ?
 - which methods are suitable for code LLMs?
+
+== Evaluation Metrics for Decompilation
+
+= Related Work
+
+== Neural Decompilation Systems
+
+== Research Gap and Positioning
 
 = Methodology
 
@@ -172,3 +199,5 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 - summarize results
 - restate findings
 - clean bibliography and references
+
+#bibliography("references.bib")
