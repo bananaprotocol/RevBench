@@ -111,6 +111,34 @@
 
 == Decompilation Fundamentals
 
+Decompilation is the process of translating low-level executable code back into a higher-level programming language representation.
+Understanding the fundamentals of this process, and its inherent challenges, is essential for appreciating both the potential and limitations of neural approaches to decompilation.
+This section first examines the forward compilation process to understand what information is lost, then discusses traditional decompilation techniques with a focus on Ghidra's approach, and finally outlines the key challenges that motivate this research.
+
+=== The Compilation Process
+
+Before examining decompilation, it is instructive to understand the forward compilation process and the information that is irretrievably lost at each stage.
+This loss of information is what makes decompilation fundamentally challenging.
+It is not simply the inverse of compilation, but rather an attempt to recover semantics from a lacking representation.
+
+==== Overview of Compilation Stages
+
+The transformation from source code to executable binary occurs through several distinct phases, each with specific responsibilities and each contributing to information loss.
+
+// add figure that shows pipeline
+
+==== Preprocessing
+
+==== Lexical and Syntactic Analysis
+
+==== Intermediate Representation and Optimization
+
+==== Code Generation
+
+==== Assembly and Linking
+
+==== Summary of Information Loss
+
 == Neural Decompilation
 
 Converting binary code back into a high-level language, a process known as decompilation, is necessary for tasks ranging from indentifying vulnerabilities to maintaining legacy systems.
