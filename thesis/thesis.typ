@@ -300,6 +300,16 @@ This approach provides insight into the reliability and consistency of the model
 
 === Quantitative Results
 
+Two primary metrics capture the baseline model's performance:
+
+*Pass\@1* measures functional equivalence, the percentage of problems for which the model's first generated solution passes all test cases in the provided test harness.
+This metric represents the most important evaluation criterion, as it requires not merely syntactically valid or similar-looking code, but code that exhibits identical behavior to the original implementation across diverse inputs.
+
+*Compile%* measures the proportion of generated outputs that successfully compile with a standard C compiler (GCC).
+This metric serves as a prerequisite for functional correctness, non-compiling code cannot be functionally equivalent, while also indicating the model's ability to generate syntactically valid C code with proper type consistency, correct syntax, and valid identifiers.
+
+The quantitative results are summarized in #ref(<baseline>).
+
 #figure(
   table(
     columns: (auto, auto, auto),
@@ -309,7 +319,7 @@ This approach provides insight into the reliability and consistency of the model
     [Compile (%)], [18.94%], [#sym.plus.minus 0.53%],
   ),
   caption: [Baseline model performance on HumanEval-C (n=151, 5 runs)],
-)
+) <baseline>
 
 - LoRA performance
 - Knowledge Editing success rate
