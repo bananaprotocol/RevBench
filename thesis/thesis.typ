@@ -290,6 +290,16 @@ The resulting dataset comprises approximately *4,000 training samples* from ExeB
 
 == Baseline Performance
 
+The baseline performance establishes the fundamental capabilities of the pre-trained LLM when applied to neural decompilation without any task-specific adaptation.
+This evaluation provides the reference point against which all subsequent adaptations, whether general LoRA fine-tuning or error-specific LoRAs, will be measured.
+Understanding the baseline is crucial not only for quantifying improvements but also for identifying the specific weaknesses and error patterns that targeted interventions should address.
+
+The baseline model was evaluated on the HumanEval-C test set using Ghidra-generated pseudocode as input.
+To account for the inherent randomness, each evaluation was conducted across five independent runs, and both mean and standard deviation are reported for all metrics.
+This approach provides insight into the reliability and consistency of the model's performance, which is particularly important given that temperature-based sampling can introduce variability in output quality.
+
+=== Quantitative Results
+
 #figure(
   table(
     columns: (auto, auto, auto),
