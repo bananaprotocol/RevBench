@@ -198,12 +198,16 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 
 == Overview
 
+- Two approaches: LoRA (global) vs. KE (surgical / targeted)
+- Hypothesis and experimental design
+
 == Data Pipeline
 
-- data sources: ExeBench, AnghaBench
-- compiler choice, compilation settings, optimization level
-- ghidra decompilation
-- filtering: line length, length ratio
+- data sources: ExeBench (train), HumanEval-C (test)
+- compilation: gcc settings, optimizations
+- decompilation: ghidra headless
+- filtering and quality assurance: line length, length ratio, valid pairs
+- statistics: final training set: \~4000 samples, test set: 151 samples with test harnesses
 
 == LoRA Fine-Tuning Approach
 
