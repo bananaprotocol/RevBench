@@ -306,7 +306,7 @@ Two primary metrics capture the baseline model's performance:
 This metric represents the most important evaluation criterion, as it requires not merely syntactically valid or similar-looking code, but code that exhibits identical behavior to the original implementation across diverse inputs.
 
 *Compile%* measures the proportion of generated outputs that successfully compile with a standard C compiler (GCC).
-This metric serves as a prerequisite for functional correctness, non-compiling code cannot be functionally equivalent, while also indicating the model's ability to generate syntactically valid C code with proper type consistency, correct syntax, and valid identifiers.
+This metric serves as a prerequisite for functional correctness, as non-compiling code cannot be functionally equivalent, while also indicating the model's ability to generate syntactically valid C code with proper type consistency, correct syntax, and valid identifiers.
 
 The quantitative results are summarized in #ref(<baseline>).
 
