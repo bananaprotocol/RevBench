@@ -211,9 +211,28 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 
 == LoRA Fine-Tuning Approach
 
+- base model: CodeLlama 7B Instruct
+- training config: target attention + mlp projections
+- QLoRA
+- prompt format
+- hyperparam search: rank/alpha grid search (r8-r128)
+
 == Knowledge Editing Approach
 
+- formulating decompilation as KE (ghidra artifacts as knowledge triplets)
+- edit targets (undefined4 -> int, ...)
+- ROME implementation (easyedit, edit specification)
+- challenges encountered: standard KE problematic for decompilation
+
 == Evaluation Framework
+
+- Pass\@1 on HumanEval-C
+- Compilation check
+- Functional equivalence testing using assertions
+- Multiple runs for stability
+- Failure categorization
+- Semantic error patterns
+- Synthetic data generation for targeted training
 
 == Comparison
 
