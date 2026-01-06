@@ -52,9 +52,11 @@
 
 #pagebreak()
 
+#set page(numbering: "i")
+
 #counter(page).update(1)
 #align(center)[
-  #page(numbering: "i")[
+  #page()[
     #set par(justify: false)
     #text(size: 17pt, weight: "bold")[Abstract]\
     #v(1mm)
@@ -64,7 +66,7 @@
 ]
 
 #align(center)[
-  #page(numbering: "i")[
+  #page()[
     #set par(justify: false)
     #text(size: 17pt, weight: "bold")[Abstract]\
     #v(1mm)
@@ -74,7 +76,7 @@
 ]
 
 #align(center)[
-  #page(numbering: "i")[
+  #page()[
     #set par(justify: false)
     #text(size: 17pt, weight: "bold")[Acknowledgments]\
     #v(1mm)
@@ -82,14 +84,12 @@
   ]
 ]
 
-#page(numbering: "i")[
-  #outline()
-]
+#outline()
 
-#counter(page).update(1)
 #set page(
   numbering: "1",
 )
+#counter(page).update(1)
 
 = Introduction
 
