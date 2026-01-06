@@ -288,7 +288,19 @@ The resulting dataset comprises approximately *4,000 training samples* from ExeB
 
 = Results
 
-- baseline performance
+== Baseline Performance
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    inset: 10pt,
+    table.header([*Metric*], [*Mean*], [*Std Dev*]),
+    [Pass\@1 (%)], [15.50%], [#sym.plus.minus 1.08%],
+    [Compile (%)], [18.94%], [#sym.plus.minus 0.53%],
+  ),
+  caption: [Baseline model performance on HumanEval-C (n=151, 5 runs)],
+)
+
 - LoRA performance
 - Knowledge Editing success rate
 - comparison: did KE break the rest of the model?
