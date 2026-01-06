@@ -224,7 +224,7 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 - ROME implementation (easyedit, edit specification)
 - challenges encountered: standard KE problematic for decompilation
 
-== Evaluation Framework
+== Error Analysis
 
 - Pass\@1 on HumanEval-C
 - Compilation check
@@ -242,18 +242,21 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 
 = Experimental Setup
 
+- hardware and software environment: gpus, bwHPC cluster, google colab, libraries (transformers, peft, ...)
 - base model: CodeLlama-7B Instruct
+- evaluation metric: Pass\@1 with HumanEval-C (test harness execution), compilability
 - LoRA hyperparameters
 - Knowledge Editing config
-- evaluation metric: Pass\@1 with HumanEval, compilability
 - why this metric? why is e.g. BLEU bad? are there other metrics?
 - functional equivalence: unit tests, symbolic execution, fuzzing
 
-= Results & Evaluation
+= Results
 
+- baseline performance
 - LoRA performance
 - Knowledge Editing success rate
 - comparison: did KE break the rest of the model?
+- error analysis (failure distribution, semantic error taxonomy, trainability assessment)
 
 = Discussion
 
