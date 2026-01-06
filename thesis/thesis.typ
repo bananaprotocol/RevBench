@@ -228,11 +228,22 @@ All adapted models are evaluated against the baseline using identical metrics (c
 
 == Data Pipeline
 
-- data sources: ExeBench (train), HumanEval-C (test)
-- compilation: gcc settings, optimizations
-- decompilation: ghidra headless
-- filtering and quality assurance: line length, length ratio, valid pairs
-- statistics: final training set: \~4000 samples, test set: 151 samples with test harnesses
+The experimental infrastructure relies on two complementary datasets serving distinct purposes in the evaluation pipeline.
+*ExeBench* serves as the primary training corpus, providing a diverse collection of C functions suitable for fine-tuning the models.
+*HumanEval-C* functions as the evaluation dataset, offering 151 programming problems with associated test harnesses that enable rigorous verification of functional equivalence beyond mere syntactic similarity.
+
+The data preparation process begins with *compilation*, where source C code is compiled into binary executables using GCC with the `-O2` optimization level.
+This optimization setting represents a realistic balance between performance and debuggability commonly used in production software, producing binaries with substantial compiler transformations, including loop optimizations, function inlining, and register allocation, while avoiding the most aggressive optimizations that can make decompilation exceptionally challenging.
+
+Following compilation, *decompilation* is performed using Ghidra in headless mode, enabling automated batch processing of binaries.
+Ghidra's decompiler analyzes each compiled binary and generates pseudocode that serves as the input representation for the neural models.
+This pseudocode retains low-level semantics such as explicit type casts, pointer arithmetic, and architecture-specific idioms while providing more structure than raw assembly.
+
+To ensure dataset quality, a *filtering and quality assurance* process is applied to the generated pairs of Ghidra pseudocode and original source code.
+Filtering criteria include line length constraints to remove excessively long or short functions that may represent edge cases, length ratio checks between pseudocode and source code to identify potential decompilation failures or anomalies, and validation to ensure both input and output constitute valid, complete function pairs.
+These filters remove malformed samples that could introduce noise during training or evaluation.
+
+The resulting dataset comprises approximately *4,000 training samples* from ExeBench and *151 test samples* from HumanEval-C, each accompanied by test harnesses that enable automated verification of functional correctness through execution-based testing.
 
 == LoRA Fine-Tuning Approach
 
