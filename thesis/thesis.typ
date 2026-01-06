@@ -259,10 +259,29 @@ Second, CodeLlama's architecture and training specifically target programming la
 Third, the Instruct variant's instruction-following capabilities align well with the decompilation task formulation, where the model receives explicit directives to transform Ghidra pseudocode into clean C code.
 Finally the model's open availability and extensive community adoption provide valuable resources for implementation and comparison.
 
-- training config: target attention + mlp projections
+=== Training Configuration
+
+- target attention + mlp projections
 - QLoRA
 - prompt format
-- hyperparam search: rank/alpha grid search (r8-r128)
+
+````
+<s>[INST] You are an expert C decompiler.
+Refine the following Ghidra pseudocode into valid, compilable C code.
+STRICT RESPONSE RULES:
+1. Do not write a main function.
+2. Keep the exact same function name and arguments.
+3. Output ONLY the raw code. Do not use Markdown code blocks (```).
+4. Do not output any introductory text or explanations.
+
+Pseudocode:
+{ghidra_pseudocode}
+[/INST]
+````
+
+=== Hyperparameter Search
+
+- rank/alpha grid search (r8-r128)
 
 == Knowledge Editing Approach
 
