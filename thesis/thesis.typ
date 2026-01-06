@@ -198,8 +198,33 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 
 == Overview
 
-- Two approaches: LoRA (global) vs. KE (surgical / targeted)
-- Hypothesis and experimental design
+This thesis investigates two fundamentally different paradigms for adapting pre-trained Large Language Models to the task of neural decompilation: Low-Rank Adaptation (LoRA) and Knowledge Editing (KE).
+These approaches represent contrasting philosophies in model adaptation and are hypothesized to offer complementary strengths when addressing the challenges inherent to decompilation.
+
+The decompilation task is formulated as a translation problem where the input consists of Ghidra-generated pseudocode rather than raw binary or assembly.
+This intermediate representation retains essential low-level semantics while providing a more structured input format that is better suited for LLM processing.
+The objective is to transform this pseudocode into clean, idiomatic, and functionally equivalent high-level C code.
+
+*Low-Rank Adaptation* constitutes a global adaptation strategy.
+By introducing low-rank trainable matrices into the Transformer architecture, LoRA enables the model to learn broad patterns from a corpus of decompilation examples.
+This approach is well-suited for capturing general improvements such as more idiomatic code generation, better recognition of common programming constructs, and improved handling of compiler-introduced patterns.
+This adaptation affects the model's behavior across a wide range of inputs, making it appropriate for enhancing overall decompilation quality.
+
+*Knowledge Editing*, in contrast, represents a surgical intervention approach.
+However preliminary investigation revealed that traditional KE techniques such as ROME, designed primarily for factual knowledge correction in natural language domains, are not well-suited to the decompilation task, which involves complex structural transformations rather than discrete factual assertions.
+Consequently, this work explores *error-specific LoRAs* as an alternative targeted adaptation strategy.
+Rather than editing model weights directly, error-specific LoRAs are trained on curated datasets focusing on particular recurring error patterns (e.g., loop bound errors, operator errors, or initialization errors).
+This approach maintains the surgical, targeted philosophy of knowledge editing while remaining compatible with the architectural and task characteristics of neural decompilation.
+
+The central hypothesis of this work proposes that these two approaches, general-purpose LoRAs and error-specific LoRAs, are not merely alternatives but rather address different aspects of the decompilation problem.
+General LoRA is expected to yield consistent improvements in overall code quality and readability, while error-specific LoRAs are hypothesized to excel at eliminating particular, reproducible error categories that persist even after broad fine-tuning.
+Furthermore, a hybrid approach combining both techniques may leverage their respective strengths to achieve superior results compared to either method in isolation.
+
+The experimental design follows a structured comparative methodology.
+First, a baseline is established by evaluating a pre-trained LLM on a curated dataset of binary functions with known source code.
+Subsequently, general LoRA fine-tuning is applied to create a globally adapted model, and error-specific LoRAs are trained and applied to create a targeted-correction variants.
+All adapted models are evaluated against the baseline using identical metrics (compilability, and functional equivalence), enabling direct comparison.
+// not sure if enough time left: Additional analyses examine scalability, interference effects, and robustness to input variations, culminating in an exploration of hybrid strategies that combine both adaptation techniques.
 
 == Data Pipeline
 
