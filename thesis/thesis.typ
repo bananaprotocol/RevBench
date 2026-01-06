@@ -247,7 +247,18 @@ The resulting dataset comprises approximately *4,000 training samples* from ExeB
 
 == LoRA Fine-Tuning Approach
 
-- base model: CodeLlama 7B Instruct
+=== Base Model Selection
+
+The foundation for LoRA fine-tuning is CodeLlama 7B Instruct, a 7-billion parameter large language model specifically optimized for code-related tasks.
+CodeLlama represents a family of models derived from Llama 2, further trained on code-heavy corpora to develop stronger capabilities in code understanding, generation, and transformation tasks.
+The Instruct variant has been additionally fine-tuned to follow instructions, making it particularly well-suited for task-oriented applications where the model must respond to structured prompts.
+
+Several factors motivated this selection.
+First, the 7B parameter scale strikes a practical balance between model capacity and computational feasibility, enabling relatively efficient fine-tuning and inference while maintaining sufficient representational power for complex code transformations.
+Second, CodeLlama's architecture and training specifically target programming language understanding, providing a stronger starting point than general-purpose language models.
+Third, the Instruct variant's instruction-following capabilities align well with the decompilation task formulation, where the model receives explicit directives to transform Ghidra pseudocode into clean C code.
+Finally the model's open availability and extensive community adoption provide valuable resources for implementation and comparison.
+
 - training config: target attention + mlp projections
 - QLoRA
 - prompt format
