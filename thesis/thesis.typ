@@ -321,6 +321,8 @@ The quantitative results are summarized in #ref(<baseline>).
   caption: [Baseline model performance on HumanEval-C (n=151, 5 runs)],
 ) <baseline>
 
+=== Qualitative Analysis
+
 - LoRA performance
 - Knowledge Editing success rate
 - comparison: did KE break the rest of the model?
