@@ -196,12 +196,20 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 
 = Methodology
 
+== Overview
+
 == Data Pipeline
 
 - data sources: ExeBench, AnghaBench
 - compiler choice, compilation settings, optimization level
 - ghidra decompilation
 - filtering: line length, length ratio
+
+== LoRA Fine-Tuning Approach
+
+== Knowledge Editing Approach
+
+== Evaluation Framework
 
 == Comparison
 
