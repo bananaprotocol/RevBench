@@ -265,6 +265,9 @@ Finally the model's open availability and extensive community adoption provide v
 - QLoRA
 - prompt format
 
+*Prompt template design* plays a crucial role in eliciting appropriate model behavior.
+The prompt structure leverages CodeLlama's instruction format, using the `[INST]` tags that the model was trained to recognize. The template is designed to address common failure modes observed during preliminary experiments:
+
 ````
 <s>[INST] You are an expert C decompiler.
 Refine the following Ghidra pseudocode into valid, compilable C code.
