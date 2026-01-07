@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import re
@@ -10,7 +11,7 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 MODEL_PATH = "codellama/CodeLlama-7b-Instruct-hf"
-LORA_PATH = "models/lora"
+# LORA_PATH = "models/lora_r64_a64"
 TEST_DATA_PATH = "data/humaneval_c_test.jsonl"
 RESULTS_FILE = "results/evaluation_log.jsonl"
 
@@ -134,19 +135,27 @@ class RevBench:
 
 
 def main():
-    if not os.path.exists(TEST_DATA_PATH):
-        print(f"Error: {TEST_DATA_PATH} not found.")
+    parser = argparse.ArgumentParser(description="Evaluate decompilation model")
+    parser.add_argument("--lora", default=None, help="Path to LoRA adapter")
+    parser.add_argument("--output", default=RESULTS_FILE, help="Output log file")
+    parser.add_argument("--test-data", default=TEST_DATA_PATH, help="Test data path")
+    args = parser.parse_args()
+
+    if not os.path.exists(args.test_data):
+        print(f"Error: {args.test_data} not found.")
         return
 
-    with open(TEST_DATA_PATH, "r") as f:
+    with open(args.test_data, "r") as f:
         dataset = [json.loads(line) for line in f]
 
-    evaluator = RevBench(MODEL_PATH, LORA_PATH)
+    evaluator = RevBench(MODEL_PATH, args.lora)
 
     passed_count = 0
     total_count = 0
 
-    with open(RESULTS_FILE, "w") as log_file:
+    os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
+
+    with open(args.output, "w") as log_file:
         for entry in tqdm(dataset):
             ghidra_input = entry["ghidra_input"]
             test_harness = entry["test_harness"]
