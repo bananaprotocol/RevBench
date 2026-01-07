@@ -263,9 +263,23 @@ Finally the model's open availability and extensive community adoption provide v
 
 === Training Configuration
 
-- target attention + mlp projections
-- QLoRA
-- prompt format
+The training infrastructure employs *Unsloth*, an optimized framework for efficient LLM fine-tuning that provides significant speedups over standard implementations.
+The base model is loaded in 4-bit precision, reducing memory requirements while maintaining model quality.
+Unsloth's custom gradient checkpointing implementation further reduces memory overhead compared to standard PyTorch gradient checkpointing.
+
+The LoRA configuration targets all linear projection layers within the Transformer architecture.
+For the attention mechanism, this includes the query, key, value, and output projections (`q_proj`, `k_proj`, `v_proj`, `o_proj`).
+For the feed-forward network, the gated MLP projections are targeted (`gate_proj`, `up_proj`, `down_proj`).
+This comprehensive targeting ensures that adaptations can occur throughout the model's representational pipeline.
+Unlike some configurations that apply dropout to LoRA layers, dropout is set to zero to maximize the utilization of the limited trainable parameters.
+
+The training hyperparameters are configured as follows.
+A per-device batch size of 2 is used with gradient accumulation over 8 steps, yielding an effective batch size of 16.
+The maximum sequence length is set to 2048 tokens, sufficient to accommodate most function pairs in the dataset.
+Training proceeds for 3 epochs with a learning rate of $2 times 10^(-4)$ and a linear learning rate scheduler with a warmup ratio of 0.05.
+The optimizer is AdamW with 8-bit states.
+A weight decay of 0.001 provides light regularization.
+A fixed random seed of 3407 ensures reproducibility across training runs.
 
 *Prompt template design* plays a crucial role in eliciting appropriate model behavior.
 The prompt structure leverages CodeLlama's instruction format, using the `[INST]` tags that the model was trained to recognize. The template is designed to address common failure modes observed during preliminary experiments:
