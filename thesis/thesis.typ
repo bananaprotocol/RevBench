@@ -322,7 +322,61 @@ Pseudocode:
 
 === Hyperparameter Search
 
-- rank/alpha grid search (r8-r128)
+To identify optimal LoRA hyperparameters, a grid search was conducted over rank values ranging from 8 to 128, with alpha values set equal to or double the rank.
+Each configuration was evaluated across 5 independent runs on the HumanEval-C test set (n=151) to account for sampling variability.
+
+#figure(
+  table(
+    columns: (auto, auto, auto, auto),
+    inset: 10pt,
+    align: (left, center, center, center),
+    table.header(
+      [*Config*], [*Rank / Alpha*], [*Pass\@1 (%)*], [*Compile (%)*]
+    ),
+    [Baseline],
+    [---],
+    [15.50 #sym.plus.minus 1.20],
+    [18.94 #sym.plus.minus 0.59],
+
+    [LoRA], [8 / 8], [20.93 #sym.plus.minus 0.89], [82.38 #sym.plus.minus 0.36],
+
+    [LoRA],
+    [16 / 16],
+    [21.46 #sym.plus.minus 2.27],
+    [82.91 #sym.plus.minus 1.78],
+
+    [LoRA],
+    [32 / 32],
+    [23.44 #sym.plus.minus 1.79],
+    [84.77 #sym.plus.minus 0.66],
+
+    [LoRA],
+    [32 / 64],
+    [23.71 #sym.plus.minus 2.06],
+    [83.97 #sym.plus.minus 0.86],
+
+    [LoRA],
+    [64 / 64],
+    [*23.95* #sym.plus.minus 1.48],
+    [84.33 #sym.plus.minus 1.30],
+
+    [LoRA],
+    [64 / 128],
+    [22.78 #sym.plus.minus 1.00],
+    [*85.56* #sym.plus.minus 1.78],
+
+    [LoRA],
+    [128 / 128],
+    [23.18 #sym.plus.minus 2.34],
+    [84.50 #sym.plus.minus 1.11],
+  ),
+  caption: [LoRA hyperparameter search results on HumanEval-C (5 runs per config). Bold indicates best performance.],
+)
+
+The results reveal several patterns.
+First, even the smallest LoRA configuration (r=8) dramatically improves compilability from 18.94% to 82.38%, indicating that fine-tuning effectively teaches the model to generate syntactically valid C code rather than pseudocode artifacts.
+Second, Pass\@1 shows diminishing returns beyond rank 32, with configurations from r=32 to r=128 all achieving approximately 23-24%.
+Third, increasing alpha relative to rank (e.g., r=32/a=64 vs r=32/a=32) provides marginal benefit. Based on these results, the r=64/a=64 configuration was selected for subsequent experiments as it achieved the highest mean Pass\@1 while maintaining stable performance across runs.
 
 == Knowledge Editing Approach
 
@@ -395,6 +449,7 @@ The quantitative results are summarized in #ref(<baseline>).
 === Qualitative Analysis
 
 - LoRA performance
+- discuss LoRA flakiness (results that sometimes fail)
 - Knowledge Editing success rate
 - comparison: did KE break the rest of the model?
 - error analysis (failure distribution, semantic error taxonomy, trainability assessment)
@@ -405,6 +460,8 @@ The quantitative results are summarized in #ref(<baseline>).
 - if LoRA is better: decompilation is a holistic reasoning task, not a factual retrieval task
 - if KE is better: specific artifacts are localizable faults, which can be patched
 - explain limitations: small dataset (4k rows), time and compute constraints
+- massive compile improvement vs modest Pass\@1 improvement suggests LoRA excels at syntactic correction but semantic reasoning remains challenging
+- diminishing returns indicate a ceiling on what LoRA alone can achieve
 
 = Conclusion
 
