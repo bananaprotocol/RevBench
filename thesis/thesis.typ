@@ -396,7 +396,15 @@ Under this formulation, the decompilation task contains implicit knowledge tripl
 
 Additionally, Ghidra produces context-specific artifacts such as `_LC0` for string literal references and `DAT_XXXXXXXX` for data section addresses, though these lack fixed target values and require context-dependent resolution.
 
-- ROME implementation (easyedit, edit specification)
+=== Implementation
+
+ROME edits were implemented using the EasyEdit library @wangEasyEditEasytouseKnowledge2023, which provides a standardized interface for various knowledge editing methods.
+Edit requests were specified as JSON objects containing the subject (Ghidra artifact), relation (type correspondence), and target object (C type).
+The editing process modifies a single feed-forward layer in the Transformer, identified through causal tracing as the layer where factual associations are stored.
+
+Four edit requests were created targeting the most common Ghidra type artifacts.
+The edited model was then tested on the same decompilation prompts used for baseline evaluation, and the generated outputs were analyzed for artifact removal rates.
+
 - challenges encountered: standard KE problematic for decompilation
 
 == Error Analysis
