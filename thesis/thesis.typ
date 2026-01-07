@@ -383,8 +383,19 @@ Third, increasing alpha relative to rank (e.g., r=32/a=64 vs r=32/a=32) provides
 Knowledge editing (KE) represents a fundamentally different paradigm from fine-tuning: rather than updating model weights through gradient descent over training examples, KE methods directly modify specific parameters to alter targeted factual associations while preserving other model behaviors.
 This section describes the experimental investigation of ROME (Rank-One Model Editing) for neural decompilation, conducted to evaluate whether surgical weight modifications can address systematic decompilation errors.
 
-- formulating decompilation as KE (ghidra artifacts as knowledge triplets)
-- edit targets (undefined4 -> int, ...)
+=== Formulating Decompilation as Knowledge Editing
+
+The hypothesis underlying this experiment was that certain Ghidra pseudocode artifacts could be conceptualized as incorrect factual associations that knowledge editing might correct.
+Ghidra's decompiler produces type annotations such as `undefined4`, `undefined1`, and `undefined8` which correspond to C types `int`, `char`, and `long` respectively.
+If the base LLM fails to consistently translate these artifacts, this failure might stem from incorrect or weak factual associations that ROME could strengthen.
+
+Under this formulation, the decompilation task contains implicit knowledge triplets of the form (subject, relation, object):
+- (`undefined4`, "corresponds to C type", `int`)
+- (`undefined1`, "corresponds to C type", `char`)
+- (`undefined8`, "corresponds to C type", `long`)
+
+Additionally, Ghidra produces context-specific artifacts such as `_LC0` for string literal references and `DAT_XXXXXXXX` for data section addresses, though these lack fixed target values and require context-dependent resolution.
+
 - ROME implementation (easyedit, edit specification)
 - challenges encountered: standard KE problematic for decompilation
 
