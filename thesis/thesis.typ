@@ -278,7 +278,7 @@ A per-device batch size of 2 is used with gradient accumulation over 8 steps, yi
 The maximum sequence length is set to 2048 tokens, sufficient to accommodate most function pairs in the dataset.
 Training proceeds for 3 epochs with a learning rate of $2 times 10^(-4)$ and a linear learning rate scheduler with a warmup ratio of 0.05.
 The optimizer is AdamW with 8-bit states.
-A weight decay of 0.001 provides light regularization.
+A weight decay of 0.01 provides light regularization.
 A fixed random seed of 3407 ensures reproducibility across training runs.
 
 #figure(
