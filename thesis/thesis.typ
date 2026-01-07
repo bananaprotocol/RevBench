@@ -380,6 +380,9 @@ Third, increasing alpha relative to rank (e.g., r=32/a=64 vs r=32/a=32) provides
 
 == Knowledge Editing Approach
 
+Knowledge editing (KE) represents a fundamentally different paradigm from fine-tuning: rather than updating model weights through gradient descent over training examples, KE methods directly modify specific parameters to alter targeted factual associations while preserving other model behaviors.
+This section describes the experimental investigation of ROME (Rank-One Model Editing) for neural decompilation, conducted to evaluate whether surgical weight modifications can address systematic decompilation errors.
+
 - formulating decompilation as KE (ghidra artifacts as knowledge triplets)
 - edit targets (undefined4 -> int, ...)
 - ROME implementation (easyedit, edit specification)
