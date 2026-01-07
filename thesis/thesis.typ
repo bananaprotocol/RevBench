@@ -53,36 +53,38 @@
 #pagebreak()
 
 #set page(numbering: "i")
-
 #counter(page).update(1)
-#align(center)[
-  #page()[
-    #set par(justify: false)
-    #text(size: 17pt, weight: "bold")[Abstract]\
-    #v(1mm)
-    _English_ \
-    #v(1mm)
-    #lorem(200)]
-]
 
 #align(center)[
-  #page()[
-    #set par(justify: false)
-    #text(size: 17pt, weight: "bold")[Abstract]\
-    #v(1mm)
-    _Deutsch_ \
-    #v(1mm)
-    #lorem(200)]
+  #set par(justify: false)
+  #text(size: 17pt, weight: "bold")[Abstract]\
+  #v(1mm)
+  _English_ \
+  #v(1mm)
+  #lorem(200)
 ]
 
+#pagebreak()
+
 #align(center)[
-  #page()[
-    #set par(justify: false)
-    #text(size: 17pt, weight: "bold")[Acknowledgments]\
-    #v(1mm)
-    The author acknowledges support by the state of Baden-Württemberg through bwHPC.
-  ]
+  #set par(justify: false)
+  #text(size: 17pt, weight: "bold")[Abstract]\
+  #v(1mm)
+  _Deutsch_ \
+  #v(1mm)
+  #lorem(200)
 ]
+
+#pagebreak()
+
+#align(center)[
+  #set par(justify: false)
+  #text(size: 17pt, weight: "bold")[Acknowledgments]\
+  #v(1mm)
+  The author acknowledges support by the state of Baden-Württemberg through bwHPC.
+]
+
+#pagebreak()
 
 #outline()
 
