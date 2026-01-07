@@ -271,7 +271,7 @@ The LoRA configuration targets all linear projection layers within the Transform
 For the attention mechanism, this includes the query, key, value, and output projections (`q_proj`, `k_proj`, `v_proj`, `o_proj`).
 For the feed-forward network, the gated MLP projections are targeted (`gate_proj`, `up_proj`, `down_proj`).
 This comprehensive targeting ensures that adaptations can occur throughout the model's representational pipeline.
-Unlike some configurations that apply dropout to LoRA layers, dropout is set to zero to maximize the utilization of the limited trainable parameters.
+Unlike some configurations that apply dropout to LoRA layers, dropout is set to zero for improved training stability with small datasets.
 
 The training hyperparameters are configured as follows.
 A per-device batch size of 2 is used with gradient accumulation over 8 steps, yielding an effective batch size of 16.
@@ -280,6 +280,28 @@ Training proceeds for 3 epochs with a learning rate of $2 times 10^(-4)$ and a l
 The optimizer is AdamW with 8-bit states.
 A weight decay of 0.001 provides light regularization.
 A fixed random seed of 3407 ensures reproducibility across training runs.
+
+#figure(
+  table(
+    columns: (auto, auto),
+    inset: 10pt,
+    table.header([*Parameter*], [*Value*]),
+    [Framework], [Unsloth],
+    [Quantization], [4-bit],
+    [LoRA targets], [All attention + MLP projections],
+    [LoRA dropout], [0],
+    [Effective batch size], [16 (2 #sym.times 8 accumulation)],
+    [Max sequence length], [2048 tokens],
+    [Epochs], [3],
+    [Learning rate], [$2 times 10^(-4)$],
+    [LR scheduler], [Linear],
+    [Optimizer], [AdamW 8-bit],
+    [Weight decay], [0.001],
+    [Warmup ratio], [0.05],
+    [Random seed], [3407],
+  ),
+  caption: [LoRA training configuration using Unsloth],
+) <training-configuration>
 
 *Prompt template design* plays a crucial role in eliciting appropriate model behavior.
 The prompt structure leverages CodeLlama's instruction format, using the `[INST]` tags that the model was trained to recognize. The template is designed to address common failure modes observed during preliminary experiments:
