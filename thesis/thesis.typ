@@ -476,13 +476,22 @@ Consequently, the experimental evaluation focuses on assessing LoRA's effectiven
 
 = Experimental Setup
 
-- hardware and software environment: gpus, bwHPC cluster, google colab, libraries (transformers, peft, ...)
+This chapter describes the computational infrastructure, model configuration, and evaluation methodology used to conduct the experiments.
+
+== Hardware Environment
+
+Training was conducted using cloud and high-performance computing resources.
+The majority of LoRA training runs utilized Google Colab instances with a single NVIDIA A100 GPU (40GB VRAM).
+Selected experiments were conducted on the bwHPC cluster provided by the state of Baden-Württemberg, using nodes with four NVIDIA H100 GPUs.
+Model configuration and training hyperparameters are detailed in @training-configuration (see #ref(<training-configuration>, form: "page")).
+
 - base model: CodeLlama-7B Instruct
 - evaluation metric: Pass\@1 with HumanEval-C (test harness execution), compilability
 - LoRA hyperparameters
 - Knowledge Editing config
 - why this metric? why is e.g. BLEU bad? are there other metrics?
 - functional equivalence: unit tests, symbolic execution, fuzzing
+-
 
 = Results
 
