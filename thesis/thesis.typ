@@ -428,12 +428,37 @@ The remainder of this thesis therefore focuses on LoRA fine-tuning as the primar
 To understand the limitations of LoRA fine-tuning and identify opportunities for targeted improvement, a systematic error analysis was conducted on the evaluation results.
 This analysis aimed to categorize failure modes and assess which error patterns might be addressable through additional training interventions.
 
-- Pass\@1 on HumanEval-C
-- Compilation check
-- Functional equivalence testing using assertions
-- Multiple runs for stability
-- Failure categorization
-- Semantic error patterns
+=== Evaluation Framework
+
+The evaluation framework assesses generated code through a three-stage pipeline.
+First, *compilation checking* verifies that the generated C code is syntactically valid by attempting compilation with GCC.
+Second, *functional equivalence testing* executes the compiled code against a test harness containing assertions that verify input-output behavior matches the ground truth implementation.
+Third, *stability assessment* runs each evaluation multiple times (5 runs per configuration) to distinguish consistent failures from stochastic variations in generation.
+
+This multi-run approach revealed three categories of samples: consistently passing (same result across all runs), consistently failing, and flaky samples that pass in some runs but fail in others.
+The flaky category is particularly informative, as it indicates samples where the model's output is near the decision boundary; sometimes producing correct code and sometimes not.
+
+=== Failure Categorization
+
+Consistent failures were further categorized by failure type: compilation errors (syntactically invalid code), assertion failures (compiles but produces incorrect output), and timeouts (execution exceeds time limit).
+Assertion failures are of particular interest as they represent cases where the model generates plausible but semantically incorrect code; a more subtle failure mode than outright syntax errors.
+
+=== Semantic Error Taxonomy
+
+Manual analysis of assertion failures revealed six distinct error patterns:
+
+- *Decompiler information loss*: Ghidra produces severely degraded output (e.g., stub functions) that lack essential logic. These failures are unrecoverable regardless of model capability.
+
+- *Algorithm re-interpretation*: The model generates a structurally different algorithm that appears plausible given the ambiguous pseudocode but produces incorrect results.
+
+- *Loop bound and index errors*: Incorrect loop termination conditions or array indexing, often manifesting as off-by-one errors (e.g., `i < n` vs. `i <= n`).
+
+- *Comparison operator errors*: Incorrect relational operators that change program semantics (e.g., `<` vs. `>` in sorting comparisons).
+
+- *Variable initialization errors*: Missing initialization or incorrect use of output parameters, such as dereferencing pointers before assignment.
+
+- *String and format handling errors*: Incorrect format specifiers or string operations that produce malformed output.
+
 - Synthetic data generation for targeted training
 
 == Comparison
