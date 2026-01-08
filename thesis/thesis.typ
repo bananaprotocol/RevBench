@@ -188,7 +188,10 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 - what methods exist and how do they differ?
 - which methods are suitable for code LLMs?
 
-== Evaluation Metrics for Decompilation
+== Evaluation Metrics for Decompilation <eval-metrics>
+
+- why this metric? why is e.g. BLEU bad? are there other metrics?
+- functional equivalence: unit tests, symbolic execution, fuzzing
 
 = Related Work
 
@@ -485,13 +488,14 @@ The majority of LoRA training runs utilized Google Colab instances with a single
 Selected experiments were conducted on the bwHPC cluster provided by the state of Baden-Württemberg, using nodes with four NVIDIA H100 GPUs.
 Model configuration and training hyperparameters are detailed in @training-configuration (see #ref(<training-configuration>, form: "page")).
 
-- base model: CodeLlama-7B Instruct
-- evaluation metric: Pass\@1 with HumanEval-C (test harness execution), compilability
-- LoRA hyperparameters
-- Knowledge Editing config
-- why this metric? why is e.g. BLEU bad? are there other metrics?
-- functional equivalence: unit tests, symbolic execution, fuzzing
--
+== Evaluation Protocol
+
+Model performance is measured using Pass\@1 and Compile Rate as defined in @eval-metrics.
+Generated code is compiled with GCC using the `-O2` optimization flag and executed against the HumanEval-C test harnesses with a 2-second timeout per sample.
+
+During inference, code generation uses nucleus sampling with temperature 0.2 and top-p 0.95.
+The low temperature encourages deterministic outputs while retaining sufficient diversity to avoid degenerate repetition.
+To account for sampling variability, each evaluation is repeated across five independent runs, with mean and standard deviation reported for all metrics.
 
 = Results
 
