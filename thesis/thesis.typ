@@ -284,6 +284,10 @@ The optimizer is AdamW with 8-bit states.
 A weight decay of 0.01 provides light regularization.
 A fixed random seed of 3407 ensures reproducibility across training runs.
 
+Training was conducted using cloud and high-performance computing resources.
+The majority of LoRA training runs utilized Google Colab instances with a single NVIDIA A100 GPU (40GB VRAM).
+Selected experiments were conducted on the bwHPC cluster provided by the state of Baden-Württemberg, using nodes with four NVIDIA H100 GPUs.
+
 #figure(
   table(
     columns: (auto, auto),
@@ -477,37 +481,18 @@ However, as documented in the previous section, Knowledge Editing proved fundame
 This finding itself constitutes a contribution, clarifying that neural decompilation errors stem from reasoning failures rather than knowledge gaps.
 Consequently, the experimental evaluation focuses on assessing LoRA's effectiveness against the unadapted baseline, with the Knowledge Editing investigation serving as a documented negative result that illuminates the nature of the decompilation challenge.
 
-= Experimental Setup
-
-This chapter describes the computational infrastructure, model configuration, and evaluation methodology used to conduct the experiments.
-
-== Hardware Environment
-
-Training was conducted using cloud and high-performance computing resources.
-The majority of LoRA training runs utilized Google Colab instances with a single NVIDIA A100 GPU (40GB VRAM).
-Selected experiments were conducted on the bwHPC cluster provided by the state of Baden-Württemberg, using nodes with four NVIDIA H100 GPUs.
-Model configuration and training hyperparameters are detailed in @training-configuration (see #ref(<training-configuration>, form: "page")).
-
-== Evaluation Protocol
-
-Model performance is measured using Pass\@1 and Compile Rate as defined in @eval-metrics.
-Generated code is compiled with GCC using the `-O2` optimization flag and executed against the HumanEval-C test harnesses with a 2-second timeout per sample.
-
-During inference, code generation uses nucleus sampling with temperature 0.2 and top-p 0.95.
-The low temperature encourages deterministic outputs while retaining sufficient diversity to avoid degenerate repetition.
-To account for sampling variability, each evaluation is repeated across five independent runs, with mean and standard deviation reported for all metrics.
-
 = Results
+
+This chapter presents the experimental findings from evaluating LoRA-based fine-tuning for neural decompilation.
+All evaluations use the HumanEval-C test set (n=151) with generated code compiled via GCC (`-O2` optimization) and executed against test harnesses with a 2-second timeout.
+Code generation employs nucleus sampling (temperature 0.2, top-p 0.95), and each configuration is evaluated across five independent runs to account for sampling variability.
 
 == Baseline Performance
 
-The baseline performance establishes the fundamental capabilities of the pre-trained LLM when applied to neural decompilation without any task-specific adaptation.
-This evaluation provides the reference point against which all subsequent adaptations, whether general LoRA fine-tuning or error-specific LoRAs, will be measured.
-Understanding the baseline is crucial not only for quantifying improvements but also for identifying the specific weaknesses and error patterns that targeted interventions should address.
+The baseline establishes the capabilities of the pre-trained CodeLlama 7B Instruct model when applied to neural decompilation without task-specific adaptation.
+This reference point enables quantifying improvements from LoRA fine-tuning and identifying error patterns that targeted interventions should address.
 
 The baseline model was evaluated on the HumanEval-C test set using Ghidra-generated pseudocode as input.
-To account for the inherent randomness, each evaluation was conducted across five independent runs, and both mean and standard deviation are reported for all metrics.
-This approach provides insight into the reliability and consistency of the model's performance, which is particularly important given that temperature-based sampling can introduce variability in output quality.
 
 === Quantitative Results
 
