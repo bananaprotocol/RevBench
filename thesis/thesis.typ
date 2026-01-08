@@ -378,7 +378,7 @@ Each configuration was evaluated across 5 independent runs on the HumanEval-C te
     [84.50 #sym.plus.minus 1.11],
   ),
   caption: [LoRA hyperparameter search results on HumanEval-C (5 runs per config). Bold indicates best performance.],
-)
+) <hyper-params>
 
 The results reveal several patterns.
 First, even the smallest LoRA configuration (r=8) dramatically improves compilability from 18.94% to 82.38%, indicating that fine-tuning effectively teaches the model to generate syntactically valid C code rather than pseudocode artifacts.
@@ -489,22 +489,7 @@ Code generation employs nucleus sampling (temperature 0.2, top-p 0.95), and each
 
 == Baseline Performance
 
-The baseline establishes the capabilities of the pre-trained CodeLlama 7B Instruct model when applied to neural decompilation without task-specific adaptation.
-This reference point enables quantifying improvements from LoRA fine-tuning and identifying error patterns that targeted interventions should address.
-
-The baseline model was evaluated on the HumanEval-C test set using Ghidra-generated pseudocode as input.
-
-=== Quantitative Results
-
-Two primary metrics capture the baseline model's performance:
-
-*Pass\@1* measures functional equivalence, the percentage of problems for which the model's first generated solution passes all test cases in the provided test harness.
-This metric represents the most important evaluation criterion, as it requires not merely syntactically valid or similar-looking code, but code that exhibits identical behavior to the original implementation across diverse inputs.
-
-*Compile%* measures the proportion of generated outputs that successfully compile with a standard C compiler (GCC).
-This metric serves as a prerequisite for functional correctness, as non-compiling code cannot be functionally equivalent, while also indicating the model's ability to generate syntactically valid C code with proper type consistency, correct syntax, and valid identifiers.
-
-The quantitative results are summarized in #ref(<baseline>).
+The baseline establishes the capabilities of the pre-trained CodeLlama 7B Instruct model applied to neural decompilation without task-specific adaptation.
 
 #figure(
   table(
@@ -517,9 +502,44 @@ The quantitative results are summarized in #ref(<baseline>).
   caption: [Baseline model performance on HumanEval-C (n=151, 5 runs)],
 ) <baseline>
 
+The baseline achieves a Pass\@1 of 15.50% and a compile rate of only 18.94%.
+The notably low compile rate reveals that the untuned frequently reproduces Ghidra-specific artifacts, such as `undefined4` type annotations and non-standard syntax, rather than generating valid C code.
+This indicates that the primary challenge is not semantic reasoning alone but also syntactic adaptation: the model must learn to translate decompiler idioms into standard C constructs.
+
+== LoRA Fine-Tuning Results
+
+LoRA fine-tuning produces substantial improvements over the baseline.
+The hyperparameter search results, detailed in @hyper-params, identified the r=64, a=64 configuration as optimal, achieving 23.95% Pass\@1.
+
+#figure(
+  table(
+    columns: (auto, auto, auto, auto),
+    inset: 10pt,
+    align: (left, center, center, center),
+    table.header(
+      [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
+    ),
+    [Baseline],
+    [15.50 #sym.plus.minus 1.08],
+    [18.94 #sym.plus.minus 0.53],
+    [---],
+
+    [LoRA (r=64, a=64)],
+    [23.95 #sym.plus.minus 1.48],
+    [84.33 #sym.plus.minus 1.30],
+    [+8.45],
+  ),
+  caption: [Comparison of baseline and best LoRA configuration],
+) <lora-comparison>
+
+The most striking result is the compile rate improvement: from 18.94% to 84.33%, a 4.5#sym.times increase.
+This demonstrates that LoRA effectively teaches the model to generate syntactically valid C code, eliminating most Ghidra artifacts that caused compilation failures.
+
+The Pass\@1 improvement from 15.50% to 23.95% represents a 54% relative gain, though the absolute improvement of 8.45 percentage points is more modest.
+This asymmetry between compile rate and functional correctness improvements suggests that while LoRA excels at syntactic correction, semantic reasoning, understanding program logic and producing functionally equivalent code, remains challenging.
+
 === Qualitative Analysis
 
-- LoRA performance
 - discuss LoRA flakiness (results that sometimes fail)
 - Knowledge Editing success rate
 - comparison: did KE break the rest of the model?
