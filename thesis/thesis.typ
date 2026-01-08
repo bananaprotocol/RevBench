@@ -380,12 +380,12 @@ Third, increasing alpha relative to rank (e.g., r=32/a=64 vs r=32/a=32) provides
 
 == Knowledge Editing Approach
 
-Knowledge editing (KE) represents a fundamentally different paradigm from fine-tuning: rather than updating model weights through gradient descent over training examples, KE methods directly modify specific parameters to alter targeted factual associations while preserving other model behaviors.
+Knowledge Editing (KE) represents a fundamentally different paradigm from fine-tuning: rather than updating model weights through gradient descent over training examples, KE methods directly modify specific parameters to alter targeted factual associations while preserving other model behaviors.
 This section describes the experimental investigation of ROME (Rank-One Model Editing) for neural decompilation, conducted to evaluate whether surgical weight modifications can address systematic decompilation errors.
 
 === Formulating Decompilation as Knowledge Editing
 
-The hypothesis underlying this experiment was that certain Ghidra pseudocode artifacts could be conceptualized as incorrect factual associations that knowledge editing might correct.
+The hypothesis underlying this experiment was that certain Ghidra pseudocode artifacts could be conceptualized as incorrect factual associations that Knowledge Editing might correct.
 Ghidra's decompiler produces type annotations such as `undefined4`, `undefined1`, and `undefined8` which correspond to C types `int`, `char`, and `long` respectively.
 If the base LLM fails to consistently translate these artifacts, this failure might stem from incorrect or weak factual associations that ROME could strengthen.
 
@@ -398,16 +398,35 @@ Additionally, Ghidra produces context-specific artifacts such as `_LC0` for stri
 
 === Implementation
 
-ROME edits were implemented using the EasyEdit library @wangEasyEditEasytouseKnowledge2023, which provides a standardized interface for various knowledge editing methods.
+ROME edits were implemented using the EasyEdit library @wangEasyEditEasytouseKnowledge2023, which provides a standardized interface for various Knowledge Editing methods.
 Edit requests were specified as JSON objects containing the subject (Ghidra artifact), relation (type correspondence), and target object (C type).
 The editing process modifies a single feed-forward layer in the Transformer, identified through causal tracing as the layer where factual associations are stored.
 
 Four edit requests were created targeting the most common Ghidra type artifacts.
 The edited model was then tested on the same decompilation prompts used for baseline evaluation, and the generated outputs were analyzed for artifact removal rates.
 
-- challenges encountered: standard KE problematic for decompilation
+=== Fundamental Limitations
+
+The experiment revealed a fundamental mismatch between Knowledge Editing and the decompilation task.
+Critically, the base CodeLlama model already possesses the relevant factual knowledge; when directly asked "What C type does undefined4 represent?", the model correctly responds "int".
+The decompilation failures therefore do not stem from missing factual associations but from inconsistent application of known facts during code generation.
+In testing, none of the four edit requests produced correct factual responses, and artifact removal improved only marginally; with the one removed artifact replaced by an incorrect value.
+
+This distinction is crucial: Knowledge Editing methods are designed to update atomic factual associations (e.g., changing "The Eiffel Tower is located in Paris" to "The Eiffel Tower is located in London").
+Neural decompilation, however, requires consistent application of transformation rules across diverse syntactic contexts, context-dependent reasoning about surrounding code, and multi-step inference to reconstruct program semantics.
+These capabilities fall outside the scope of what Knowledge Editing can address.
+
+Furthermore, many Ghidra artifacts cannot be formulated as fixed factual mappings.
+String literal references like `_LC0` must be resolved based on the surrounding code context; there is no single correct replacement that could be encoded as an edited fact.
+The model must reason about each occurrence individually.
+
+Based on these findings, Knowledge Editing was determined to be unsuitable for the neural decompilation task.
+The remainder of this thesis therefore focuses on LoRA fine-tuning as the primary adaptation method, with Knowledge Editing serving as a documented negative result that clarifies the nature of the decompilation challenge.
 
 == Error Analysis
+
+To understand the limitations of LoRA fine-tuning and identify opportunities for targeted improvement, a systematic error analysis was conducted on the evaluation results.
+This analysis aimed to categorize failure modes and assess which error patterns might be addressable through additional training interventions.
 
 - Pass\@1 on HumanEval-C
 - Compilation check
