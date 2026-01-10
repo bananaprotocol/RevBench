@@ -342,40 +342,40 @@ Each configuration was evaluated across 5 independent runs on the HumanEval-C te
     ),
     [Baseline],
     [---],
-    [15.50 #sym.plus.minus 1.20],
-    [18.94 #sym.plus.minus 0.59],
+    [15.50 #sym.plus.minus 1.08],
+    [18.94 #sym.plus.minus 0.53],
 
-    [LoRA], [8 / 8], [20.93 #sym.plus.minus 0.89], [82.38 #sym.plus.minus 0.36],
+    [LoRA], [8 / 8], [20.93 #sym.plus.minus 0.79], [82.38 #sym.plus.minus 0.32],
 
     [LoRA],
     [16 / 16],
-    [21.46 #sym.plus.minus 2.27],
-    [82.91 #sym.plus.minus 1.78],
+    [21.46 #sym.plus.minus 2.03],
+    [82.91 #sym.plus.minus 1.59],
 
     [LoRA],
     [32 / 32],
-    [23.44 #sym.plus.minus 1.79],
-    [84.77 #sym.plus.minus 0.66],
+    [23.44 #sym.plus.minus 1.60],
+    [84.77 #sym.plus.minus 0.59],
 
     [LoRA],
     [32 / 64],
-    [23.71 #sym.plus.minus 2.06],
-    [83.97 #sym.plus.minus 0.86],
+    [23.71 #sym.plus.minus 1.84],
+    [83.97 #sym.plus.minus 0.77],
 
     [LoRA],
     [64 / 64],
-    [*23.95* #sym.plus.minus 1.48],
-    [84.33 #sym.plus.minus 1.30],
+    [*23.95* #sym.plus.minus 1.35],
+    [84.33 #sym.plus.minus 1.19],
 
     [LoRA],
     [64 / 128],
-    [22.78 #sym.plus.minus 1.00],
-    [*85.56* #sym.plus.minus 1.78],
+    [22.78 #sym.plus.minus 0.90],
+    [*85.56* #sym.plus.minus 1.59],
 
     [LoRA],
     [128 / 128],
-    [23.18 #sym.plus.minus 2.34],
-    [84.50 #sym.plus.minus 1.11],
+    [23.18 #sym.plus.minus 2.09],
+    [84.50 #sym.plus.minus 0.99],
   ),
   caption: [LoRA hyperparameter search results on HumanEval-C (5 runs per config). Bold indicates best performance.],
 ) <hyper-params>
@@ -525,8 +525,8 @@ The hyperparameter search results, detailed in @hyper-params, identified the r=6
     [---],
 
     [LoRA (r=64, a=64)],
-    [23.95 #sym.plus.minus 1.48],
-    [84.33 #sym.plus.minus 1.30],
+    [23.95 #sym.plus.minus 1.35],
+    [84.33 #sym.plus.minus 1.19],
     [+8.45],
   ),
   caption: [Comparison of baseline and best LoRA configuration],
@@ -538,9 +538,27 @@ This demonstrates that LoRA effectively teaches the model to generate syntactica
 The Pass\@1 improvement from 15.50% to 23.95% represents a 54% relative gain, though the absolute improvement of 8.45 percentage points is more modest.
 This asymmetry between compile rate and functional correctness improvements suggests that while LoRA excels at syntactic correction, semantic reasoning, understanding program logic and producing functionally equivalent code, remains challenging.
 
-=== Qualitative Analysis
+=== Result Stability
 
-- discuss LoRA flakiness (results that sometimes fail)
+Evaluation across multiple runs reveals variability in model performance due to sampling randomness.
+Analysis of per-sample consistency across five evaluation runs identified three categories:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    inset: 10pt,
+    table.header([*Category*], [*Count*], [*Percentage*]),
+    [Consistently passing], [20], [13.2%],
+    [Consistently failing], [99], [65.6%],
+    [Flaky (inconsistent)], [32], [21.2%],
+  ),
+  caption: [Result consistency across 5 evaluation runs (n=151)],
+) <consistency>
+
+The 21.2% of samples exhibiting flaky behavior, sometimes passing, sometimes failing, indicates that for a subset of problems, the model operates near the decision boundary.
+Minor variations in token sampling can lead to functionally different outputs.
+This underscores the importance of multi-run evaluation: single-run metrics would misrepresent true model capability.
+
 - Knowledge Editing success rate
 - comparison: did KE break the rest of the model?
 - error analysis (failure distribution, semantic error taxonomy, trainability assessment)
