@@ -577,6 +577,27 @@ To understand the limitations of LoRA fine-tuning, the 99 consistently failing s
 
 The dominance of assertion failures (76.8%) over compilation errors indicates that the fine-tuned model successfully generates compilable code in most cases, but the generated code does not always preserve the original program's semantics.
 
+=== Semantic Error Patterns
+
+Manual analysis of assertion failures revealed six distinct error categories:
+
+*Decompiler information loss* (\~10% of failures): Ghidra produces severely degraded output lacking essential logic.
+When the input contains only a stub function like `undefined8 func0(void) { return 0; }`, no model can reconstruct the original semantics.
+These represent data quality limitations rather than model failures.
+
+*Algorithm re-interpretation* (\~35% of failures): The model generates a semantically different but plausible algorithm.
+For instance, an array interspersing task implemented with modulo-based indexing instead of the ground truth's dual-iterator approach.
+Both implementations appear reasonable given the ambiguous pseudocode, but only one matches the test harness expectations.
+
+*Loop bound errors* (\~20% of failures): Incorrect termination conditions, often manifesting as off-by-one errors.
+Common patterns include `i < n` versus `i <= n` or `i < n - 1` versus `i < n`.
+
+*Comparison operator errors* (\~15% of failures): Incorrect relational operators that alter program semantics, such as using `>` instead of `<` in sorting comparisons.
+
+*Variable initialization errors* (\~10% of failures): Missing initialization of variables, particularly output parameters used before being set.
+
+*String and format handling errors* (\~10% of failures): Incorrect format specifiers or string operations, such as missing space separators in formatted output.
+
 = Discussion
 
 - try to explain the results
