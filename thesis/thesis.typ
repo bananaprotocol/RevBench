@@ -559,9 +559,23 @@ The 21.2% of samples exhibiting flaky behavior, sometimes passing, sometimes fai
 Minor variations in token sampling can lead to functionally different outputs.
 This underscores the importance of multi-run evaluation: single-run metrics would misrepresent true model capability.
 
-- Knowledge Editing success rate
-- comparison: did KE break the rest of the model?
-- error analysis (failure distribution, semantic error taxonomy, trainability assessment)
+== Error Analysis
+
+To understand the limitations of LoRA fine-tuning, the 99 consistently failing samples were analyzed.
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    inset: 10pt,
+    table.header([*Failure Type*], [*Count*], [*Percentage*]),
+    [Assertion failure], [76], [76.8%],
+    [Compilation error], [22], [22.2%],
+    [Timeout], [1], [1.0%],
+  ),
+  caption: [Failure type distribution among consistently failing samples],
+) <failure-types>
+
+The dominance of assertion failures (76.8%) over compilation errors indicates that the fine-tuned model successfully generates compilable code in most cases, but the generated code does not always preserve the original program's semantics.
 
 = Discussion
 
