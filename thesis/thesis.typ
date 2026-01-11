@@ -579,7 +579,7 @@ The dominance of assertion failures (76.8%) over compilation errors indicates th
 
 === Semantic Error Patterns
 
-Manual analysis of assertion failures revealed six distinct error categories:
+Manual analysis of the assertion failures revealed six distinct error categories:
 
 *Decompiler information loss* (\~10% of failures): Ghidra produces severely degraded output lacking essential logic.
 When the input contains only a stub function like `undefined8 func0(void) { return 0; }`, no model can reconstruct the original semantics.
@@ -602,12 +602,27 @@ Common patterns include `i < n` versus `i <= n` or `i < n - 1` versus `i < n`.
 
 The error patterns divide into two categories with different implications for further improvement:
 
-*Potentionally addressable* (\~45%): Loop bound errors, operator errors, and initialization errors follow systematic patterns that could be targeted through additional training data or error-specific fine-tuning.
+*Potentially addressable* (\~45%): Loop bound errors, operator errors, and initialization errors follow systematic patterns that could be targeted through additional training data or error-specific fine-tuning.
 
 *Fundamental limitations* (\~55%): Decompiler information loss cannot be addressed by any model improvement; the information simply does not exist in the input.
 Algorithm re-interpretation errors require semantic understanding beyond pattern matching; when pseudocode admits multiple valid interpretations, the model cannot determine which matches the test harness without additional context.
 
 This distribution suggests that while targeted interventions may yield incremental improvements, substantial gains in functional correctness likely require either improved decompilation input quality or advances in model reasoning capabilities.
+
+== Error-Specific Fine-Tuning Results
+
+Building on the error analysis, additional LoRA variants were trained to evaluate whether targeted training can address the identified failure patterns.
+
+=== Synthetic Error Data Generation
+
+A synthetic error dataset was generated using rule-based transformations.
+The script applies systematic corruptions to clean C code, simulating the semantic errors observed in model failures:
+
+- *Loop bound errors*: Off-by-one transformations such as `i < n` #sym.arrow `i <= n` or `i < n - 1` #sym.arrow `i < n`
+- *Operator swaps*: Comparison operator inversions such as `<` #sym.arrow `>` or `==` #sym.arrow `!=`
+- *Initialization errors*: Removal or corruption of variable initializations
+
+Synthetic training pairs were created from 30% of the original ExeBench training data (approximately 1,200 samples), with each sample transformed from clean code into a corrupted variant paired with its original as the target output.
 
 = Discussion
 
