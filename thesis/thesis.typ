@@ -624,6 +624,43 @@ The script applies systematic corruptions to clean C code, simulating the semant
 
 Synthetic training pairs were created from 30% of the original ExeBench training data (approximately 1,200 samples), with each sample transformed from clean code into a corrupted variant paired with its original as the target output.
 
+=== Targeted Error Data
+
+An initial experiment trained a LoRA adapter exclusively on the synthetic error examples, testing whether error correction can be learned in isolation from general decompilation patterns.
+
+#figure(
+  table(
+    columns: (auto, auto, auto, auto),
+    inset: 10pt,
+    align: (left, center, center, center),
+    table.header(
+      [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
+    ),
+    [Baseline],
+    [15.50 #sym.plus.minus 1.08],
+    [18.94 #sym.plus.minus 0.53],
+    [---],
+
+    [General LoRA],
+    [23.95 #sym.plus.minus 1.35],
+    [84.33 #sym.plus.minus 1.19],
+    [+8.45],
+
+    [Targeted LoRA],
+    [20.13 #sym.plus.minus 0.32],
+    [21.06 #sym.plus.minus 0.26],
+    [+4.63],
+  ),
+  caption: [Performance of LoRA trained exclusively on error-targeted data],
+) <targeted-lora-results>
+
+The targeted LoRA improves Pass\@1 by 4.63 percentage points over baseline, demonstrating that the synthetic error data teaches meaningful correction patterns.
+However, the compile rate remains nearly unchanged at 21.06%, far below the general LoRA's 84.33%.
+
+This reveals a critical limitation: training on only 1,200 synthetic examples; even with Ghidra-style artifacts; provides insufficient coverage of the diverse patterns present in real decompiler output.
+The synthetic transformations are rule-based approximations that may not capture the full complexity of actual Ghidra pseudocode.
+Additionally, the smaller dataset size compared to the 4,000 sample general training set limits the model's ability to generalize.
+
 = Discussion
 
 - try to explain the results
