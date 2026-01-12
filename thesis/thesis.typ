@@ -786,8 +786,27 @@ Rather than training on a fixed mixture of examples, adaptive strategies could e
 
 == Limitations
 
-- explain limitations: small dataset (4k rows), time and compute constraints
-- diminishing returns indicate a ceiling on what LoRA alone can achieve
+Several limitations constrain the generlizability of these findings.
+
+*Dataset scale*: The training corpus comprises approximately 4,000 samples from ExeBench, which may be insufficient to capture the full diversity of real-world decompilation scenarios.
+Larger datasets might shift the observed performance ceilings, and the specific patterns learned may not transfer to binaries compiled with different compilers, optimization levels, or architecture.
+
+*Model scale*: All experiments use CodeLlama 7B, a relatively small model by contemporary standards.
+Larger models might exhibit different learning dynamics; in particular, the semantic reasoning ceiling might shift with increased model capacity.
+However, computational constraints precluded experiments with larger models.
+
+*Evaluation scope*: The HumanEval-C test set contains 151 relatively short functions with clear input-output specifications.
+Real-world decompilation often involves longer functions, complex data structures, and incomplete specifications.
+The reported metrics may overestimate performance on more challenging targets.
+
+*Optimization level*: All binaries were compiled with `-O2` optimization.
+Different optimization levels produce different decompilation challenges; aggressive optimizations like `-O3` introduce additional complexity, while unoptimized builds (`-O0`) might be substantially easier.
+
+*Single decompiler*: The evaluation focuses exclusively on Ghidra-generated pseudocode.
+Other decompilers (IDA Pro, angr) produce different output formats and artifacts, and findings may not transfer directly.
+
+Despite these limitations, the core finding, that syntactic correction is achievable through fine-tuning while semantic reasoning remains challenging, likely holds across settings.
+The specific performance numbers should be interpreted as indicative rather than definitive.
 
 = Conclusion
 
