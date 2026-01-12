@@ -837,11 +837,22 @@ Semantic correctness, however, exhibits diminishing returns, with approximately 
 
 This work makes the following contributions:
 
-- A systematic comparison of LoRA fine-tuning configurations for neural decompilation, identifying optimal hyperparameters and characterizing the relationship between model capacity and performance.
-- A documented negative result demonstrating the unsuitability of Knowledge Editing for code transformation tasks, with analysis explaining why factual editing methods fail when the underlying challenge is reasoning rather than knowledge.
-- An error taxonomy for neural decompilation failures, distinguishing addressable patterns (loop bounds, operators, initialization) from fundamental limitations (information loss, algorithmic ambiguity).
-- Evidence for the syntactic-semantic gap in neural decompilation, providing a framework for understanding why compile rate improvements do not proportionally translate to functional correctness gains.
++ A systematic comparison of LoRA fine-tuning configurations for neural decompilation, identifying optimal hyperparameters and characterizing the relationship between model capacity and performance.
++ A documented negative result demonstrating the unsuitability of Knowledge Editing for code transformation tasks, with analysis explaining why factual editing methods fail when the underlying challenge is reasoning rather than knowledge.
++ An error taxonomy for neural decompilation failures, distinguishing addressable patterns (loop bounds, operators, initialization) from fundamental limitations (information loss, algorithmic ambiguity).
++ Evidence for the syntactic-semantic gap in neural decompilation, providing a framework for understanding why compile rate improvements do not proportionally translate to functional correctness gains.
 
 == Future Work
+
+Several directions emerge from this research.
+
+The trade-off between syntactic and semantic objectives observed in mixed training suggests that multi-objective optimization or curriculum learning approaches warrant investigation.
+Adaptive training strategies that balance these objectives throughout the learning process might achieve both high compile rates and improved functional correctness.
+
+The 55% of failures attributed to fundamental limitations highlights the need for improved decompilation input quality.
+Techniques that preserve more semantic information during decompilation, or that provide additional context such as type information or function signatures, could shift the ceiling on achievable performance.
+
+Finally, the reasoning limitations observed suggest that architectural innovations beyond fine-tuning may be necessary.
+Chain-of-thought prompting, retrieval-augmented generation, or multi-pass refinement strategies that decompose the decompilation task into subtasks represent promising directions for future research.
 
 #bibliography("references.bib")
