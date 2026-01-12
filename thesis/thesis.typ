@@ -737,6 +737,10 @@ The compile rate trade-off in the mixed approach suggests future work could expl
 
 = Discussion
 
+This chapter interprets the experimental findings, examines their implications for neural decompilation, and acknowledges the limitations of this work.
+
+== Interpretation of Results
+
 - try to explain the results
 - if LoRA is better: decompilation is a holistic reasoning task, not a factual retrieval task
 - if KE is better: specific artifacts are localizable faults, which can be patched
