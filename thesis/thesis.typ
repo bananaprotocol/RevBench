@@ -741,11 +741,22 @@ This chapter interprets the experimental findings, examines their implications f
 
 == Interpretation of Results
 
-- try to explain the results
-- if LoRA is better: decompilation is a holistic reasoning task, not a factual retrieval task
-- if KE is better: specific artifacts are localizable faults, which can be patched
+The experimental results reveal a fundamental distinction between syntactic and semantic aspects of the decompilation task.
+LoRA fine-tuning achieves a 4.5#sym.times improvement in compile rate (from 18.94% to 84.33%) but only a 54% relative improvement in Pass\@1 (from 15.50% to 23.95%).
+This asymmetry suggests that the two challenges require different capabilities: syntactic correction involves learning systematic transformations that map Ghidra artifacts to valid C constructs, while semantic correctness requires reasoning about program logic that may be ambiguous or underspecified in the decompiled representation.
+
+The failure of Knowledge Editing provides insight into the nature of decompilation errors.
+ROME and similar methods are designed to update atomic factual associations, effectively changing what the model "knows". However, the base CodeLlama model already possesses the factual knowledge; it correctly identifies that `undefined4` corresponds to `int` when asked directly.
+The decompilation failures stem not from missing knowledge but from inconsistent application of known facts during generation.
+This distinction is crucial: neural decompilation is a holistic reasoning task requiring context-dependent inference, not a factual retrieval task susceptible to surgical weight modifications.
+
+The error-specific fine-tuning experiments further illuminate this distinction.
+The targeted LoRA trained exclusively on synthetic error examples improves Pass\@1 modestly (+4.63 percentage points) while leaving compile rate essentially unchanged.
+This indicates that error correction patterns can be learned, but in isolation they are insufficient; the model requires exposure to the full diversity of decompiler output to generate syntactically valid code.
+The mixed LoRA, combining error examples with general training data, achieves the highest Pass\@1 (28.08%) but at the cost of reduced compile rate (64.50%).
+This trade-off suggests that optimizing for semantic correctness and syntactic validity may involve competing objectives that are difficult to satisfy simultaneously with a single adapter.
+
 - explain limitations: small dataset (4k rows), time and compute constraints
-- massive compile improvement vs modest Pass\@1 improvement suggests LoRA excels at syntactic correction but semantic reasoning remains challenging
 - diminishing returns indicate a ceiling on what LoRA alone can achieve
 
 = Conclusion
