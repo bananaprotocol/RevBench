@@ -628,38 +628,38 @@ Synthetic training pairs were created from 30% of the original ExeBench training
 
 An initial experiment trained a LoRA adapter exclusively on the synthetic error examples, testing whether error correction can be learned in isolation from general decompilation patterns.
 
-#figure(
-  table(
-    columns: (auto, auto, auto, auto),
-    inset: 10pt,
-    align: (left, center, center, center),
-    table.header(
-      [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
-    ),
-    [Baseline],
-    [15.50 #sym.plus.minus 1.08],
-    [18.94 #sym.plus.minus 0.53],
-    [---],
+// #figure(
+//   table(
+//     columns: (auto, auto, auto, auto),
+//     inset: 10pt,
+//     align: (left, center, center, center),
+//     table.header(
+//       [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
+//     ),
+//     [Baseline],
+//     [15.50 #sym.plus.minus 1.08],
+//     [18.94 #sym.plus.minus 0.53],
+//     [---],
 
-    [General LoRA],
-    [23.95 #sym.plus.minus 1.35],
-    [84.33 #sym.plus.minus 1.19],
-    [+8.45],
+//     [General LoRA],
+//     [23.95 #sym.plus.minus 1.35],
+//     [84.33 #sym.plus.minus 1.19],
+//     [+8.45],
 
-    [Targeted LoRA],
-    [20.13 #sym.plus.minus 0.32],
-    [21.06 #sym.plus.minus 0.26],
-    [+4.63],
-  ),
-  caption: [Performance of LoRA trained exclusively on error-targeted data],
-) <targeted-lora-results>
+//     [Targeted LoRA],
+//     [20.13 #sym.plus.minus 0.32],
+//     [21.06 #sym.plus.minus 0.26],
+//     [+4.63],
+//   ),
+//   caption: [Performance of LoRA trained exclusively on error-targeted data],
+// ) <targeted-lora-results>
 
 The targeted LoRA improves Pass\@1 by 4.63 percentage points over baseline, demonstrating that the synthetic error data teaches meaningful correction patterns.
 However, the compile rate remains nearly unchanged at 21.06%, far below the general LoRA's 84.33%.
 
-This reveals a critical limitation: training on only 1,200 synthetic examples; even with Ghidra-style artifacts; provides insufficient coverage of the diverse patterns present in real decompiler output.
+This reveals a critical limitation: training on only 1,200 synthetic examples (even with Ghidra-style artifacts) provides insufficient coverage of the diverse patterns present in real decompiler output.
 The synthetic transformations are rule-based approximations that may not capture the full complexity of actual Ghidra pseudocode.
-Additionally, the smaller dataset size compared to the 4,000 sample general training set limits the model's ability to generalize.
+Additionally, the smaller dataset size compared to the 4,000-sample general training set limits the model's ability to generalize.
 
 === Mixed Training Data
 
@@ -667,36 +667,36 @@ Based on the limited success of targeted training, a second approach combined sy
 The mixing ratio was determined by sampling original examples at twice the count of synthetic examples, yielding an approximate 1:2 ratio of error-targeted to general samples.
 This weighting aims to reinforce error correction while retaining broad decompilation capability.
 
-#figure(
-  table(
-    columns: (auto, auto, auto, auto),
-    inset: 10pt,
-    align: (left, center, center, center),
-    table.header(
-      [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
-    ),
-    [Baseline],
-    [15.50 #sym.plus.minus 1.08],
-    [18.94 #sym.plus.minus 0.53],
-    [---],
+// #figure(
+//   table(
+//     columns: (auto, auto, auto, auto),
+//     inset: 10pt,
+//     align: (left, center, center, center),
+//     table.header(
+//       [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
+//     ),
+//     [Baseline],
+//     [15.50 #sym.plus.minus 1.08],
+//     [18.94 #sym.plus.minus 0.53],
+//     [---],
 
-    [General LoRA],
-    [23.95 #sym.plus.minus 1.35],
-    [84.33 #sym.plus.minus 1.19],
-    [+8.45],
+//     [General LoRA],
+//     [23.95 #sym.plus.minus 1.35],
+//     [84.33 #sym.plus.minus 1.19],
+//     [+8.45],
 
-    [Mixed LoRA],
-    [*28.08* #sym.plus.minus 1.30],
-    [64.50 #sym.plus.minus 1.54],
-    [*+12.58*],
-  ),
-  caption: [Comparison of general and mixed LoRA training],
-) <mixed-lora-results>
+//     [Mixed LoRA],
+//     [*28.08* #sym.plus.minus 1.30],
+//     [64.50 #sym.plus.minus 1.54],
+//     [*+12.58*],
+//   ),
+//   caption: [Comparison of general and mixed LoRA training],
+// ) <mixed-lora-results>
 
 The mixed LoRA achieves the highest Pass\@1 of 28.08%, representing an 81% relative improvement over baseline and a 17% relative improvement over the general LoRA.
 However, the compile rate decreases from 84.33% to 64.50%.
 
-This trade-off reveals an important insight: the error-focused training data successfully improves semantic correctness; the model produces functionally correct code more often; but at the cost of introducing some syntactic errors.
+This trade-off reveals an important insight: the error-focused training data successfully improves semantic correctness (the model produces functionally correct code more often) but at the cost of introducing some syntactic errors.
 Combining error examples with general training data proves more effective than either approach alone, suggesting that robust decompilation requires both broad pattern coverage and targeted error correction.
 
 === Summary
