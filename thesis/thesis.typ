@@ -810,8 +810,38 @@ The specific performance numbers should be interpreted as indicative rather than
 
 = Conclusion
 
-- summarize results
-- restate findings
-- clean bibliography and references
+This thesis investigated two adaptation approaches for improving neural decompilation: Low-Rank Adaptation (LoRA) and Knowledge Editing.
+The research was motivated by the observation that pre-trained language models, while capable of code generation, struggle to produce valid C code from Ghidra-generated pseudocode without task-specific adaptation.
+
+== Summary of Findings
+
+The experimental evaluation yielded several key findings.
+
+First, LoRA fine-tuning substantially improves decompilation performance.
+The best configuration (r=64, a=64) achieved a Pass\@1 of 23.95%, representing a 54% relative improvement over the baseline of 15.50%.
+More dramatically, the compile rate improved from 18.94% to 84.33%, demonstrating that fine-tuning effectively teaches the model to generate syntactically valid C code rather than pseudocode artifacts.
+
+Second, Knowledge Editing proved unsuitable for neural decompilation.
+The investigation revealed that decompilation errors do not stem from missing factual knowledge but from inconsistent application of known transformation rules during generation.
+This negative result clarifies that neural decompilation is fundamentally a reasoning task, not a knowledge retrieval task.
+
+Third, error-specific fine-tuning with mixed training data achieved the highest functional correctness.
+By combining synthetic error examples with general training data, the mixed LoRA reached 28.08% Pass\@1, an 81% relative improvement over baseline.
+However, this came at the cost of reduced compile rate (64.50%), revealing a trade-off between syntactic and semantic optimization objectives.
+
+Fourth, a "syntactic-semantic gap" characterizes the neural decompilation challenge.
+Syntactic correction is readily achievable through fine-tuning, with even minimal LoRA configurations dramatically improving compile rates.
+Semantic correctness, however, exhibits diminishing returns, with approximately 55% of failures stemming from fundamental limitations that model adaptation alone cannot address.
+
+== Contributions
+
+This work makes the following contributions:
+
+- A systematic comparison of LoRA fine-tuning configurations for neural decompilation, identifying optimal hyperparameters and characterizing the relationship between model capacity and performance.
+- A documented negative result demonstrating the unsuitability of Knowledge Editing for code transformation tasks, with analysis explaining why factual editing methods fail when the underlying challenge is reasoning rather than knowledge.
+- An error taxonomy for neural decompilation failures, distinguishing addressable patterns (loop bounds, operators, initialization) from fundamental limitations (information loss, algorithmic ambiguity).
+- Evidence for the syntactic-semantic gap in neural decompilation, providing a framework for understanding why compile rate improvements do not proportionally translate to functional correctness gains.
+
+== Future Work
 
 #bibliography("references.bib")
