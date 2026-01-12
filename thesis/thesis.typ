@@ -756,6 +756,25 @@ This indicates that error correction patterns can be learned, but in isolation t
 The mixed LoRA, combining error examples with general training data, achieves the highest Pass\@1 (28.08%) but at the cost of reduced compile rate (64.50%).
 This trade-off suggests that optimizing for semantic correctness and syntactic validity may involve competing objectives that are difficult to satisfy simultaneously with a single adapter.
 
+== The Syntactic-Semantic Gap
+
+The consistent pattern across all experiments points to what might be termed a "syntactic-semantic gap" in neural decompilation.
+Syntactic adaptation, learning to produce valid C code rather than pseudocode artifacts, is readily achievable through fine-tuning.
+Even the smallest LoRA configuration (r=8) improves compile rate from 18.94% to 82.38%.
+This suggests that syntactic patterns are relatively surface-level and can be captured with most parameter budgets.
+
+Semantic correctness, however, exhibits diminishing returns.
+Configurations from r=32 to r=128 all achieve approximately 23-24% Pass\@1, indicating a ceiling that additional capacity cannot overcome.
+The error analysis provides insight into why: approximately 55% of failures stem from fundamental limitations (decompiler information loss and algorithm re-interpretation) that cannot be addressed through model adaptation alone.
+When Ghidra produces a stub function or ambiguous pseudocode, no amount of fine-tuning can recover the original semantics.
+
+The remaining 45% of failures involving loop bounds, operators, and initialization represent the addressable portion of semantic errors.
+The mixed LoRA's improvement over the general LoRA (+4.13 percentage points) likely comes from better handling of these systematic error patterns. However, this improvement is modest relative to the syntactic gains, suggesting that even "addressable" semantic errors require more sophisticated interventions than pattern-based training can provide.
+
+== Implications for Neural Decompilation
+
+== Limitations
+
 - explain limitations: small dataset (4k rows), time and compute constraints
 - diminishing returns indicate a ceiling on what LoRA alone can achieve
 
