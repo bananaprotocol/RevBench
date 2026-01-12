@@ -761,7 +761,7 @@ This trade-off suggests that optimizing for semantic correctness and syntactic v
 The consistent pattern across all experiments points to what might be termed a "syntactic-semantic gap" in neural decompilation.
 Syntactic adaptation, learning to produce valid C code rather than pseudocode artifacts, is readily achievable through fine-tuning.
 Even the smallest LoRA configuration (r=8) improves compile rate from 18.94% to 82.38%.
-This suggests that syntactic patterns are relatively surface-level and can be captured with most parameter budgets.
+This suggests that syntactic patterns are relatively surface-level and can be captured with modest parameter budgets.
 
 Semantic correctness, however, exhibits diminishing returns.
 Configurations from r=32 to r=128 all achieve approximately 23-24% Pass\@1, indicating a ceiling that additional capacity cannot overcome.
@@ -776,7 +776,7 @@ The mixed LoRA's improvement over the general LoRA (+4.13 percentage points) lik
 These findings have several implications for future work in neural decompilation.
 
 First, the effectiveness of LoRA for syntactic correction suggests that pseudocode-to-code translation could serve as a preprocessing step, converting decompiler output into compilable C before applying more sophisticated semantic analysis.
-This decomposition might allow spezialized models or techniques to focus on each subproblem independently.
+This decomposition might allow specialized models or techniques to focus on each subproblem independently.
 
 Second, the limitations of Knowledge Editing indicate that neural decompilation errors are not localized faults that can be patched individually.
 Improving semantic correctness likely requires architectural innovations that enhance reasoning capabilities, such as chain-of-thought prompting, retrieval augmentation, or multi-pass refinement strategies.
@@ -786,10 +786,10 @@ Rather than training on a fixed mixture of examples, adaptive strategies could e
 
 == Limitations
 
-Several limitations constrain the generlizability of these findings.
+Several limitations constrain the generalizability of these findings.
 
 *Dataset scale*: The training corpus comprises approximately 4,000 samples from ExeBench, which may be insufficient to capture the full diversity of real-world decompilation scenarios.
-Larger datasets might shift the observed performance ceilings, and the specific patterns learned may not transfer to binaries compiled with different compilers, optimization levels, or architecture.
+Larger datasets might shift the observed performance ceilings, and the specific patterns learned may not transfer to binaries compiled with different compilers, optimization levels, or architectures.
 
 *Model scale*: All experiments use CodeLlama 7B, a relatively small model by contemporary standards.
 Larger models might exhibit different learning dynamics; in particular, the semantic reasoning ceiling might shift with increased model capacity.
