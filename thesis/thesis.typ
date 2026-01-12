@@ -773,6 +773,17 @@ The mixed LoRA's improvement over the general LoRA (+4.13 percentage points) lik
 
 == Implications for Neural Decompilation
 
+These findings have several implications for future work in neural decompilation.
+
+First, the effectiveness of LoRA for syntactic correction suggests that pseudocode-to-code translation could serve as a preprocessing step, converting decompiler output into compilable C before applying more sophisticated semantic analysis.
+This decomposition might allow spezialized models or techniques to focus on each subproblem independently.
+
+Second, the limitations of Knowledge Editing indicate that neural decompilation errors are not localized faults that can be patched individually.
+Improving semantic correctness likely requires architectural innovations that enhance reasoning capabilities, such as chain-of-thought prompting, retrieval augmentation, or multi-pass refinement strategies.
+
+Third, the trade-off observed in mixed training suggests that multi-objective optimization or curriculum learning approaches might better balance syntactic and semantic improvements.
+Rather than training on a fixed mixture of examples, adaptive strategies could emphasize different objectives at different training stages.
+
 == Limitations
 
 - explain limitations: small dataset (4k rows), time and compute constraints
