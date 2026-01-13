@@ -163,6 +163,9 @@ The remainder of this thesis is organized as follows.
 
 = Background
 
+This chapter introduces the foundational concepts required to understand the experimental work presented in this thesis.
+We begin with decompilation fundamentals, then cover the machine learning approaches under investigation: Parameter-Efficient Fine-Tuning and Knowledge Editing.
+
 == Decompilation Fundamentals
 
 Decompilation is the process of translating low-level executable code back into a higher-level programming language representation.
