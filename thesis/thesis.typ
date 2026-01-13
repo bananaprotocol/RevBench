@@ -218,29 +218,61 @@ The model learns to replace `undefined4` with appropriate types, generate meanin
 
 === The Challenge of Full Fine-Tuning
 
+Fine-tuning adapts a pretrained model to a specific task by updating its parameters on task-specific data.
+For modern Large Language Models with billions of parameters, full fine-tuning presents significant challenges.
+Updating all parameters requires storing optimizer states and gradients for each parameter, often exceeding available GPU memory.
+Furthermore, each fine-tuned model requires storing a complete copy of all parameters, making it expensive to maintain multiple specialized models.
+
 === Low-Rank Adaptation (LoRA)
 
-Low-Rank Adaptation, or LoRA, is a parameter-efficient fine-tuning method, which freezes the pretrained model weights and injects trainable rank decomposition matrices into each layer of the Transformer, reducing the number of trainable parameters by a large amount. @huLoRALowRankAdaptation2021
-As larger models are pretrained, full-finetuning, where all model parameters are updated, becomes a big challenge, as it requires huge amounts of GPU memory.
-The authors of the paper hypothesize that the change in weights during model adaptation has a low instrinstic rank, i.e. a very low rank suffices for making the model learn a new downstream task, even if the full rank of the parameters is much larger.
+Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021 addresses these challenges by freezing the pretrained model weights and injecting trainable low-rank decomposition matrices into each layer.
+For a p retrained weight matrix $W_0 in RR^(d times k)$, LoRA adds a parallel path:
+
+$ h = W_0 x + Delta W x = W_0 x + B A x $
+
+where $A in RR^(r times k)$ and $B in RR^(d times r)$ are small trainable matrices with rank $r << min(d, k)$.
+During training, only $A$ and $B$ are updated while $W_0$ remains frozen.
+
+This approach dramatically reduces trainable parameters.
+For a model with $d = 4096$, applying LoRA with rank $r = 64$ to a weight matrix reduces trainable parameters from 16 million to approximately 500 thousand; a 32#sym.times reduction.
 
 === QLoRA
 
+QLoRA @dettmersQLoRAEfficientFinetuning2023 extends LoRA by combining it with quantization.
+The frozen base model weights are stored in 4-bit precision using a novel NormalFloat (NF4) data type optimized for normally distributed weights.
+The low-rank adapters remain in higher precision for training stability.
+
+This combination enables fine-tuning models that would otherwise exceed available memory.
+A 7-billion parameter model that requires approximately 28G in 16-bit precision can be loaded in roughly 4GB with 4-bit quantization, making fine-tuning feasible on consumer hardware.
+
 == Knowledge Editing
 
-While LLMs are able to recall a large amount of common facts, even very large models can lack specialized knowledge or recall obsolete information if not updated frequently.
-The ability to efficiently maintain and customize new information is thus desirable in a lot of domains.
-Retraining large models can be computationally inaccessible, which is why methods which can update knowledge directly are desired.
-Several Knowledge Editing methods have been proposed to insert new memories into specific model parameters.
-These include constrained fine-tuning, hypernetwork knowledge editing, and rank-one model editing.
+Knowledge Editing refers to techniques for making targeted modifications to a model's behavior without full retraining.
+Unlike fine-tuning, which updates parameters across the entire model, Knowledge Editing aims to surgically modify specific factual associations or behaviors.
 
-- how is knowledge specified?
-- what methods exist and how do they differ?
-- which methods are suitable for code LLMs?
+Rank-One Model Editing (ROME) @mengLocatingEditingFactual2023 localizes factual knowledge to specific MLP layers in Transformer models and modifies their weights to update individual facts.
+The technique treats certain MLP layers as key-value stores and uses rank-one updates to change specific associations while preserving other model capabilities.
+
+ROME and related methods were originally developed for correcting factual errors in language models; for example, updating a model's knowledge that "The Eiffel Tower is located in Paris" to "The Eiffel Tower is located in London".
+The technique has shown promise for such targeted corrections while maintaining model performance on unrelated tasks.
+
+This thesis investigates whether Knowledge Editing can similarly correct specific decompilation errors; treating incorrect code patterns as "facts" to be edited.
 
 == Evaluation Metrics
 
-- why this metric? why is e.g. BLEU bad? are there other metrics?
+Evaluating decompilation quality requires metrics that capture functional correctness rather than surface-level textual similarity.
+A decompiled function may use different variable names, formatting, or even algorithmic approaches while remaining functionally equivalent to the original.
+
+*Pass\@k* measures the probability that at least one of $k$ generated samples passes all test cases.
+For Pass\@1, each generated function is compiled and executed against a test harness containing assertions that verify functional behavior.
+A function passes only if it compiles successfully, executes without errors, and produces correct outputs for all test inputs.
+
+*Compile rate* measures the fraction of generated functions that successfully compile, independent of functional correctness.
+The metric captures the model's ability to produce syntactically valid code; a prerequisite for any practical use.
+
+These metrics are preferable to text-based metrics like BLEU or exact match, which can penalize functionally correct code that differs stylistically from reference implementations.
+A function that correcctly implements a specification with different variable names receives full credit under Pass\@k but may score poorly on textual similarity metrics.
+
 - functional equivalence: unit tests, symbolic execution, fuzzing
 
 = Related Work
