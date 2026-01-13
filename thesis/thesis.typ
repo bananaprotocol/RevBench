@@ -112,11 +112,53 @@ These approaches represent fundamentally different hypotheses about the nature o
 
 == Problem Statement
 
+Pre-trained Large Language Models for code, such as CodeLlama, possess extensive knowledge of programming languages and can generate syntactically correct code in various contexts.
+However, when presented with Ghidra pseudocode, these models frequently reproduce decompiler-specific artifacts rather than translating them into standard C constructs.
+This results in output that fials to compile or, when it does compile, produces functionally incorrect results.
+
+The central challenge is adapting thesse models to the decompilation task efficiently.
+Full fine-tuning requires updating billions of parameters, demanding significant computational resources and risking catastrophic forgetting of the model's general capabilities.
+Two alternative approaches warrant investigation:
+
+*Low-Rank Adaptation (LoRA)* introduces small trainable matrices into the model architecture, enabling task-specific adaptation while keeping the base model frozen.
+
+*Knowledge Editing* directly modifies specific model parameters to correct targeted factual associations.
+This approach hypothesizes that decompilation errors stem from incorrect or missing factual mappings (e.g., that `undefined4` should map to `int`) that can be surgically corrected.
+
 == Research Questions
+
+This thesis addresses the following research questions:
+
++ *RQ1*: How effectively can LoRA fine-tuning improve the functional correctness of LLM-generated decompiled code?
++ *RQ2*: Can Knowledge Editing techniques correct systematic decompiler artifacts in model output?
++ *RQ3*: What types of decompilation errors are addressable through model adaptation, and what limitations remain?
++ *RQ4*: How do targeted error-specific training approaches compare to general fine-tuning for improving decompilation quality?
 
 == Contributions
 
+This thesis makes the following contributions:
+
++ A systematic evaluation of LoRA fine-tuning for neural decompilation, demonstrating a 54% relative improvement in functional correctness (Pass\@1 from 15.50% to 23.95%) and a 4.5#sym.times improvement in compile rate.
++ A documented negative result showing that Knowledge Editing is unsuitable for neural decompilation, with analysis that decompilation errors stem from reasoning failures rather than knowledge gaps.
++ An error taxonomy categorizing decompilation failures into addressable patterns (45%) and fundamental limitations (55%), providing insight into the ceiling of achievable performance.
++ Evidence for a "syntactic-semantic gap" in neural decompilation, where syntactic correction is readily achievable but semantic reasoning remains challenging.
++ Demonstration that mixed training combining error-specific examples with general data achieves the highest functional correctness (28.08% Pass\@1), representing an 81% relative improvement over baseline.
+
 == Thesis Outline
+
+The remainder of this thesis is organized as follows.
+
+*Chapter 2: Background* provides foundational material on decompilation, neural approaches to code transformation, parameter-efficient fine-tuning methods, and knowledge editing techniques.
+
+*Chapter 3: Related Work* surveys existing research in neural decompilation and positions this work within the broader landscape.
+
+*Chapter 4: Methodology* describes the experimental design, including the data pipeline, model configuration, training procedures, and evaluation framework.
+
+*Chapter 5: Results* presents the experimental findings, including baseline performance, LoRA fine-tuning results, error analysis, and error-specific fine-tuning outcomes.
+
+*Chapter 6: Discussion* interprets the results, examines implications for neural decompilation, and acknowledges limitations.
+
+*Chapter 7: Conclusion* summarizes the findings and suggests directions for future work.
 
 = Background
 
