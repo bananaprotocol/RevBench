@@ -95,11 +95,20 @@
 
 = Introduction
 
-- reverse engineering is a manual and tedious process
-- modern binaries are heavily optimized, stripping variable names, structure, ...
-- we investigate LoRA and Knowledge Editing as cheaper alternatives to improve decompilation performance and fix specific decompiler hallucinations
+Reverse engineering of software binaries is essential for security analysis, malware detection, legacy system maintenance, and vulnerability research.
+At the core of this process lies decompilation: transforming compiled machine code back into human-readable source code.
+However, decompilation is inherently lossy; the compilation process discards variable names, type information, comments, and high-level structure, leaving decompilers to reconstruct these elements through heuristic analysis.
 
-== Motivation and Context
+Modern decompilers such as Ghidra produce pseudocode that, while logically equivalent to the original program, often contains artifacts that make it difficult to read, modify, or recompile.
+The artifacts include non-standard type annotations (e.g., `undefined4`), synthesized variable names, and unconventional control flow constructs.
+Human analysts must manually refine this output, a time-consuming process that scales poorly with the volume of software requiring analysis.
+
+Recent advances in Large Language Models (LLMs) have demonstrated remarkable capabilities in code understanding and generation, suggesting their potentional application to decompilation refinement.
+Rather than replacing traditional decompilers, LLMs could serve as a post-processing step, transforming pseudocode into clean, idiomatic, and compilable source code.
+However, applying pre-trained LLMs directly to this task yields poor results; the models reproduce decompiler artifacts rather than translating them into standard constructs.
+
+This thesis investigates two adaptation approaches for improving LLM-based decompilation: Low-Rank Adaptation (LoRA), a parameter-efficient fine-tuning method, and Knowledge Editing, a technique for surgically modifying model weights to correct specific factual associations.
+These approaches represent fundamentally different hypotheses about the nature of decompilation errors and offer complementary strategies for addressing them.
 
 == Problem Statement
 
