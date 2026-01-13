@@ -170,31 +170,45 @@ We begin with decompilation fundamentals, then cover the machine learning approa
 
 === Compilation and Information Loss
 
-Decompilation is the process of translating low-level executable code back into a higher-level programming language representation.
-Understanding the fundamentals of this process, and its inherent challenges, is essential for appreciating both the potential and limitations of neural approaches to decompilation.
-This section first examines the forward compilation process to understand what information is lost, then discusses traditional decompilation techniques with a focus on Ghidra's approach, and finally outlines the key challenges that motivate this research.
+Compilation transforms human-readable source code into machine-executable binary code through multiple stages: preprocessing, parsing, semantic analysis, optimization, and code generation.
+Each stage discards information that is unnecessary for execution but valuable for human understanding.
 
-The transformation from source code to executable binary occurs through several distinct phases, each with specific responsibilities and each contributing to information loss.
+Variable names become register allocations or stack offsets.
+Type information is reduced to memory sizes and alignment constraints.
+Control flow structures like `for` and `while` loops compile to identical jump instructions.
+Comments and formatting disappear entirely.
+High-level abstractions such as struct layouts, inline functions, and macro expansions are flattened into sequences of machine instructions.
+
+This information loss is inherently one-way.
+The compilation process is a many-to-one mapping: countless source programs compile to identical binaries.
+Recovering the original source from a binary is therefore fundamentally ill-posed; we can only approximate one of many possible originals.
 
 // add figure that shows pipeline
 
 === Traditional Decompilers
 
-Before examining decompilation, it is instructive to understand the forward compilation process and the information that is irretrievably lost at each stage.
-This loss of information is what makes decompilation fundamentally challenging.
-It is not simply the inverse of compilation, but rather an attempt to recover semantics from a lacking representation.
+Decompilers attempt to reverse compilation by analyzing binary code and producing readable source code.
+Modern decompilers like Ghidra, IDA Pro, and angr employ sophisticated techniques including control flow graph reconstruction, data flow analysis, type recovery, and pattern matching for common idioms.
+
+Despite these techniques, decompiler output differs substantially from original source code.
+Ghidra, the decompiler used in this thesis, produces pseudocode that is syntactically similar to C but contains artifacts of the recovery process.
+These include generic type names like `undefined4` for recovered 32-bit values, synthesized variable names such as `local_10` based on stack positions, and occasionally incorrect control flow reconstruction.
+
+While this output aids human reverse engineers in understanding program behavior, it typically cannot be directly compiled.
+The gap between decompiler output and compilable source code motivates the neural decompilation approach explored in this thesis.
 
 == Neural Decompilation
 
-Converting binary code back into a high-level language, a process known as decompilation, is necessary for tasks ranging from indentifying vulnerabilities to maintaining legacy systems.
-However, because compilation erases fine-grained details like loop structures and variable names, reconstructing the original source code is complex.
-Prominent tools like Ghidra and IDA Pro use strict, rule-based algorithms, to analyze the control flow graphs of binary code to reconstruct logic.
-This can generate high-level pseudo-code which is logically correct, but often difficult for humans to read and often can't easily be re-compiled.
-Neural Decompilation is the application of neural networks to decompilation, where it is treated as a Machine Translation problem.
+Neural decompilation frames the refinement of decompiler output as a sequence-to-sequence translation task. Rather than reconstructing source code from raw binaries, neural approaches take existing decompiler output as input and generate improved, compilable code as output.
 
-- what is it?
-- how do standard decompilers work?
-- why do they only create pseudocode?
+This framing has several advantages.
+First, traditional decompilers handle the complex low-level analysis; recovering control flow, identifying function boundaries, and inferring approximate types.
+The neural model then focuses on the higher-level task of producing natural, compilable code.
+Second, the approach can leverage the large body of work on neural machine translation and code generation.
+
+Large Language Models pretrained on code, such as CodeLlama, have shown strong performance on code generation tasks.
+Fine-tuning these models on decompilation data allows them to learn the mapping from decompiler artifacts to conventional C idioms.
+The model learns to replace `undefined4` with appropriate types, generate meaningful variable names, and restructure awkward control flow into idiomatic patterns.
 
 == Parameter-Efficient Fine-Tuning
 
@@ -265,7 +279,6 @@ The experimental design follows a structured comparative methodology.
 First, a baseline is established by evaluating a pre-trained LLM on a curated dataset of binary functions with known source code.
 Subsequently, general LoRA fine-tuning is applied to create a globally adapted model, and error-specific LoRAs are trained and applied to create a targeted-correction variants.
 All adapted models are evaluated against the baseline using identical metrics (compilability, and functional equivalence), enabling direct comparison.
-// not sure if enough time left: Additional analyses examine scalability, interference effects, and robustness to input variations, culminating in an exploration of hybrid strategies that combine both adaptation techniques.
 
 == Data Pipeline
 
