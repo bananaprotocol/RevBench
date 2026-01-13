@@ -103,7 +103,7 @@ Modern decompilers such as Ghidra produce pseudocode that, while logically equiv
 The artifacts include non-standard type annotations (e.g., `undefined4`), synthesized variable names, and unconventional control flow constructs.
 Human analysts must manually refine this output, a time-consuming process that scales poorly with the volume of software requiring analysis.
 
-Recent advances in Large Language Models (LLMs) have demonstrated remarkable capabilities in code understanding and generation, suggesting their potentional application to decompilation refinement.
+Recent advances in Large Language Models (LLMs) have demonstrated remarkable capabilities in code understanding and generation, suggesting their potential application to decompilation refinement.
 Rather than replacing traditional decompilers, LLMs could serve as a post-processing step, transforming pseudocode into clean, idiomatic, and compilable source code.
 However, applying pre-trained LLMs directly to this task yields poor results; the models reproduce decompiler artifacts rather than translating them into standard constructs.
 
@@ -114,9 +114,9 @@ These approaches represent fundamentally different hypotheses about the nature o
 
 Pre-trained Large Language Models for code, such as CodeLlama, possess extensive knowledge of programming languages and can generate syntactically correct code in various contexts.
 However, when presented with Ghidra pseudocode, these models frequently reproduce decompiler-specific artifacts rather than translating them into standard C constructs.
-This results in output that fials to compile or, when it does compile, produces functionally incorrect results.
+This results in output that fails to compile or, when it does compile, produces functionally incorrect results.
 
-The central challenge is adapting thesse models to the decompilation task efficiently.
+The central challenge is adapting these models to the decompilation task efficiently.
 Full fine-tuning requires updating billions of parameters, demanding significant computational resources and risking catastrophic forgetting of the model's general capabilities.
 Two alternative approaches warrant investigation:
 
