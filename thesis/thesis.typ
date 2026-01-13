@@ -121,6 +121,7 @@ Full fine-tuning requires updating billions of parameters, demanding significant
 Two alternative approaches warrant investigation:
 
 *Low-Rank Adaptation (LoRA)* introduces small trainable matrices into the model architecture, enabling task-specific adaptation while keeping the base model frozen.
+This approach hypothesizes that decompilation can be learned as a general skill through exposure to pseudocode-to-source-code examples.
 
 *Knowledge Editing* directly modifies specific model parameters to correct targeted factual associations.
 This approach hypothesizes that decompilation errors stem from incorrect or missing factual mappings (e.g., that `undefined4` should map to `int`) that can be surgically corrected.
