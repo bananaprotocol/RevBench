@@ -168,33 +168,21 @@ We begin with decompilation fundamentals, then cover the machine learning approa
 
 == Decompilation Fundamentals
 
+=== Compilation and Information Loss
+
 Decompilation is the process of translating low-level executable code back into a higher-level programming language representation.
 Understanding the fundamentals of this process, and its inherent challenges, is essential for appreciating both the potential and limitations of neural approaches to decompilation.
 This section first examines the forward compilation process to understand what information is lost, then discusses traditional decompilation techniques with a focus on Ghidra's approach, and finally outlines the key challenges that motivate this research.
-
-=== The Compilation Process
-
-Before examining decompilation, it is instructive to understand the forward compilation process and the information that is irretrievably lost at each stage.
-This loss of information is what makes decompilation fundamentally challenging.
-It is not simply the inverse of compilation, but rather an attempt to recover semantics from a lacking representation.
-
-==== Overview of Compilation Stages
 
 The transformation from source code to executable binary occurs through several distinct phases, each with specific responsibilities and each contributing to information loss.
 
 // add figure that shows pipeline
 
-==== Preprocessing
+=== Traditional Decompilers
 
-==== Lexical and Syntactic Analysis
-
-==== Intermediate Representation and Optimization
-
-==== Code Generation
-
-==== Assembly and Linking
-
-==== Summary of Information Loss
+Before examining decompilation, it is instructive to understand the forward compilation process and the information that is irretrievably lost at each stage.
+This loss of information is what makes decompilation fundamentally challenging.
+It is not simply the inverse of compilation, but rather an attempt to recover semantics from a lacking representation.
 
 == Neural Decompilation
 
@@ -214,7 +202,7 @@ Neural Decompilation is the application of neural networks to decompilation, whe
 - what are the rank decomposition matrices A and B?
 - why does it save memory?
 
-=== Full Fine-Tuning vs. Efficient Adaptation
+=== The Challenge of Full Fine-Tuning
 
 === Low-Rank Adaptation (LoRA)
 
@@ -222,14 +210,7 @@ Low-Rank Adaptation, or LoRA, is a parameter-efficient fine-tuning method, which
 As larger models are pretrained, full-finetuning, where all model parameters are updated, becomes a big challenge, as it requires huge amounts of GPU memory.
 The authors of the paper hypothesize that the change in weights during model adaptation has a low instrinstic rank, i.e. a very low rank suffices for making the model learn a new downstream task, even if the full rank of the parameters is much larger.
 
-=== Variants and Extensions
-
-- QLoRA
-
-== Transformers and LLMs for Code
-
-- how do transformers work?
-- how does attention work?
+=== QLoRA
 
 == Knowledge Editing
 
@@ -243,7 +224,7 @@ These include constrained fine-tuning, hypernetwork knowledge editing, and rank-
 - what methods exist and how do they differ?
 - which methods are suitable for code LLMs?
 
-== Evaluation Metrics for Decompilation <eval-metrics>
+== Evaluation Metrics
 
 - why this metric? why is e.g. BLEU bad? are there other metrics?
 - functional equivalence: unit tests, symbolic execution, fuzzing
