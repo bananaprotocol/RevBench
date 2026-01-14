@@ -52,6 +52,16 @@
 
 #pagebreak()
 
+Hiermit versichere ich, dass ich die Arbeit selbst verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel benutzt und wörtlich oder inhaltlich aus fremden Werken Übernommenes als fremd kenntlich gemacht habe.
+Ferner versichere ich, dass die übermittelte elektronische Version in Inhalt und Wortlaut mit der gedruckten Version meiner Arbeit vollständig übereinstimmt.
+Ich bin einverstanden, dass diese elektronische Fassung universitätsintern anhand einer Plagiatssoftware auf Plagiate überprüft wird.
+
+Heidelberg, den 16.01.2026
+
+Hendrik Lohmar
+
+#pagebreak()
+
 #set page(numbering: "i")
 #counter(page).update(1)
 
@@ -61,8 +71,21 @@
   #v(1mm)
   _English_ \
   #v(1mm)
-  #lorem(200)
 ]
+
+Decompilation, the process of recovering source code from compiled binaries, is essential for security analysis and legacy software maintenance.
+Traditional decompilers like Ghidra produce pseudocode that aids human understanding but often cannot be directly compiled or executed.
+This thesis investigates parameter-efficient methods for adapting Large Language Models to refine Ghidra pseudocode into valid, compilable C code.
+
+We compare two fundamentally different approaches: Low-Rank Adaptation (LoRA), which trains small adapter matrices while keeping base model weights frozen, and Knowledge Editing, which surgically modifies specific model weights to correct individual errors.
+We evaluate these methods using CodeLlama-7B-Instruct on a benchmark of 151 functions with functional correctness tests.
+
+Our experiments reveal that LoRA fine-tuning substantially improves decompilation quality, achieving a Pass\@1 rate of 28.08% and a compile rate of 84.33%, compared to the baseline of 15.50% and 18.94% respectively.
+Knowledge Editing, however, proved ineffective for this task, as decompilation errors involve complex structural transformations rather than discrete factual corrections.
+
+A key finding is the syntactic-semantic gap: high compile rates do not guarantee functional correctness.
+Models can learn to produce syntactically valid code while still generating semantically incorrect implementations.
+This gap highlights the importance of functional testing over surface-level metrics in neural decompilation research.
 
 #pagebreak()
 
@@ -72,8 +95,21 @@
   #v(1mm)
   _Deutsch_ \
   #v(1mm)
-  #lorem(200)
 ]
+
+Dekompilierung, der Prozess der Wiederherstellung von Quellcode aus kompilierten Binärdateien, ist für Sicherheitsanalysen und die Wartung von Legacy-Software unerlässlich.
+Traditionelle Decompiler wie Ghidra erzeugen Pseudocode, der das menschliche Verständnis unterstützt, aber oft nicht direkt kompiliert oder ausgeführt werden kann.
+Diese Arbeit untersucht parametereffiziente Methoden zur Anpassung von Large Language Models, um Ghidra-Pseudocode in gültigen, kompilierbaren C-Code zu transformieren.
+
+Wir vergleichen zwei grundlegend verschiedene Ansätze: Low-Rank Adaptation (LoRA), das kleine Adaptermatrizen trainiert, während die Basismodellgewichte eingefroren bleiben, und Knowledge Editing, das gezielt spezifische Modellgewichte modifiziert, um einzelne Fehler zu korrigieren.
+Wir evaluieren diese Methoden mit CodeLlama-7B-Instruct auf einem Benchmark von 151 Funktionen mit funktionalen Korrektheitstests.
+
+Unsere Experimente zeigen, dass LoRA-Fine-Tuning die Dekompilierungsqualität erheblich verbessert und eine Pass\@1-Rate von 28,08% sowie eine Kompilierungsrate von 84,33% erreicht, verglichen mit der Baseline von 15,50% bzw. 18,94%.
+Knowledge Editing erwies sich jedoch als ineffektiv für diese Aufgabe, da Dekompilierungsfehler komplexe strukturelle Transformationen und keine diskreten faktischen Korrekturen erfordern.
+
+Eine zentrale Erkenntnis ist die syntaktisch-semantische Lücke: Hohe Kompilierungsraten garantieren keine funktionale Korrektheit.
+Modelle können lernen, syntaktisch gültigen Code zu erzeugen, der dennoch semantisch falsche Implementierungen enthält.
+Diese Lücke unterstreicht die Bedeutung funktionaler Tests gegenüber oberflächlichen Metriken in der Forschung zur neuronalen Dekompilierung.
 
 #pagebreak()
 
@@ -286,14 +322,14 @@ The refinement approach, which takes Ghidra pseudocode as input, achieved substa
 Other LLM-based approaches include DecGPT @wongRefiningDecompiledCode2023, which refines IDA Pro output by incorporating compiler error messages into an iterative refinement loop, and DeGPT @huDeGPTOptimizingDecompiler2024, which focuses on improving the readability of Ghidra output for human analysts.
 Nova @jiangNovaGenerativeLanguage2025 developed specialized binary language models fine-tuned for decompilation tasks.
 
-These systems share a common methodology: they either train or fine-tune models on a large corpora of binary-source pairs, updating all model parameters.
+These systems share a common methodology: they either train or fine-tune models on large corpora of binary-source pairs, updating all model parameters.
 LLM4Decompile, for instance, trains on billions of tokens of decompilation data.
 This full fine-tuning approach achieves strong results but requires substantial computational resources and produces task-specific models that cannot easily incorporate targeted corrections.
 
 == Research Gap and Positioning
 
 While existing work has demonstrated the effectiveness of LLMs for decompilation, the field has not systematically explored parameter-efficient adaptation methods.
-All major neural decompilation systems employ either full-fine-tuning or prompting-based approaches.
+All major neural decompilation systems employ either full fine-tuning or prompting-based approaches.
 
 This thesis investigates whether parameter-efficient techniques can achieve competitive results while enabling more flexible model adaptation.
 Specifically, we compare:
@@ -305,7 +341,7 @@ Specifically, we compare:
 This comparison addresses a practical concern: as LLMs grow larger, full fine-tuning becomes increasingly prohibitive.
 If parameter-efficient methods can match or approach full fine-tuning performance, they offer a more accessible path to specialized decompilation models.
 
-Furthermore, only few prior works have investigated Knowledge Editing for code transformation tasks.
+Furthermore, only a few prior works have investigated Knowledge Editing for code transformation tasks.
 While ROME and related techniques have shown success in correcting factual knowledge, their applicability to structural code transformations remains unexplored.
 This thesis provides the first empirical evaluation of Knowledge Editing in the decompilation domain.
 
