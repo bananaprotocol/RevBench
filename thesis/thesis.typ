@@ -170,7 +170,7 @@ We begin with decompilation fundamentals, then cover the machine learning approa
 
 === Compilation and Information Loss
 
-Compilation transforms human-readable source code into machine-executable binary code through multiple stages: preprocessing, parsing, semantic analysis, optimization, and code generation.
+Compilation transforms human-readable source code into machine-executable binary code through multiple stages: preprocessing, parsing, semantic analysis, optimization, and code generation @ahoCompilersPrinciplesTechniques2002.
 Each stage discards information that is unnecessary for execution but valuable for human understanding.
 
 Variable names become register allocations or stack offsets.
@@ -188,7 +188,7 @@ Recovering the original source from a binary is therefore fundamentally ill-pose
 === Traditional Decompilers
 
 Decompilers attempt to reverse compilation by analyzing binary code and producing readable source code.
-Modern decompilers like Ghidra, IDA Pro, and angr employ sophisticated techniques including control flow graph reconstruction, data flow analysis, type recovery, and pattern matching for common idioms.
+Modern decompilers like Ghidra @nationalsecurityagencyGhidra2019, IDA Pro @hex-raysIDAPro, and angr @shoshitaishviliSOKStateArt2016 employ sophisticated techniques including control flow graph reconstruction, data flow analysis, type recovery, and pattern matching for common idioms.
 
 Despite these techniques, decompiler output differs substantially from original source code.
 Ghidra, the decompiler used in this thesis, produces pseudocode that is syntactically similar to C but contains artifacts of the recovery process.
@@ -199,14 +199,14 @@ The gap between decompiler output and compilable source code motivates the neura
 
 == Neural Decompilation
 
-Neural decompilation frames the refinement of decompiler output as a sequence-to-sequence translation task. Rather than reconstructing source code from raw binaries, neural approaches take existing decompiler output as input and generate improved, compilable code as output.
+Neural decompilation frames the refinement of decompiler output as a sequence-to-sequence translation task @fuNeuralbasedProgramDecompiler2019. Rather than reconstructing source code from raw binaries, neural approaches take existing decompiler output as input and generate improved, compilable code as output.
 
 This framing has several advantages.
 First, traditional decompilers handle the complex low-level analysis; recovering control flow, identifying function boundaries, and inferring approximate types.
 The neural model then focuses on the higher-level task of producing natural, compilable code.
 Second, the approach can leverage the large body of work on neural machine translation and code generation.
 
-Large Language Models pretrained on code, such as CodeLlama, have shown strong performance on code generation tasks.
+Large Language Models pretrained on code, such as CodeLlama @roziereCodeLlamaOpen2023, have shown strong performance on code generation tasks.
 Fine-tuning these models on decompilation data allows them to learn the mapping from decompiler artifacts to conventional C idioms.
 The model learns to replace `undefined4` with appropriate types, generate meaningful variable names, and restructure awkward control flow into idiomatic patterns.
 
@@ -246,7 +246,7 @@ A 7-billion parameter model that requires approximately 28G in 16-bit precision 
 Knowledge Editing refers to techniques for making targeted modifications to a model's behavior without full retraining.
 Unlike fine-tuning, which updates parameters across the entire model, Knowledge Editing aims to surgically modify specific factual associations or behaviors.
 
-Rank-One Model Editing (ROME) @mengLocatingEditingFactual2023 localizes factual knowledge to specific MLP layers in Transformer models and modifies their weights to update individual facts.
+Rank-One Model Editing (ROME) @mengLocatingEditingFactual2023 localizes factual knowledge to specific MLP layers in Transformer models @vaswaniAttentionAllYou2023 and modifies their weights to update individual facts.
 The technique treats certain MLP layers as key-value stores and uses rank-one updates to change specific associations while preserving other model capabilities.
 
 ROME and related methods were originally developed for correcting factual errors in language models; for example, updating a model's knowledge that "The Eiffel Tower is located in Paris" to "The Eiffel Tower is located in London".
@@ -259,14 +259,14 @@ This thesis investigates whether Knowledge Editing can similarly correct specifi
 Evaluating decompilation quality requires metrics that capture functional correctness rather than surface-level textual similarity.
 A decompiled function may use different variable names, formatting, or even algorithmic approaches while remaining functionally equivalent to the original.
 
-*Pass\@k* measures the probability that at least one of $k$ generated samples passes all test cases.
+*Pass\@k* @chenEvaluatingLargeLanguage2021 measures the probability that at least one of $k$ generated samples passes all test cases.
 For Pass\@1, each generated function is compiled and executed against a test harness containing assertions that verify functional behavior.
 A function passes only if it compiles successfully, executes without errors, and produces correct outputs for all test inputs.
 
 *Compile rate* measures the fraction of generated functions that successfully compile, independent of functional correctness.
 The metric captures the model's ability to produce syntactically valid code; a prerequisite for any practical use.
 
-These metrics are preferable to text-based metrics like BLEU or exact match, which can penalize functionally correct code that differs stylistically from reference implementations.
+These metrics are preferable to text-based metrics like BLEU @papineniBLEUMethodAutomatic2001 or exact match, which can penalize functionally correct code that differs stylistically from reference implementations.
 A function that correctly implements a specification with different variable names receives full credit under Pass\@k but may score poorly on textual similarity metrics.
 
 = Related Work
