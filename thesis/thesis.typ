@@ -212,10 +212,6 @@ The model learns to replace `undefined4` with appropriate types, generate meanin
 
 == Parameter-Efficient Fine-Tuning
 
-- how does LoRA work?
-- what are the rank decomposition matrices A and B?
-- why does it save memory?
-
 === The Challenge of Full Fine-Tuning
 
 Fine-tuning adapts a pretrained model to a specific task by updating its parameters on task-specific data.
@@ -226,7 +222,7 @@ Furthermore, each fine-tuned model requires storing a complete copy of all param
 === Low-Rank Adaptation (LoRA)
 
 Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021 addresses these challenges by freezing the pretrained model weights and injecting trainable low-rank decomposition matrices into each layer.
-For a p retrained weight matrix $W_0 in RR^(d times k)$, LoRA adds a parallel path:
+For a pretrained weight matrix $W_0 in RR^(d times k)$, LoRA adds a parallel path:
 
 $ h = W_0 x + Delta W x = W_0 x + B A x $
 
@@ -271,9 +267,7 @@ A function passes only if it compiles successfully, executes without errors, and
 The metric captures the model's ability to produce syntactically valid code; a prerequisite for any practical use.
 
 These metrics are preferable to text-based metrics like BLEU or exact match, which can penalize functionally correct code that differs stylistically from reference implementations.
-A function that correcctly implements a specification with different variable names receives full credit under Pass\@k but may score poorly on textual similarity metrics.
-
-- functional equivalence: unit tests, symbolic execution, fuzzing
+A function that correctly implements a specification with different variable names receives full credit under Pass\@k but may score poorly on textual similarity metrics.
 
 = Related Work
 
