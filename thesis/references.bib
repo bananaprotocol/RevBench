@@ -60,6 +60,22 @@
   keywords = {Computer Science - Machine Learning},
 }
 
+@misc{fuNeuralbasedProgramDecompiler2019,
+  title = {A {{Neural-based Program Decompiler}}},
+  author = {Fu, Cheng and Chen, Huili and Liu, Haolan and Chen, Xinyun and Tian, Yuandong and Koushanfar, Farinaz and Zhao, Jishen},
+  year = 2019,
+  month = jun,
+  number = {arXiv:1906.12029},
+  eprint = {1906.12029},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1906.12029},
+  urldate = {2026-01-14},
+  abstract = {Reverse engineering of binary executables is a critical problem in the computer security domain. On the one hand, malicious parties may recover interpretable source codes from the software products to gain commercial advantages. On the other hand, binary decompilation can be leveraged for code vulnerability analysis and malware detection. However, efficient binary decompilation is challenging. Conventional decompilers have the following major limitations: (i) they are only applicable to specific source-target language pair, hence incurs undesired development cost for new language tasks; (ii) their output high-level code cannot effectively preserve the correct functionality of the input binary; (iii) their output program does not capture the semantics of the input and the reversed program is hard to interpret. To address the above problems, we propose Coda, the first end-to-end neural-based framework for code decompilation. Coda decomposes the decompilation task into two key phases: First, Coda employs an instruction type-aware encoder and a tree decoder for generating an abstract syntax tree (AST) with attention feeding during the code sketch generation stage. Second, Coda then updates the code sketch using an iterative error correction machine guided by an ensembled neural error predictor. By finding a good approximate candidate and then fixing it towards perfect, Coda achieves superior performance compared to baseline approaches. We assess Coda's performance with extensive experiments on various benchmarks. Evaluation results show that Coda achieves an average of 82\textbackslash\% program recovery accuracy on unseen binary samples, where the state-of-the-art decompilers yield 0\textbackslash\% accuracy. Furthermore, Coda outperforms the sequence-to-sequence model with attention by a margin of 70\textbackslash\% program accuracy.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Machine Learning,Computer Science - Programming Languages},
+}
+
 @misc{hartvigsenAgingGRACELifelong2023,
   title = {Aging with {{GRACE}}: {{Lifelong Model Editing}} with {{Discrete Key-Value Adaptors}}},
   shorttitle = {Aging with {{GRACE}}},
@@ -77,6 +93,12 @@
   keywords = {Computer Science - Machine Learning},
 }
 
+@misc{hex-raysIDAPro,
+  title = {{{IDA Pro}}},
+  author = {{Hex-Rays}},
+  howpublished = {https://hex-rays.com/ida-pro}
+}
+
 @misc{huangTransformerPatcherOneMistake2023,
   title = {Transformer-{{Patcher}}: {{One Mistake}} Worth {{One Neuron}}},
   shorttitle = {Transformer-{{Patcher}}},
@@ -92,6 +114,20 @@
   abstract = {Large Transformer-based Pretrained Language Models (PLMs) dominate almost all Natural Language Processing (NLP) tasks. Nevertheless, they still make mistakes from time to time. For a model deployed in an industrial environment, fixing these mistakes quickly and robustly is vital to improve user experiences. Previous works formalize such problems as Model Editing (ME) and mostly focus on fixing one mistake. However, the one-mistake-fixing scenario is not an accurate abstraction of the real-world challenge. In the deployment of AI services, there are ever-emerging mistakes, and the same mistake may recur if not corrected in time. Thus a preferable solution is to rectify the mistakes as soon as they appear nonstop. Therefore, we extend the existing ME into Sequential Model Editing (SME) to help develop more practical editing methods. Our study shows that most current ME methods could yield unsatisfying results in this scenario. We then introduce Transformer-Patcher, a novel model editor that can shift the behavior of transformer-based models by simply adding and training a few neurons in the last Feed-Forward Network layer. Experimental results on both classification and generation tasks show that Transformer-Patcher can successively correct up to thousands of errors (Reliability) and generalize to their equivalent inputs (Generality) while retaining the model's accuracy on irrelevant inputs (Locality). Our method outperforms previous fine-tuning and HyperNetwork-based methods and achieves state-of-the-art performance for Sequential Model Editing (SME). The code is available at https://github.com/ZeroYuHuang/Transformer-Patcher.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+}
+
+@inproceedings{huDeGPTOptimizingDecompiler2024,
+  title = {{{DeGPT}}: {{Optimizing Decompiler Output}} with {{LLM}}},
+  shorttitle = {{{DeGPT}}},
+  booktitle = {Proceedings 2024 {{Network}} and {{Distributed System Security Symposium}}},
+  author = {Hu, Peiwei and Liang, Ruigang and Chen, Kai},
+  year = 2024,
+  publisher = {Internet Society},
+  address = {San Diego, CA, USA},
+  doi = {10.14722/ndss.2024.24401},
+  urldate = {2026-01-14},
+  isbn = {978-1-891562-93-8},
+  langid = {english},
 }
 
 @misc{huLoRALowRankAdaptation2021,
@@ -126,6 +162,23 @@
   abstract = {Knowledge editing techniques, aiming to efficiently modify a minor proportion of knowledge in large language models (LLMs) without negatively impacting performance across other inputs, have garnered widespread attention. However, existing methods predominantly rely on memorizing the updated knowledge, impeding LLMs from effectively combining the new knowledge with their inherent knowledge when answering questions. To this end, we propose a Learning to Edit (LTE) framework, focusing on teaching LLMs to apply updated knowledge into input questions, inspired by the philosophy of "Teach a man to fish." LTE features a two-phase process: (i) the Alignment Phase, which fine-tunes LLMs on a meticulously curated parallel dataset to make reliable, in-scope edits while preserving out-of-scope information and linguistic proficiency; and (ii) the Inference Phase, which employs a retrieval-based mechanism for real-time and mass knowledge editing. By comparing our approach with seven advanced baselines across four popular knowledge editing benchmarks and two LLM architectures, we demonstrate LTE's superiority in knowledge editing performance, robustness in both batch and sequential editing, minimal interference on general tasks, and rapid editing speeds. The data and code are available at https://github.com/YJiangcm/LTE.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Computation and Language},
+}
+
+@misc{jiangNovaGenerativeLanguage2025,
+  title = {Nova: {{Generative Language Models}} for {{Assembly Code}} with {{Hierarchical Attention}} and {{Contrastive Learning}}},
+  shorttitle = {Nova},
+  author = {Jiang, Nan and Wang, Chengxiao and Liu, Kevin and Xu, Xiangzhe and Tan, Lin and Zhang, Xiangyu and Babkin, Petr},
+  year = 2025,
+  month = nov,
+  number = {arXiv:2311.13721},
+  eprint = {2311.13721},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2311.13721},
+  urldate = {2026-01-14},
+  abstract = {Binary code analysis is the foundation of crucial tasks in the security domain; thus building effective binary analysis techniques is more important than ever. Large language models (LLMs) although have brought impressive improvement to source code tasks, do not directly generalize to assembly code due to the unique challenges of assembly: (1) the low information density of assembly and (2) the diverse optimizations in assembly code. To overcome these challenges, this work proposes a hierarchical attention mechanism that builds attention summaries to capture the semantics more effectively and designs contrastive learning objectives to train LLMs to learn assembly optimization. Equipped with these techniques, this work develops Nova, a generative LLM for assembly code. Nova outperforms existing techniques on binary code decompilation by up to 14.84 -- 21.58\% (absolute percentage point improvement) higher Pass@1 and Pass@10, and outperforms the latest binary code similarity detection techniques by up to 6.17\% Recall@1, showing promising abilities on both assembly generation and understanding tasks.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Software Engineering},
 }
 
 @misc{liModelEditingLLMs4Code2024,
@@ -194,6 +247,44 @@
   keywords = {Computer Science - Computation and Language,Computer Science - Machine Learning},
 }
 
+@misc{nationalsecurityagencyGhidra2019,
+  title = {Ghidra},
+  author = {{National Security Agency}},
+  year = 2019,
+  howpublished = {https://www.nsa.gov/ghidra}
+}
+
+@misc{panPreciseLocalizationMemories2025,
+  title = {Precise {{Localization}} of {{Memories}}: {{A Fine-grained Neuron-level Knowledge Editing Technique}} for {{LLMs}}},
+  shorttitle = {Precise {{Localization}} of {{Memories}}},
+  author = {Pan, Haowen and Wang, Xiaozhi and Cao, Yixin and Shi, Zenglin and Yang, Xun and Li, Juanzi and Wang, Meng},
+  year = 2025,
+  month = mar,
+  number = {arXiv:2503.01090},
+  eprint = {2503.01090},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2503.01090},
+  urldate = {2026-01-14},
+  abstract = {Knowledge editing aims to update outdated information in Large Language Models (LLMs). A representative line of study is locate-then-edit methods, which typically employ causal tracing to identify the modules responsible for recalling factual knowledge about entities. However, we find these methods are often sensitive only to changes in the subject entity, leaving them less effective at adapting to changes in relations. This limitation results in poor editing locality, which can lead to the persistence of irrelevant or inaccurate facts, ultimately compromising the reliability of LLMs. We believe this issue arises from the insufficient precision of knowledge localization. To address this, we propose a Fine-grained Neuron-level Knowledge Editing (FiNE) method that enhances editing locality without affecting overall success rates. By precisely identifying and modifying specific neurons within feed-forward networks, FiNE significantly improves knowledge localization and editing. Quantitative experiments demonstrate that FiNE efficiently achieves better overall performance compared to existing techniques, providing new insights into the localization and modification of knowledge within LLMs.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+}
+
+@inproceedings{papineniBLEUMethodAutomatic2001,
+  title = {{{BLEU}}: A Method for Automatic Evaluation of Machine Translation},
+  shorttitle = {{{BLEU}}},
+  booktitle = {Proceedings of the 40th {{Annual Meeting}} on {{Association}} for {{Computational Linguistics}}  - {{ACL}} '02},
+  author = {Papineni, Kishore and Roukos, Salim and Ward, Todd and Zhu, Wei-Jing},
+  year = 2001,
+  pages = {311},
+  publisher = {Association for Computational Linguistics},
+  address = {Philadelphia, Pennsylvania},
+  doi = {10.3115/1073083.1073135},
+  urldate = {2026-01-14},
+  langid = {english},
+}
+
 @misc{roziereCodeLlamaOpen2023,
   title = {Code {{Llama}}: {{Open Foundation Models}} for {{Code}}},
   shorttitle = {Code {{Llama}}},
@@ -205,6 +296,21 @@
   abstract = {We release Code Llama, a family of large language models for code based on Llama 2 providing state-of-the-art performance among open models, infilling capabilities, support for large input contexts, and zero-shot instruction following ability for programming tasks. We provide multiple flavors to cover a wide range of applications: foundation models (Code Llama), Python specializations (Code Llama - Python), and instruction-following models (Code Llama - Instruct) with 7B, 13B, 34B and 70B parameters each. All models are trained on sequences of 16k tokens and show improvements on inputs with up to 100k tokens. 7B, 13B and 70B Code Llama and Code Llama - Instruct variants support infilling based on surrounding content. Code Llama reaches state-of-the-art performance among open models on several code benchmarks, with scores of up to 67\% and 65\% on HumanEval and MBPP, respectively. Notably, Code Llama - Python 7B outperforms Llama 2 70B on HumanEval and MBPP, and all our models outperform every other publicly available model on MultiPL-E. We release Code Llama under a permissive license that allows for both research and commercial use.},
   copyright = {Creative Commons Attribution 4.0 International},
   keywords = {Computation and Language (cs.CL),FOS: Computer and information sciences},
+}
+
+@inproceedings{shoshitaishviliSOKStateArt2016,
+  title = {{{SOK}}: ({{State}} of) {{The Art}} of {{War}}: {{Offensive Techniques}} in {{Binary Analysis}}},
+  shorttitle = {{{SOK}}},
+  booktitle = {2016 {{IEEE Symposium}} on {{Security}} and {{Privacy}} ({{SP}})},
+  author = {Shoshitaishvili, Yan and Wang, Ruoyu and Salls, Christopher and Stephens, Nick and Polino, Mario and Dutcher, Andrew and Grosen, John and Feng, Siji and Hauser, Christophe and Kruegel, Christopher and Vigna, Giovanni},
+  year = 2016,
+  month = may,
+  pages = {138--157},
+  publisher = {IEEE},
+  address = {San Jose, CA},
+  doi = {10.1109/SP.2016.17},
+  urldate = {2026-01-14},
+  isbn = {978-1-5090-0824-7},
 }
 
 @inproceedings{tanLLM4DecompileDecompilingBinary2024,
@@ -267,6 +373,39 @@
   abstract = {Large language models (LLMs) need knowledge updates to meet the ever-growing world facts and correct the hallucinated responses, facilitating the methods of lifelong model editing. Where the updated knowledge resides in memories is a fundamental question for model editing. In this paper, we find that editing either long-term memory (direct model parameters) or working memory (non-parametric knowledge of neural network activations/representations by retrieval) will result in an impossible triangle -- reliability, generalization, and locality can not be realized together in the lifelong editing settings. For long-term memory, directly editing the parameters will cause conflicts with irrelevant pretrained knowledge or previous edits (poor reliability and locality). For working memory, retrieval-based activations can hardly make the model understand the edits and generalize (poor generalization). Therefore, we propose WISE to bridge the gap between memories. In WISE, we design a dual parametric memory scheme, which consists of the main memory for the pretrained knowledge and a side memory for the edited knowledge. We only edit the knowledge in the side memory and train a router to decide which memory to go through when given a query. For continual editing, we devise a knowledge-sharding mechanism where different sets of edits reside in distinct subspaces of parameters, and are subsequently merged into a shared memory without conflicts. Extensive experiments show that WISE can outperform previous model editing methods and overcome the impossible triangle under lifelong model editing of question answering, hallucination, and out-of-distribution settings across trending LLM architectures, e.g., GPT, LLaMA, and Mistral. Code is available at https://github.com/zjunlp/EasyEdit.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Information Retrieval,Computer Science - Machine Learning},
+}
+
+@article{wongDecLLMLLMAugmentedRecompilable2025,
+  title = {{{DecLLM}}: {{LLM-Augmented Recompilable Decompilation}} for {{Enabling Programmatic Use}} of {{Decompiled Code}}},
+  shorttitle = {{{DecLLM}}},
+  author = {Wong, Wai Kin and Wu, Daoyuan and Wang, Huaijin and Li, Zongjie and Liu, Zhibo and Wang, Shuai and Tang, Qiyi and Nie, Sen and Wu, Shi},
+  year = 2025,
+  month = jun,
+  journal = {Proceedings of the ACM on Software Engineering},
+  volume = {2},
+  number = {ISSTA},
+  pages = {1841--1864},
+  issn = {2994-970X},
+  doi = {10.1145/3728958},
+  urldate = {2026-01-14},
+  abstract = {Decompilers are widely used in reverse engineering (RE) to convert compiled executables into human-readable pseudocode and support various security analysis tasks. Existing decompilers, such as IDA Pro and Ghidra, focus on enhancing the readability of decompiled code rather than its recompilability, which limits further programmatic use, such as for CodeQL-based vulnerability analysis that requires compilable versions of the decompiled code. Recent LLM-based approaches for enhancing decompilation results, while useful for human RE analysts, unfortunately also follow the same path.             In this paper, we explore, for the first time, how off-the-shelf large language models (LLMs) can be used to enable recompilable decompilation---automatically correcting decompiler outputs into compilable versions. We first show that this is non-trivial through a pilot study examining existing rule-based and LLM-based approaches. Based on the lessons learned, we design DecLLM, an iterative LLM-based repair loop that utilizes both static recompilation and dynamic runtime feedback as oracles to iteratively fix decompiler outputs. We test DecLLM on popular C benchmarks and real-world binaries using two mainstream LLMs, GPT-3.5 and GPT-4, and show that off-the-shelf LLMs can achieve an upper bound of around 70\% recompilation success rate, i.e., 70 out of 100 originally non-recompilable decompiler outputs are now recompilable. We also demonstrate the practical applicability of the recompilable code for CodeQL-based vulnerability analysis, which is impossible to perform directly on binaries. For the remaining 30\% of hard cases, we further delve into their errors to gain insights for future improvements in decompilation-oriented LLM design.},
+  langid = {english},
+}
+
+@misc{wongRefiningDecompiledCode2023,
+  title = {Refining {{Decompiled C Code}} with {{Large Language Models}}},
+  author = {Wong, Wai Kin and Wang, Huaijin and Li, Zongjie and Liu, Zhibo and Wang, Shuai and Tang, Qiyi and Nie, Sen and Wu, Shi},
+  year = 2023,
+  month = nov,
+  number = {arXiv:2310.06530},
+  eprint = {2310.06530},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2310.06530},
+  urldate = {2026-01-14},
+  abstract = {A C decompiler converts an executable into source code. The recovered C source code, once re-compiled, is expected to produce an executable with the same functionality as the original executable. With over twenty years of development, C decompilers have been widely used in production to support reverse engineering applications. Despite the prosperous development of C decompilers, it is widely acknowledged that decompiler outputs are mainly used for human consumption, and are not suitable for automatic recompilation. Often, a substantial amount of manual effort is required to fix the decompiler outputs before they can be recompiled and executed properly. This paper is motived by the recent success of large language models (LLMs) in comprehending dense corpus of natural language. To alleviate the tedious, costly and often error-prone manual effort in fixing decompiler outputs, we investigate the feasibility of using LLMs to augment decompiler outputs, thus delivering recompilable decompilation. Note that different from previous efforts that focus on augmenting decompiler outputs with higher readability (e.g., recovering type/variable names), we focus on augmenting decompiler outputs with recompilability, meaning to generate code that can be recompiled into an executable with the same functionality as the original executable. We conduct a pilot study to characterize the obstacles in recompiling the outputs of the de facto commercial C decompiler -- IDA-Pro. We then propose a two-step, hybrid approach to augmenting decompiler outputs with LLMs. We evaluate our approach on a set of popular C test cases, and show that our approach can deliver a high recompilation success rate to over 75\% with moderate effort, whereas none of the IDA-Pro's original outputs can be recompiled. We conclude with a discussion on the limitations of our approach and promising future research directions.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Software Engineering},
 }
 
 @inproceedings{xieRevealingDeceptivenessKnowledge2025,
