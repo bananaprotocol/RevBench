@@ -271,9 +271,43 @@ A function that correctly implements a specification with different variable nam
 
 = Related Work
 
+This chapter situates the present work within the broader landscape of neural decompilation research and highlights the specific gap this thesis addresses.
+
 == Neural Decompilation Systems
 
+Early approaches to neural decompilation employed recurrent neural networks to translate assembly or low-level intermediate representations directly to source code.
+Coda @fuNeuralbasedProgramDecompiler2019 pioneered the end-to-end neural decompiler concept, training sequence-to-sequence models to transform binary representations into C code.
+
+More recent work has leveraged the capabilities of Large Language Models.
+LLM4Decompile @tanLLM4DecompileDecompilingBinary2024 represents the current state-of-the-art, training a series of models ranging from 1.3B to 33B parameters specifically for decompilation.
+Their approach follows two paradigms: end-to-end decompilation from assembly, and refinement of existing decompiler output.
+The refinement approach, which takes Ghidra pseudocode as input, achieved substantially higher re-executability rates than the end-to-end method.
+
+Other LLM-based approaches include DecGPT @wongRefiningDecompiledCode2023, which refines IDA Pro output by incorporating compiler error messages into an iterative refinement loop, and DeGPT @huDeGPTOptimizingDecompiler2024, which focuses on improving the readability of Ghidra output for human analysts.
+Nova @jiangNovaGenerativeLanguage2025 developed specialized binary language models fine-tuned for decompilation tasks.
+
+These systems share a common methodology: they either train or fine-tune models on a large corpora of binary-source pairs, updating all model parameters.
+LLM4Decompile, for instance, trains on billions of tokens of decompilation data.
+This full fine-tuning approach achieves strong results but requires substantial computational resources and produces task-specific models that cannot easily incorporate targeted corrections.
+
 == Research Gap and Positioning
+
+While existing work has demonstrated the effectiveness of LLMs for decompilation, the field has not systematically explored parameter-efficient adaptation methods.
+All major neural decompilation systems employ either full-fine-tuning or prompting-based approaches.
+
+This thesis investigates whether parameter-efficient techniques can achieve competitive results while enabling more flexible model adaptation.
+Specifically, we compare:
+
++ *Low-Rank Adaptation (LoRA)* as a parameter-efficient alternative to full fine-tuning, examining whether the dramatic reduction in trainable parameters compromises decompilation quality.
++ *Knowledge Editing* as a surgical intervention technique, testing whether decompilation errors can be corrected through targeted weight modifications rather than broad training.
++ *Targeted LoRA training* on error-specific datasets, combining the efficiency of LoRA with focused training on particular error categories.
+
+This comparison addresses a practical concern: as LLMs grow larger, full fine-tuning becomes increasingly prohibitive.
+If parameter-efficient methods can match or approach full fine-tuning performance, they offer a more accessible path to specialized decompilation models.
+
+Furthermore, only few prior works have investigated Knowledge Editing for code transformation tasks.
+While ROME and related techniques have shown success in correcting factual knowledge, their applicability to structural code transformations remains unexplored.
+This thesis provides the first empirical evaluation of Knowledge Editing in the decompilation domain.
 
 = Methodology
 
