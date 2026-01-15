@@ -80,7 +80,9 @@ This thesis investigates parameter-efficient methods for adapting Large Language
 We compare two fundamentally different approaches: Low-Rank Adaptation (LoRA), which trains small adapter matrices while keeping base model weights frozen, and Knowledge Editing, which surgically modifies specific model weights to correct individual errors.
 We evaluate these methods using CodeLlama-7B-Instruct on a benchmark of 151 functions with functional correctness tests.
 
-Our experiments reveal that LoRA fine-tuning substantially improves decompilation quality, achieving a functional correctness rate of 28.08% and a compile rate of 84.33%, compared to the baseline of 15.50% and 18.94% respectively.
+Our experiments reveal that LoRA fine-tuning substantially improves decompilation quality.
+General fine-tuning achieves 84.33% compile rate and 23.95% functional correctness (baseline: 18.94% and 15.50%).
+Mixed training with error-specific data reaches the highest functional correctness of 28.08%, though at a reduced compile rate of 64.50%.
 Knowledge Editing, however, proved ineffective for this task, as decompilation errors involve complex structural transformations rather than discrete factual corrections.
 
 A key finding is the syntactic-semantic gap: high compile rates do not guarantee functional correctness.
@@ -104,7 +106,9 @@ Diese Arbeit untersucht parametereffiziente Methoden zur Anpassung von Large Lan
 Wir vergleichen zwei grundlegend verschiedene Ansätze: Low-Rank Adaptation (LoRA), das kleine Adaptermatrizen trainiert, während die Basismodellgewichte eingefroren bleiben, und Knowledge Editing, das gezielt spezifische Modellgewichte modifiziert, um einzelne Fehler zu korrigieren.
 Wir evaluieren diese Methoden mit CodeLlama-7B-Instruct auf einem Benchmark von 151 Funktionen mit funktionalen Korrektheitstests.
 
-Unsere Experimente zeigen, dass LoRA-Fine-Tuning die Dekompilierungsqualität erheblich verbessert und eine funktionale Korrektheitsrate von 28,08% sowie eine Kompilierungsrate von 84,33% erreicht, verglichen mit der Baseline von 15,50% bzw. 18,94%.
+Unsere Experimente zeigen, dass LoRA-Fine-Tuning die Dekompilierungsqualität erheblich verbessert.
+Allgemeines Fine-Tuning erreicht 84,33% Kompilierungsrate und 23,95% funktionale Korrektheit (Baseline: 18,94% und 15,50%).
+Gemischtes Training mit fehlerspezifischen Daten erzielt die höchste funktionale Korrektheit von 28,08%, jedoch bei einer reduzierten Kompilierungsrate von 64,50%.
 Knowledge Editing erwies sich jedoch als ineffektiv für diese Aufgabe, da Dekompilierungsfehler komplexe strukturelle Transformationen und keine diskreten faktischen Korrekturen erfordern.
 
 Eine zentrale Erkenntnis ist die syntaktisch-semantische Lücke: Hohe Kompilierungsraten garantieren keine funktionale Korrektheit.
