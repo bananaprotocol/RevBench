@@ -233,6 +233,21 @@ These include generic type names like `undefined4` for recovered 32-bit values, 
 While this output aids human reverse engineers in understanding program behavior, it typically cannot be directly compiled.
 The gap between decompiler output and compilable source code motivates the neural decompilation approach explored in this thesis.
 
+- explain how ghidra works
+- give artifacts examples
+
+== Transformer architecture
+
+=== Self-Attention Mechanism
+
+=== Feed-Forward Layers
+
+== Large Language Models
+
+=== Pretraining and Scale
+
+=== LLMs for Code
+
 == Neural Decompilation
 
 Neural decompilation frames the refinement of decompiler output as a sequence-to-sequence translation task @fuNeuralbasedProgramDecompiler2019. Rather than reconstructing source code from raw binaries, neural approaches take existing decompiler output as input and generate improved, compilable code as output.
@@ -246,7 +261,15 @@ Large Language Models pretrained on code, such as CodeLlama @roziereCodeLlamaOpe
 Fine-tuning these models on decompilation data allows them to learn the mapping from decompiler artifacts to conventional C idioms.
 The model learns to replace `undefined4` with appropriate types, generate meaningful variable names, and restructure awkward control flow into idiomatic patterns.
 
+- state how code LLMs differ from text LLMs
+- training data, objectives
+- llama -> codellama progression
+- Instruction tuning
+
 == Parameter-Efficient Fine-Tuning
+
+- explain why lora was chosen
+- maybe mention alternatives
 
 === The Challenge of Full Fine-Tuning
 
@@ -278,6 +301,9 @@ This combination enables fine-tuning models that would otherwise exceed availabl
 A 7-billion parameter model that requires approximately 28G in 16-bit precision can be loaded in roughly 4GB with 4-bit quantization, making fine-tuning feasible on consumer hardware.
 
 == Knowledge Editing
+
+- mention other methods
+- explain why ROME was chosen
 
 Knowledge Editing refers to techniques for making targeted modifications to a model's behavior without full retraining.
 Unlike fine-tuning, which updates parameters across the entire model, Knowledge Editing aims to surgically modify specific factual associations or behaviors.
