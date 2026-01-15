@@ -225,20 +225,98 @@ Recovering the original source from a binary is therefore fundamentally ill-pose
 
 // add figure that shows pipeline
 
-=== Traditional Decompilers
+=== Ghidra Decompiler
 
-Decompilers attempt to reverse compilation by analyzing binary code and producing readable source code.
 Modern decompilers like Ghidra @nationalsecurityagencyGhidra2019, IDA Pro @hex-raysIDAPro, and angr @shoshitaishviliSOKStateArt2016 employ sophisticated techniques including control flow graph reconstruction, data flow analysis, type recovery, and pattern matching for common idioms.
 
-Despite these techniques, decompiler output differs substantially from original source code.
-Ghidra, the decompiler used in this thesis, produces pseudocode that is syntactically similar to C but contains artifacts of the recovery process.
-These include generic type names like `undefined4` for recovered 32-bit values, synthesized variable names such as `local_10` based on stack positions, and occasionally incorrect control flow reconstruction.
+Ghidra's decompiler follows a multi-stage pipeline that transforms binary machine code into C-like pseudocode#footnote("Technical details derived from Ghidra's internal decompiler documentation.").
+The process begins with *p-code generation*, where machine instructions are translated into Ghidra's intermediate representation called p-code, a Register Transfer Language (RTL) designed specifically for reverse engineering.
+The SLEIGH specification language defines the translation from each processor's machine code to p-code, enabling Ghidra to support multiple architectures through modular processor specifications @nationalsecurityagencyGhidra2019.
 
-While this output aids human reverse engineers in understanding program behavior, it typically cannot be directly compiled.
+From the raw p-code, Ghidra constructs *basic blocks and a control flow graph (CFG)*.
+Basic blocks are sequences of p-code operations with a single entry point and single exit point, connected by control flow edges representing jumps, branches, and function calls.
+The CFG is normalized to ensure a unique entry block, which may require inserting placeholder blocks when the function's first instruction is a branch target @nationalsecurityagencyGhidra2019.
+
+The core analysis occurs in the *main simplification loop*, which iteratively refines the p-code representation.
+This loop first converts the p-code into Static Single Assignment (SSA) form, where each variable is assigned exactly once, enabling powerful dataflow optimizations.
+Dead code elimination removes operations whose results are never used, which is particularly important for decompilation since many machine instructions produce side effects (such as setting processor flags) that are irrelevant at particular program points.
+Type propagation infers high-level type information from instruction usage patterns and propagates this information through the SSA graph @nationalsecurityagencyGhidra2019.
+
+Term rewriting forms the bulk of the simplification process, applying transformation rules to normalize and simplify expressions.
+Unlike compiler optimizations that aim for performance, these rules target human readability: propagating copies, folding constants, simplifying algebraic expressions, and undoing compiler optimizations such as strength-reduced multiplications and divisions.
+The loop also recovers high-level control flow structures, identifying loops, if-else blocks, and switch statements from the CFG to enable structured output @nationalsecurityagencyGhidra2019.
+
+After simplification, Ghidra performs *variable recovery* by exiting SSA form and merging low-level variables into high-level variables.
+This process resembles register coloring in compilers, ensuring that merged variables do not hold conflicting values simultaneously.
+Additional merging passes reduce variable count further, attempting to produce code that resembles typical C programs.
+Finally, the decompiler selects variable names based on available symbol information or generates synthetic names, adds necessary type casts, and emits the final C tokens with syntax highlighting and address annotations for cross-referencing with the original binary @nationalsecurityagencyGhidra2019.
+
+Despite this sophisticated analysis, Ghidra's output differs substantially from original source code due to information loss during compilation.
+Ghidra produces pseudocode that is syntactically similar to C but contains characteristic artifacts of the recovery process @nationalsecurityagencyGhidra2019.
+
+*Type annotations* represent recovered data sizes rather than semantic types.
+Ghidra uses names like `undefined4` for 32-bit values, `undefined1` for bytes, and `undefined8` for 64-bit values when it cannot determine the original type.
+A variable declared as `int counter` in the source might appear as `undefined4 local_c` in the decompiled output @nationalsecurityagencyGhidra2019.
+
+*Variable naming* reflects stack layout rather than programmer intent.
+Local variables receive names like `local_10`, `local_1c`, or `local_28` based on their stack frame offsets.
+Parameters may appear as `param_1`, `param_2`, etc., losing the descriptive names from the original source @nationalsecurityagencyGhidra2019.
+
+*Pointer and array handling* often produces verbose expressions.
+Array accesses like `arr[i]` may decompile to pointer arithmetic such as `*(int *)((long)arr + (long)i * 4)`, with explicit casts reflecting the underlying memory operations @nationalsecurityagencyGhidra2019.
+
+*String and data references* use address-based names.
+String literals referenced via the GOT (Global Offset Table) may appear as `_LC0` or similar labels, while global data appears as `DAT_XXXXXXXX` with hexadecimal addresses @nationalsecurityagencyGhidra2019.
+
+*Control flow reconstruction* occasionally produces non-standard constructs.
+Compiler optimizations can create control flow patterns that do not map cleanly to standard C constructs, resulting in goto statements or awkward loop structures in the decompiled output @nationalsecurityagencyGhidra2019.
+
+@ghidra-artifacts illustrates these artifacts with a concrete example, showing how a simple function transforms through compilation and decompilation.
+
+#figure(
+  grid(
+    columns: 2,
+    gutter: 1em,
+    [
+      ```c
+      // Original source
+      int sum_array(int *arr, int n) {
+          int total = 0;
+          for (int i = 0; i < n; i++) {
+              total += arr[i];
+          }
+          return total;
+      }
+      ```
+    ],
+    [
+      ```c
+      // Ghidra pseudocode
+      undefined8 sum_array(long param_1,
+                          int param_2) {
+        undefined8 uVar1;
+        int local_c;
+        int local_8;
+
+        local_c = 0;
+        local_8 = 0;
+        while (local_8 < param_2) {
+          local_c = local_c +
+            *(int *)(param_1 +
+              (long)local_8 * 4);
+          local_8 = local_8 + 1;
+        }
+        uVar1 = CONCAT44(local_c, local_c);
+        return uVar1;
+      }
+      ```
+    ],
+  ),
+  caption: [Comparison of original C source code and Ghidra decompiled pseudocode, illustrating typical decompilation artifacts including type annotations (`undefined8`), synthesized variable names (`local_c`, `param_1`), explicit pointer arithmetic, and return value handling.],
+) <ghidra-artifacts>
+
+While this output aids human reverse engineers in understanding program behavior, it typically cannot be directly compiled due to the non-standard type annotations and constructs.
 The gap between decompiler output and compilable source code motivates the neural decompilation approach explored in this thesis.
-
-- explain how ghidra works
-- give artifacts examples
 
 == Transformer architecture
 
@@ -304,7 +382,7 @@ Here $x$ denotes the input to the layer, $h$ the intermediate representation aft
 Llama replaces standard layer normalization with RMSNorm @zhangRootMeanSquare2019, which omits the mean-centering step while achieving comparable performance with reduced computational overhead.
 
 Beyond normalization, the residual connections are critical architectural components that enable gradient flow through deep networks and allow each layer to learn incremental refinements rather than complete transformations.
-Modern LLMs stack dozens of these layers (CodeLlama 7B uses 32 layers @touvronLLaMAOpenEfficient2023) creating a deep processing pipeline where each layer refines the representations produced by previous layers.
+Modern LLMs stack dozens of these layers (CodeLlama-7B uses 32 layers @touvronLLaMAOpenEfficient2023) creating a deep processing pipeline where each layer refines the representations produced by previous layers.
 
 This compositional structure has implications for adaptation methods investigated in this thesis.
 LoRA @huLoRALowRankAdaptation2021 targets the projection matrices within both attention and FFN sublayers, with the residual connections ensuring that adaptations combine additively with the frozen base model computations.
