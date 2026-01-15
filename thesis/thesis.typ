@@ -135,25 +135,25 @@ Reverse engineering of software binaries is essential for security analysis, mal
 At the core of this process lies decompilation: transforming compiled machine code back into human-readable source code.
 However, decompilation is inherently lossy; the compilation process discards variable names, type information, comments, and high-level structure, leaving decompilers to reconstruct these elements through heuristic analysis.
 
-Modern decompilers such as Ghidra produce pseudocode that, while logically equivalent to the original program, often contains artifacts that make it difficult to read, modify, or recompile.
+Modern decompilers such as Ghidra @nationalsecurityagencyGhidra2019 produce pseudocode that, while logically equivalent to the original program, often contains artifacts that make it difficult to read, modify, or recompile.
 The artifacts include non-standard type annotations (e.g., `undefined4`), synthesized variable names, and unconventional control flow constructs.
 Human analysts must manually refine this output, a time-consuming process that scales poorly with the volume of software requiring analysis.
 
-Recent advances in Large Language Models (LLMs) have demonstrated remarkable capabilities in code understanding and generation, suggesting their potential application to decompilation refinement.
+Recent advances in Large Language Models (LLMs) have demonstrated remarkable capabilities in code understanding and generation @roziereCodeLlamaOpen2023, suggesting their potential application to decompilation refinement.
 Rather than replacing traditional decompilers, LLMs could serve as a post-processing step, transforming pseudocode into clean, idiomatic, and compilable source code.
 However, applying pre-trained LLMs directly to this task yields poor results; the models reproduce decompiler artifacts rather than translating them into standard constructs.
 
-This thesis investigates two adaptation approaches for improving LLM-based decompilation: Low-Rank Adaptation (LoRA), a parameter-efficient fine-tuning method, and Knowledge Editing, a technique for surgically modifying model weights to correct specific factual associations.
+This thesis investigates two adaptation approaches for improving LLM-based decompilation: Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021, a parameter-efficient fine-tuning method, and Knowledge Editing @mengLocatingEditingFactual2023, a technique for surgically modifying model weights to correct specific factual associations.
 These approaches represent fundamentally different hypotheses about the nature of decompilation errors and offer complementary strategies for addressing them.
 
 == Problem Statement
 
-Pre-trained Large Language Models for code, such as CodeLlama, possess extensive knowledge of programming languages and can generate syntactically correct code in various contexts.
+Pre-trained Large Language Models for code, such as CodeLlama @roziereCodeLlamaOpen2023, possess extensive knowledge of programming languages and can generate syntactically correct code in various contexts.
 However, when presented with Ghidra pseudocode, these models frequently reproduce decompiler-specific artifacts rather than translating them into standard C constructs.
 This results in output that fails to compile or, when it does compile, produces functionally incorrect results.
 
 The central challenge is adapting these models to the decompilation task efficiently.
-Full fine-tuning requires updating billions of parameters, demanding significant computational resources and risking catastrophic forgetting of the model's general capabilities.
+Full fine-tuning requires updating billions of parameters, demanding significant computational resources and risking catastrophic forgetting @kirkpatrickOvercomingCatastrophicForgetting2017 of the model's general capabilities.
 Two alternative approaches warrant investigation:
 
 *Low-Rank Adaptation (LoRA)* introduces small trainable matrices into the model architecture, enabling task-specific adaptation while keeping the base model frozen.
@@ -341,7 +341,7 @@ Specifically, we compare:
 This comparison addresses a practical concern: as LLMs grow larger, full fine-tuning becomes increasingly prohibitive.
 If parameter-efficient methods can match or approach full fine-tuning performance, they offer a more accessible path to specialized decompilation models.
 
-Furthermore, only a few prior works have investigated Knowledge Editing for code transformation tasks.
+Furthermore, only a few prior works have investigated Knowledge Editing for code transformation tasks @liModelEditingLLMs4Code2024.
 While ROME and related techniques have shown success in correcting factual knowledge, their applicability to structural code transformations remains unexplored.
 This thesis provides the first empirical evaluation of Knowledge Editing in the decompilation domain.
 
@@ -379,10 +379,10 @@ All adapted models are evaluated against the baseline using identical metrics (c
 == Data Pipeline
 
 The experimental infrastructure relies on two complementary datasets serving distinct purposes in the evaluation pipeline.
-*ExeBench* serves as the primary training corpus, providing a diverse collection of C functions suitable for fine-tuning the models.
-*HumanEval-C* functions as the evaluation dataset, offering 151 programming problems with associated test harnesses that enable rigorous verification of functional equivalence beyond mere syntactic similarity.
+*ExeBench* @armengol-estapeExeBenchMLscaleDataset2022 serves as the primary training corpus, providing a diverse collection of C functions suitable for fine-tuning the models.
+*HumanEval-Decompile* @tanLLM4DecompileDecompilingBinary2024 functions as the evaluation dataset, offering 151 programming problems with associated test harnesses that enable rigorous verification of functional equivalence beyond mere syntactic similarity.
 
-The data preparation process begins with *compilation*, where source C code is compiled into binary executables using GCC with the `-O2` optimization level.
+The data preparation process begins with *compilation*, where source C code is compiled into binary executables using GCC @gnuprojectGNUCompilerCollection with the `-O2` optimization level.
 This optimization setting represents a realistic balance between performance and debuggability commonly used in production software, producing binaries with substantial compiler transformations, including loop optimizations, function inlining, and register allocation, while avoiding the most aggressive optimizations that can make decompilation exceptionally challenging.
 
 Following compilation, *decompilation* is performed using Ghidra in headless mode, enabling automated batch processing of binaries.
@@ -393,14 +393,14 @@ To ensure dataset quality, a *filtering and quality assurance* process is applie
 Filtering criteria include line length constraints to remove excessively long or short functions that may represent edge cases, length ratio checks between pseudocode and source code to identify potential decompilation failures or anomalies, and validation to ensure both input and output constitute valid, complete function pairs.
 These filters remove malformed samples that could introduce noise during training or evaluation.
 
-The resulting dataset comprises approximately *4,000 training samples* from ExeBench and *151 test samples* from HumanEval-C, each accompanied by test harnesses that enable automated verification of functional correctness through execution-based testing.
+The resulting dataset comprises approximately *4,000 training samples* from ExeBench and *151 test samples* from HumanEval-Decompile, each accompanied by test harnesses that enable automated verification of functional correctness through execution-based testing.
 
 == LoRA Fine-Tuning Approach
 
 === Base Model Selection
 
 The foundation for LoRA fine-tuning is CodeLlama 7B Instruct, a 7-billion parameter large language model specifically optimized for code-related tasks.
-CodeLlama represents a family of models derived from Llama 2, further trained on code-heavy corpora to develop stronger capabilities in code understanding, generation, and transformation tasks.
+CodeLlama @roziereCodeLlamaOpen2023 represents a family of models derived from Llama 2 @touvronLlama2Open2023, further trained on code-heavy corpora to develop stronger capabilities in code understanding, generation, and transformation tasks.
 The Instruct variant has been additionally fine-tuned to follow instructions, making it particularly well-suited for task-oriented applications where the model must respond to structured prompts.
 
 Several factors motivated this selection.
@@ -411,9 +411,9 @@ Finally the model's open availability and extensive community adoption provide v
 
 === Training Configuration
 
-The training infrastructure employs *Unsloth*, an optimized framework for efficient LLM fine-tuning that provides significant speedups over standard implementations.
+The training infrastructure employs *Unsloth* @hanUnsloth2023, an optimized framework for efficient LLM fine-tuning that provides significant speedups over standard implementations.
 The base model is loaded in 4-bit precision, reducing memory requirements while maintaining model quality.
-Unsloth's custom gradient checkpointing implementation further reduces memory overhead compared to standard PyTorch gradient checkpointing.
+Unsloth's custom gradient checkpointing implementation further reduces memory overhead compared to standard PyTorch @paszkePyTorchImperativeStyle2019 gradient checkpointing.
 
 The LoRA configuration targets all linear projection layers within the Transformer architecture.
 For the attention mechanism, this includes the query, key, value, and output projections (`q_proj`, `k_proj`, `v_proj`, `o_proj`).
@@ -425,13 +425,13 @@ The training hyperparameters are configured as follows.
 A per-device batch size of 2 is used with gradient accumulation over 8 steps, yielding an effective batch size of 16.
 The maximum sequence length is set to 2048 tokens, sufficient to accommodate most function pairs in the dataset.
 Training proceeds for 3 epochs with a learning rate of $2 times 10^(-4)$ and a linear learning rate scheduler with a warmup ratio of 0.05.
-The optimizer is AdamW with 8-bit states.
+The optimizer is AdamW @loshchilovDecoupledWeightDecay2019 with 8-bit states.
 A weight decay of 0.01 provides light regularization.
 A fixed random seed of 3407 ensures reproducibility across training runs.
 
 Training was conducted using cloud and high-performance computing resources.
-The majority of LoRA training runs utilized Google Colab instances with a single NVIDIA A100 GPU (40GB VRAM).
-Selected experiments were conducted on the bwHPC cluster provided by the state of Baden-Württemberg, using nodes with four NVIDIA H100 GPUs.
+The majority of LoRA training runs utilized Google Colab @googleresearchGoogleColaboratory instances with a single NVIDIA A100 GPU (40GB VRAM).
+Selected experiments were conducted on the bwHPC cluster @baden-wurttembergministeriumfurwissenschaftforschungundkunstBwHPC provided by the state of Baden-Württemberg, using nodes with four NVIDIA H100 GPUs.
 
 #figure(
   table(
@@ -475,7 +475,7 @@ Pseudocode:
 === Hyperparameter Search
 
 To identify optimal LoRA hyperparameters, a grid search was conducted over rank values ranging from 8 to 128, with alpha values set equal to or double the rank.
-Each configuration was evaluated across 5 independent runs on the HumanEval-C test set (n=151) to account for sampling variability.
+Each configuration was evaluated across 5 independent runs on the HumanEval-Decompile test set (n=151) to account for sampling variability.
 
 #figure(
   table(
@@ -522,7 +522,7 @@ Each configuration was evaluated across 5 independent runs on the HumanEval-C te
     [23.18 #sym.plus.minus 2.09],
     [84.50 #sym.plus.minus 0.99],
   ),
-  caption: [LoRA hyperparameter search results on HumanEval-C (5 runs per config). Bold indicates best performance.],
+  caption: [LoRA hyperparameter search results on HumanEval-Decompile (5 runs per config). Bold indicates best performance.],
 ) <hyper-params>
 
 The results reveal several patterns.
@@ -629,8 +629,8 @@ Consequently, the experimental evaluation focuses on assessing LoRA's effectiven
 = Results
 
 This chapter presents the experimental findings from evaluating LoRA-based fine-tuning for neural decompilation.
-All evaluations use the HumanEval-C test set (n=151) with generated code compiled via GCC (`-O2` optimization) and executed against test harnesses with a 2-second timeout.
-Code generation employs nucleus sampling (temperature 0.2, top-p 0.95), and each configuration is evaluated across five independent runs to account for sampling variability.
+All evaluations use the HumanEval-Decompile test set (n=151) with generated code compiled via GCC (`-O2` optimization) and executed against test harnesses with a 2-second timeout.
+Code generation employs nucleus sampling (temperature 0.2, top-p 0.95) @holtzmanCuriousCaseNeural2020, and each configuration is evaluated across five independent runs to account for sampling variability.
 
 == Baseline Performance
 
@@ -644,7 +644,7 @@ The baseline establishes the capabilities of the pre-trained CodeLlama 7B Instru
     [Pass\@1 (%)], [15.50%], [#sym.plus.minus 1.08%],
     [Compile (%)], [18.94%], [#sym.plus.minus 0.53%],
   ),
-  caption: [Baseline model performance on HumanEval-C (n=151, 5 runs)],
+  caption: [Baseline model performance on HumanEval-Decompile (n=151, 5 runs)],
 ) <baseline>
 
 The baseline achieves a Pass\@1 of 15.50% and a compile rate of only 18.94%.
@@ -878,7 +878,7 @@ Combining error examples with general training data proves more effective than e
 ) <lora-summary>
 
 The results demonstrate a clear progression: targeted training alone provides modest semantic improvement but neglects syntactic learning; general training dramatically improves syntax but plateaus on semantics; mixed training achieves the best functional correctness by combining both objectives.
-The compile rate trade-off in the mixed approach suggests future work could explore curriculum learning or multi-objective optimization to balance syntactic and semantic improvements.
+The compile rate trade-off in the mixed approach suggests future work could explore curriculum learning @bengioCurriculumLearning2009 or multi-objective optimization to balance syntactic and semantic improvements.
 
 = Discussion
 
@@ -924,9 +924,9 @@ First, the effectiveness of LoRA for syntactic correction suggests that pseudoco
 This decomposition might allow specialized models or techniques to focus on each subproblem independently.
 
 Second, the limitations of Knowledge Editing indicate that neural decompilation errors are not localized faults that can be patched individually.
-Improving semantic correctness likely requires architectural innovations that enhance reasoning capabilities, such as chain-of-thought prompting, retrieval augmentation, or multi-pass refinement strategies.
+Improving semantic correctness likely requires architectural innovations that enhance reasoning capabilities, such as chain-of-thought prompting @weiChainofThoughtPromptingElicits2023, retrieval augmentation @lewisRetrievalAugmentedGenerationKnowledgeIntensive2021, or multi-pass refinement strategies.
 
-Third, the trade-off observed in mixed training suggests that multi-objective optimization or curriculum learning approaches might better balance syntactic and semantic improvements.
+Third, the trade-off observed in mixed training suggests that multi-objective optimization or curriculum learning @bengioCurriculumLearning2009 approaches might better balance syntactic and semantic improvements.
 Rather than training on a fixed mixture of examples, adaptive strategies could emphasize different objectives at different training stages.
 
 == Limitations
@@ -940,7 +940,7 @@ Larger datasets might shift the observed performance ceilings, and the specific 
 Larger models might exhibit different learning dynamics; in particular, the semantic reasoning ceiling might shift with increased model capacity.
 However, computational constraints precluded experiments with larger models.
 
-*Evaluation scope*: The HumanEval-C test set contains 151 relatively short functions with clear input-output specifications.
+*Evaluation scope*: The HumanEval-Decompile test set contains 151 relatively short functions with clear input-output specifications.
 Real-world decompilation often involves longer functions, complex data structures, and incomplete specifications.
 The reported metrics may overestimate performance on more challenging targets.
 
@@ -991,13 +991,14 @@ This work makes the following contributions:
 
 Several directions emerge from this research.
 
-The trade-off between syntactic and semantic objectives observed in mixed training suggests that multi-objective optimization or curriculum learning approaches warrant investigation.
+The trade-off between syntactic and semantic objectives observed in mixed training suggests that multi-objective optimization or curriculum learning @bengioCurriculumLearning2009 approaches warrant investigation.
 Adaptive training strategies that balance these objectives throughout the learning process might achieve both high compile rates and improved functional correctness.
 
 The 55% of failures attributed to fundamental limitations highlights the need for improved decompilation input quality.
 Techniques that preserve more semantic information during decompilation, or that provide additional context such as type information or function signatures, could shift the ceiling on achievable performance.
 
 Finally, the reasoning limitations observed suggest that architectural innovations beyond fine-tuning may be necessary.
-Chain-of-thought prompting, retrieval-augmented generation, or multi-pass refinement strategies that decompose the decompilation task into subtasks represent promising directions for future research.
+Chain-of-thought prompting @weiChainofThoughtPromptingElicits2023, retrieval-augmented generation @lewisRetrievalAugmentedGenerationKnowledgeIntensive2021, or multi-pass refinement strategies that decompose the decompilation task into subtasks represent promising directions for future research.
 
 #bibliography("references.bib")
+
