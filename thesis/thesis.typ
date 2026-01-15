@@ -137,7 +137,7 @@ Diese Lücke unterstreicht die Bedeutung funktionaler Tests gegenüber oberfläc
 
 Reverse engineering of software binaries is essential for security analysis, malware detection, legacy system maintenance, and vulnerability research.
 At the core of this process lies decompilation: transforming compiled machine code back into human-readable source code.
-However, decompilation is inherently lossy; the compilation process discards variable names, type information, comments, and high-level structure, leaving decompilers to reconstruct these elements through heuristic analysis.
+However, decompilation is inherently lossy; the compilation process discards variable names, type information, comments, and high-level structure, leaving decompilers to reconstruct these elements through heuristic analysis @ahoCompilersPrinciplesTechniques2002.
 
 Modern decompilers such as Ghidra @nationalsecurityagencyGhidra2019 produce pseudocode that, while logically equivalent to the original program, often contains artifacts that make it difficult to read, modify, or recompile.
 The artifacts include non-standard type annotations (e.g., `undefined4`), synthesized variable names, and unconventional control flow constructs.
@@ -401,7 +401,7 @@ Given a sequence of tokens $x_1, x_2, ..., x_{t-1}$, the model learns to predict
 $ cal(L) = -sum_(t=1)^T log P(x_t | x_1, ..., x_{t-1}) $
 
 This self-supervised objective requires no manual labeling; the training signal comes from the text itself.
-The model learns syntactic patterns, semantic relationships, and factual knowledge implicitly through the prediction task @radfordLanguageModelsAre2018.
+The model learns syntactic patterns, semantic relationships, and factual knowledge implicitly through the prediction task @radfordImprovingLanguageUnderstanding2018.
 
 *Scaling laws* @kaplanScalingLawsNeural2020 describe predictable relationships between model size, dataset size, compute budget, and model performance.
 These empirical findings show that performance improves smoothly as a power law with increased scale, guiding decisions about resource allocation during training.
@@ -411,6 +411,20 @@ Llama 2 @touvronLlama2Open2023 ranges from 7B to 70B parameters, trained on 2 tr
 Architectural choices including RMSNorm @zhangRootMeanSquare2019, SwiGLU activations @shazeerGLUVariantsImprove2020, and rotary positional embedding (RoPE) @suRoFormerEnhancedTransformer2023 improve training stability and model quality compared to the original Transformer design.
 
 === LLMs for Code
+
+Code-specialized LLMs adapt the language model paradigm to programming languages.
+While general-purpose LLMs encounter code during pretraining, dedicated code models are trained predominantly on source code, learning programming-specific patterns such as syntax rules, API usage, and algorithmic idioms @roziereCodeLlamaOpen2023.
+
+CodeLlama @roziereCodeLlamaOpen2023 extends Llama 2 through continued pretraining on 500 billion tokens of code-heavy data.
+The training mixture emphasizes programming languages (primarily Python, C/C++, Java, and JavaScript) while retaining natural language capability for understanding comments and documentation.
+This specialization produces models that outperform general-purpose LLMs of equivalent size on code generation benchmarks @roziereCodeLlamaOpen2023.
+
+CodeLlama includes several variants optimized for different use cases.
+The base model excels at code completion, while CodeLlama-Instruct undergoes additional fine-tuning to follow natural language instructions.
+Instruction tuning @weiFinetunedLanguageModels2022 teaches the model to respond appropriately to user requests rather than simply continuing text, making it suitable for task-oriented applications like code generation from specifications.
+
+The instruction-tuned variant is particularly relevant for decompilation, where the model must follow explicit directives to transform pseudocode into valid C.
+The 7B parameter size provides a practical balance: sufficient capacity for complex code transformations while remaining tractable for parameter-efficient fine-tuning on consumer hardware.
 
 == Neural Decompilation
 
@@ -424,11 +438,6 @@ Second, the approach can leverage the large body of work on neural machine trans
 Large Language Models pretrained on code, such as CodeLlama @roziereCodeLlamaOpen2023, have shown strong performance on code generation tasks.
 Fine-tuning these models on decompilation data allows them to learn the mapping from decompiler artifacts to conventional C idioms.
 The model learns to replace `undefined4` with appropriate types, generate meaningful variable names, and restructure awkward control flow into idiomatic patterns.
-
-- state how code LLMs differ from text LLMs
-- training data, objectives
-- llama -> codellama progression
-- Instruction tuning
 
 == Parameter-Efficient Fine-Tuning
 
