@@ -448,7 +448,7 @@ Selected experiments were conducted on the bwHPC cluster @baden-wurttembergminis
     [Learning rate], [$2 times 10^(-4)$],
     [LR scheduler], [Linear],
     [Optimizer], [AdamW 8-bit],
-    [Weight decay], [0.001],
+    [Weight decay], [0.01],
     [Warmup ratio], [0.05],
     [Random seed], [3407],
   ),
