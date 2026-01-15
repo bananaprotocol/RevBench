@@ -33,6 +33,22 @@
   howpublished = {https://www.bwhpc.de/}
 }
 
+@misc{baLayerNormalization2016,
+  title = {Layer {{Normalization}}},
+  author = {Ba, Jimmy Lei and Kiros, Jamie Ryan and Hinton, Geoffrey E.},
+  year = 2016,
+  month = jul,
+  number = {arXiv:1607.06450},
+  eprint = {1607.06450},
+  primaryclass = {stat},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1607.06450},
+  urldate = {2026-01-15},
+  abstract = {Training state-of-the-art, deep neural networks is computationally expensive. One way to reduce the training time is to normalize the activities of the neurons. A recently introduced technique called batch normalization uses the distribution of the summed input to a neuron over a mini-batch of training cases to compute a mean and variance which are then used to normalize the summed input to that neuron on each training case. This significantly reduces the training time in feed-forward neural networks. However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks. In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case. Like batch normalization, we also give each neuron its own adaptive bias and gain which are applied after the normalization but before the non-linearity. Unlike batch normalization, layer normalization performs exactly the same computation at training and test times. It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step. Layer normalization is very effective at stabilizing the hidden state dynamics in recurrent networks. Empirically, we show that layer normalization can substantially reduce the training time compared with previously published techniques.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Machine Learning,Statistics - Machine Learning},
+}
+
 @inproceedings{bengioCurriculumLearning2009,
   title = {Curriculum Learning},
   booktitle = {Proceedings of the 26th {{Annual International Conference}} on {{Machine Learning}}},
@@ -97,6 +113,19 @@
   keywords = {Computer Science - Machine Learning,Computer Science - Programming Languages},
 }
 
+@inproceedings{gevaTransformerFeedForwardLayers2021,
+  title = {Transformer {{Feed-Forward Layers Are Key-Value Memories}}},
+  booktitle = {Proceedings of the 2021 {{Conference}} on {{Empirical Methods}} in {{Natural Language Processing}}},
+  author = {Geva, Mor and Schuster, Roei and Berant, Jonathan and Levy, Omer},
+  year = 2021,
+  pages = {5484--5495},
+  publisher = {Association for Computational Linguistics},
+  address = {Online and Punta Cana, Dominican Republic},
+  doi = {10.18653/v1/2021.emnlp-main.446},
+  urldate = {2026-01-15},
+  langid = {english},
+}
+
 @misc{gnuprojectGNUCompilerCollection,
   title = {{{GNU Compiler Collection}}},
   author = {{GNU Project}},
@@ -131,6 +160,22 @@
   abstract = {Deployed language models decay over time due to shifting inputs, changing user needs, or emergent world-knowledge gaps. When such problems are identified, we want to make targeted edits while avoiding expensive retraining. However, current model editors, which modify such behaviors of pre-trained models, degrade model performance quickly across multiple, sequential edits. We propose GRACE, a lifelong model editing method, which implements spot-fixes on streaming errors of a deployed model, ensuring minimal impact on unrelated inputs. GRACE writes new mappings into a pre-trained model's latent space, creating a discrete, local codebook of edits without altering model weights. This is the first method enabling thousands of sequential edits using only streaming errors. Our experiments on T5, BERT, and GPT models show GRACE's state-of-the-art performance in making and retaining edits, while generalizing to unseen inputs. Our code is available at https://www.github.com/thartvigsen/grace\textbraceright.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Machine Learning},
+}
+
+@misc{heDeepResidualLearning2015,
+  title = {Deep {{Residual Learning}} for {{Image Recognition}}},
+  author = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  year = 2015,
+  month = dec,
+  number = {arXiv:1512.03385},
+  eprint = {1512.03385},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1512.03385},
+  urldate = {2026-01-15},
+  abstract = {Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers---8x deeper than VGG nets but still having lower complexity. An ensemble of these residual nets achieves 3.57\% error on the ImageNet test set. This result won the 1st place on the ILSVRC 2015 classification task. We also present analysis on CIFAR-10 with 100 and 1000 layers. The depth of representations is of central importance for many visual recognition tasks. Solely due to our extremely deep representations, we obtain a 28\% relative improvement on the COCO object detection dataset. Deep residual nets are foundations of our submissions to ILSVRC \& COCO 2015 competitions, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
 }
 
 @misc{hex-raysIDAPro,
@@ -422,6 +467,22 @@
   keywords = {Computation and Language (cs.CL),FOS: Computer and information sciences},
 }
 
+@misc{shazeerGLUVariantsImprove2020,
+  title = {{{GLU Variants Improve Transformer}}},
+  author = {Shazeer, Noam},
+  year = 2020,
+  month = feb,
+  number = {arXiv:2002.05202},
+  eprint = {2002.05202},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2002.05202},
+  urldate = {2026-01-15},
+  abstract = {Gated Linear Units (arXiv:1612.08083) consist of the component-wise product of two linear projections, one of which is first passed through a sigmoid function. Variations on GLU are possible, using different nonlinear (or even linear) functions in place of sigmoid. We test these variants in the feed-forward sublayers of the Transformer (arXiv:1706.03762) sequence-to-sequence model, and find that some of them yield quality improvements over the typically-used ReLU or GELU activations.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Machine Learning,Computer Science - Neural and Evolutionary Computing,Statistics - Machine Learning},
+}
+
 @inproceedings{shoshitaishviliSOKStateArt2016,
   title = {{{SOK}}: ({{State}} of) {{The Art}} of {{War}}: {{Offensive Techniques}} in {{Binary Analysis}}},
   shorttitle = {{{SOK}}},
@@ -468,6 +529,23 @@
   abstract = {In this work, we develop and release Llama 2, a collection of pretrained and fine-tuned large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters. Our fine-tuned LLMs, called Llama 2-Chat, are optimized for dialogue use cases. Our models outperform open-source chat models on most benchmarks we tested, and based on our human evaluations for helpfulness and safety, may be a suitable substitute for closed-source models. We provide a detailed description of our approach to fine-tuning and safety improvements of Llama 2-Chat in order to enable the community to build on our work and contribute to the responsible development of LLMs.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+}
+
+@misc{touvronLLaMAOpenEfficient2023,
+  title = {{{LLaMA}}: {{Open}} and {{Efficient Foundation Language Models}}},
+  shorttitle = {{{LLaMA}}},
+  author = {Touvron, Hugo and Lavril, Thibaut and Izacard, Gautier and Martinet, Xavier and Lachaux, Marie-Anne and Lacroix, Timoth{\'e}e and Rozi{\`e}re, Baptiste and Goyal, Naman and Hambro, Eric and Azhar, Faisal and Rodriguez, Aurelien and Joulin, Armand and Grave, Edouard and Lample, Guillaume},
+  year = 2023,
+  month = feb,
+  number = {arXiv:2302.13971},
+  eprint = {2302.13971},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2302.13971},
+  urldate = {2026-01-15},
+  abstract = {We introduce LLaMA, a collection of foundation language models ranging from 7B to 65B parameters. We train our models on trillions of tokens, and show that it is possible to train state-of-the-art models using publicly available datasets exclusively, without resorting to proprietary and inaccessible datasets. In particular, LLaMA-13B outperforms GPT-3 (175B) on most benchmarks, and LLaMA-65B is competitive with the best models, Chinchilla-70B and PaLM-540B. We release all our models to the research community.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
 }
 
 @misc{vaswaniAttentionAllYou2023,
@@ -627,6 +705,22 @@
   abstract = {Large Language Models (LLMs) have shown extraordinary capabilities in understanding and generating text that closely mirrors human communication. However, a primary limitation lies in the significant computational demands during training, arising from their extensive parameterization. This challenge is further intensified by the dynamic nature of the world, necessitating frequent updates to LLMs to correct outdated information or integrate new knowledge, thereby ensuring their continued relevance. Note that many applications demand continual model adjustments post-training to address deficiencies or undesirable behaviors. There is an increasing interest in efficient, lightweight methods for on-the-fly model modifications. To this end, recent years have seen a burgeoning in the techniques of knowledge editing for LLMs, which aim to efficiently modify LLMs' behaviors within specific domains while preserving overall performance across various inputs. In this paper, we first define the knowledge editing problem and then provide a comprehensive review of cutting-edge approaches. Drawing inspiration from educational and cognitive research theories, we propose a unified categorization criterion that classifies knowledge editing methods into three groups: resorting to external knowledge, merging knowledge into the model, and editing intrinsic knowledge. Furthermore, we introduce a new benchmark, KnowEdit, for a comprehensive empirical evaluation of representative knowledge editing approaches. Additionally, we provide an in-depth analysis of knowledge location, which can give a deeper understanding of the knowledge structures inherent within LLMs. Finally, we discuss several potential applications of knowledge editing, outlining its broad and impactful implications.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language,Computer Science - Computer Vision and Pattern Recognition,Computer Science - Human-Computer Interaction,Computer Science - Machine Learning},
+}
+
+@misc{zhangRootMeanSquare2019,
+  title = {Root {{Mean Square Layer Normalization}}},
+  author = {Zhang, Biao and Sennrich, Rico},
+  year = 2019,
+  month = oct,
+  number = {arXiv:1910.07467},
+  eprint = {1910.07467},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1910.07467},
+  urldate = {2026-01-15},
+  abstract = {Layer normalization (LayerNorm) has been successfully applied to various deep neural networks to help stabilize training and boost model convergence because of its capability in handling re-centering and re-scaling of both inputs and weight matrix. However, the computational overhead introduced by LayerNorm makes these improvements expensive and significantly slows the underlying network, e.g. RNN in particular. In this paper, we hypothesize that re-centering invariance in LayerNorm is dispensable and propose root mean square layer normalization, or RMSNorm. RMSNorm regularizes the summed inputs to a neuron in one layer according to root mean square (RMS), giving the model re-scaling invariance property and implicit learning rate adaptation ability. RMSNorm is computationally simpler and thus more efficient than LayerNorm. We also present partial RMSNorm, or pRMSNorm where the RMS is estimated from p\% of the summed inputs without breaking the above properties. Extensive experiments on several tasks using diverse network architectures show that RMSNorm achieves comparable performance against LayerNorm but reduces the running time by 7\%\textasciitilde 64\% on different models. Source code is available at https://github.com/bzhangGo/rmsnorm.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language,Computer Science - Machine Learning,Statistics - Machine Learning},
 }
 
 @misc{zotero-item-161,

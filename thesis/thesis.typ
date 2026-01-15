@@ -238,9 +238,73 @@ The gap between decompiler output and compilable source code motivates the neura
 
 == Transformer architecture
 
+The Transformer architecture @vaswaniAttentionAllYou2023 forms the foundation of modern Large Language Models.
+Unlike earlier recurrent architectures that process sequences token-by-token, Transformers process entire sequences in parallel through a mechanism called self-attention.
+This section introduces the key components relevant to understanding the adaptation methods investigated in this thesis.
+
 === Self-Attention Mechanism
 
+Self-attention allows each token in a sequence to attend to all other tokens, learning contextual relationships regardless of their distance in a sequence.
+For an input sequence of token embeddings $X in RR^(n times d)$, where $n$ is the sequence length and $d$ is the embedding dimension, self-attention computes three matrices through learned linear projections:
+$ Q = X W_Q, quad K = X W_K, quad V = X W_V $
+
+where $W_Q, W_K, W_v in RR^(d times d_k)$ are the query, key, and value projection matrices respectively @vaswaniAttentionAllYou2023.
+The attention output is computed as:
+
+$ "Attention"(Q, K, V) = "softmax"((Q K^T) / sqrt(d_k)) V $
+
+The scaling factor $sqrt(d_k)$ prevents the dot products from growing too large, which would push the softmax into regions with extremely small gradients @vaswaniAttentionAllYou2023.
+
+In practice, Transformers employ multi-head attention, which runs several attention operations in parallel with different learned projections:
+
+$ "MultiHead"(X) = "Concat"("head"_1, ..., "head"_h) W_O $
+
+where each $"head"_i = "Attention"(X W_Q^i, X W_K^i, X W_V^i)$ and $W_O$ is the output projection matrix.
+This allows the model to attend to information from different representation subspaces at different positions @vaswaniAttentionAllYou2023.
+
+The projection matrices ($W_Q$, $W_K$, $W_V$, $W_O$) are key targets for parameter-efficient fine-tuning methods like LoRA @huLoRALowRankAdaptation2021, as they control how the model forms and combines attention patterns.
+
 === Feed-Forward Layers
+
+Each Transformer layer contains a position-wise feed-forward network (FFN) applied independently to each token representation after the attention sublayer.
+In the original Transformer architecture @vaswaniAttentionAllYou2023, the FFN consists of two linear transformations with a ReLU activation:
+
+$ "FFN"(x) = max(0, x W_1 + b_1) W_2 + b_2 $
+
+where $W_1 in RR^(d times d_("ff"))$ projects from the model dimension $d$ to a larger intermediate dimension $d_("ff")$ (typically $4d$), and $W_2 in RR^(d_("ff") times d)$ projects back to the model dimension.
+
+Modern architectures like Llama @touvronLlama2Open2023 employ a gated variant using the SwiGLU activation @shazeerGLUVariantsImprove2020:
+
+$
+  "FFN"_("SwiGLU")(x) = ("SiLU"(x W_("gate")) dot.o x W_("up")) W_("down")
+$
+
+where $"SiLU"(x) = x dot.o sigma(x)$ is the Sigmoid Linear Unit activation, $dot.o$ denotes element-wise multiplication. The weight matrices $W_("gate"), W_("up") in RR^(d times d_("ff"))$ project to the intermediate dimension while $W_("down") in RR^(d_("ff") times d)$ projects back.
+This gated formulation improves training stability and model quality @shazeerGLUVariantsImprove2020.
+
+The feed-forward layers serve as the primary site for storing factual knowledge in Transformer models @mengLocatingEditingFactual2023.
+While attention layers route information between token positions, FFN layers transform individual token representations, acting as key-value memories @gevaTransformerFeedForwardLayers2021.
+This property makes FFN layers the target of Knowledge Editing methods like ROME @mengLocatingEditingFactual2023, and explains why LoRA fine-tuning @huLoRALowRankAdaptation2021 targets both attention projections and FFN projections to enable comprehensive adaptation.
+
+=== Layer Composition
+
+A complete Transformer layer combines the attention and feed-forward sublayers with residual connections @heDeepResidualLearning2015 and normalization.
+The original Transformer applies "post-norm", placing normalization after each sublayer @vaswaniAttentionAllYou2023.
+Modern architectures like Llama @touvronLlama2Open2023 instead use "pre-norm", applying normalization before each sublayer:
+
+$ h = x + "MultiHead"("RMSNorm"(x)) $
+$ y = h + "FFN"("RMSNorm"(h)) $
+
+Here $x$ denotes the input to the layer, $h$ the intermediate representation after attention, and $y$ the final layer output.
+
+Llama replaces standard layer normalization with RMSNorm @zhangRootMeanSquare2019, which omits the mean-centering step while achieving comparable performance with reduced computational overhead.
+
+Beyond normalization, the residual connections are critical architectural components that enable gradient flow through deep networks and allow each layer to learn incremental refinements rather than complete transformations.
+Modern LLMs stack dozens of these layers (CodeLlama 7B uses 32 layers @touvronLLaMAOpenEfficient2023) creating a deep processing pipeline where each layer refines the representations produced by previous layers.
+
+This compositional structure has implications for adaptation methods investigated in this thesis.
+LoRA @huLoRALowRankAdaptation2021 targets the projection matrices within both attention and FFN sublayers, with the residual connections ensuring that adaptations combine additively with the frozen base model computations.
+This layer-wise organization also enables Knowledge Editing methods like ROME to localize factual knowledge to specific middle layers, where causal tracing experiments have shown factual associations are most strongly encoded in the MLP sublayers @mengLocatingEditingFactual2023.
 
 == Large Language Models
 
