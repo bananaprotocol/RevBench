@@ -441,8 +441,8 @@ The model learns to replace `undefined4` with appropriate types, generate meanin
 
 == Parameter-Efficient Fine-Tuning
 
-- explain why lora was chosen
-- maybe mention alternatives
+Several parameter-efficient fine-tuning methods have been proposed including adapter modules @houlsbyParameterEfficientTransferLearning2019, prefix tuning @liPrefixTuningOptimizingContinuous2021, and prompt tuning @lesterPowerScaleParameterEfficient2021.
+This thesis employs Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021 because it introduces no inference latency (adapters can be merged into base weights), is compatible with quantization (enabling QLoRA @dettmersQLoRAEfficientFinetuning2023), and provides fine-grained control over which layers to adapt.
 
 === The Challenge of Full Fine-Tuning
 
@@ -475,18 +475,14 @@ A 7-billion parameter model that requires approximately 28G in 16-bit precision 
 
 == Knowledge Editing
 
-- mention other methods
-- explain why ROME was chosen
-
-Knowledge Editing refers to techniques for making targeted modifications to a model's behavior without full retraining.
+Knowledge Editing encompasses various techniques for targeted model modification, including hypernetwork-based approaches @mitchellFastModelEditing2022, semi-parametric methods with explicit memory @mitchellMemoryBasedModelEditing2022, and in-context editing @zhengCanWeEdit2023.
 Unlike fine-tuning, which updates parameters across the entire model, Knowledge Editing aims to surgically modify specific factual associations or behaviors.
 
-Rank-One Model Editing (ROME) @mengLocatingEditingFactual2023 localizes factual knowledge to specific MLP layers in Transformer models @vaswaniAttentionAllYou2023 and modifies their weights to update individual facts.
-The technique treats certain MLP layers as key-value stores and uses rank-one updates to change specific associations while preserving other model capabilities.
+This thesis investigates Rank-One Model Editing (ROME) @mengLocatingEditingFactual2023, which localizes factual knowledge to specific MLP layers in Transformer models @vaswaniAttentionAllYou2023 and modifies their weights to update individual facts.
+The technique treats certain MLP layers as key-value stores @gevaTransformerFeedForwardLayers2021 and uses rank-one updates to change specific associations while preserving other model capabilities.
+ROME was selected due to its interpretable mechanism, theoretical grounding through causal tracing, and efficient single-layer modification.
 
 ROME and related methods were originally developed for correcting factual errors in language models; for example, updating a model's knowledge that "The Eiffel Tower is located in Paris" to "The Eiffel Tower is located in London".
-The technique has shown promise for such targeted corrections while maintaining model performance on unrelated tasks.
-
 This thesis investigates whether Knowledge Editing can similarly correct specific decompilation errors; treating incorrect code patterns as "facts" to be edited.
 
 == Evaluation Metrics
