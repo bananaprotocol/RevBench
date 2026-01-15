@@ -282,6 +282,22 @@
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Software Engineering},
 }
 
+@misc{kaplanScalingLawsNeural2020,
+  title = {Scaling {{Laws}} for {{Neural Language Models}}},
+  author = {Kaplan, Jared and McCandlish, Sam and Henighan, Tom and Brown, Tom B. and Chess, Benjamin and Child, Rewon and Gray, Scott and Radford, Alec and Wu, Jeffrey and Amodei, Dario},
+  year = 2020,
+  month = jan,
+  number = {arXiv:2001.08361},
+  eprint = {2001.08361},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2001.08361},
+  urldate = {2026-01-15},
+  abstract = {We study empirical scaling laws for language model performance on the cross-entropy loss. The loss scales as a power-law with model size, dataset size, and the amount of compute used for training, with some trends spanning more than seven orders of magnitude. Other architectural details such as network width or depth have minimal effects within a wide range. Simple equations govern the dependence of overfitting on model/dataset size and the dependence of training speed on model size. These relationships allow us to determine the optimal allocation of a fixed compute budget. Larger models are significantly more sample-efficient, such that optimally compute-efficient training involves training very large models on a relatively modest amount of data and stopping significantly before convergence.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Machine Learning,Statistics - Machine Learning},
+}
+
 @article{kirkpatrickOvercomingCatastrophicForgetting2017,
   title = {Overcoming Catastrophic Forgetting in Neural Networks},
   author = {Kirkpatrick, James and Pascanu, Razvan and Rabinowitz, Neil and Veness, Joel and Desjardins, Guillaume and Rusu, Andrei A. and Milan, Kieran and Quan, John and Ramalho, Tiago and {Grabska-Barwinska}, Agnieszka and Hassabis, Demis and Clopath, Claudia and Kumaran, Dharshan and Hadsell, Raia},
@@ -454,6 +470,18 @@
   keywords = {Computer Science - Machine Learning,Computer Science - Mathematical Software,Statistics - Machine Learning},
 }
 
+@misc{radfordImprovingLanguageUnderstanding2018,
+  title = {Improving {{Language Understanding}} by {{Generative Pre-Training}}},
+  author = {Radford, Alec and Narasimhan, Karthik and Salimans, Tim and Sutskever, Ilya},
+  year = 2018,
+}
+
+@misc{radfordLanguageModelsAre2019,
+  title = {Language {{Models}} Are {{Unsupervised Multitask Learners}}},
+  author = {Radford, Alec and Wu, Jeffrey and Child, Rewon and Luan, David and Amodei, Dario and Sutskever, Ilya},
+  year = 2019,
+}
+
 @misc{roziereCodeLlamaOpen2023,
   title = {Code {{Llama}}: {{Open Foundation Models}} for {{Code}}},
   shorttitle = {Code {{Llama}}},
@@ -496,6 +524,23 @@
   doi = {10.1109/SP.2016.17},
   urldate = {2026-01-14},
   isbn = {978-1-5090-0824-7},
+}
+
+@misc{suRoFormerEnhancedTransformer2023,
+  title = {{{RoFormer}}: {{Enhanced Transformer}} with {{Rotary Position Embedding}}},
+  shorttitle = {{{RoFormer}}},
+  author = {Su, Jianlin and Lu, Yu and Pan, Shengfeng and Murtadha, Ahmed and Wen, Bo and Liu, Yunfeng},
+  year = 2023,
+  month = nov,
+  number = {arXiv:2104.09864},
+  eprint = {2104.09864},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2104.09864},
+  urldate = {2026-01-15},
+  abstract = {Position encoding recently has shown effective in the transformer architecture. It enables valuable supervision for dependency modeling between elements at different positions of the sequence. In this paper, we first investigate various methods to integrate positional information into the learning process of transformer-based language models. Then, we propose a novel method named Rotary Position Embedding(RoPE) to effectively leverage the positional information. Specifically, the proposed RoPE encodes the absolute position with a rotation matrix and meanwhile incorporates the explicit relative position dependency in self-attention formulation. Notably, RoPE enables valuable properties, including the flexibility of sequence length, decaying inter-token dependency with increasing relative distances, and the capability of equipping the linear self-attention with relative position encoding. Finally, we evaluate the enhanced transformer with rotary position embedding, also called RoFormer, on various long text classification benchmark datasets. Our experiments show that it consistently overcomes its alternatives. Furthermore, we provide a theoretical analysis to explain some experimental results. RoFormer is already integrated into Huggingface: \textbackslash url\textbraceleft https://huggingface.co/docs/transformers/model\_doc/roformer\textbraceright.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language,Computer Science - Machine Learning},
 }
 
 @inproceedings{tanLLM4DecompileDecompilingBinary2024,
@@ -610,6 +655,38 @@
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
 }
 
+@misc{weiEmergentAbilitiesLarge2022,
+  title = {Emergent {{Abilities}} of {{Large Language Models}}},
+  author = {Wei, Jason and Tay, Yi and Bommasani, Rishi and Raffel, Colin and Zoph, Barret and Borgeaud, Sebastian and Yogatama, Dani and Bosma, Maarten and Zhou, Denny and Metzler, Donald and Chi, Ed H. and Hashimoto, Tatsunori and Vinyals, Oriol and Liang, Percy and Dean, Jeff and Fedus, William},
+  year = 2022,
+  month = oct,
+  number = {arXiv:2206.07682},
+  eprint = {2206.07682},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2206.07682},
+  urldate = {2026-01-15},
+  abstract = {Scaling up language models has been shown to predictably improve performance and sample efficiency on a wide range of downstream tasks. This paper instead discusses an unpredictable phenomenon that we refer to as emergent abilities of large language models. We consider an ability to be emergent if it is not present in smaller models but is present in larger models. Thus, emergent abilities cannot be predicted simply by extrapolating the performance of smaller models. The existence of such emergence implies that additional scaling could further expand the range of capabilities of language models.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+}
+
+@misc{weiFinetunedLanguageModels2022,
+  title = {Finetuned {{Language Models Are Zero-Shot Learners}}},
+  author = {Wei, Jason and Bosma, Maarten and Zhao, Vincent Y. and Guu, Kelvin and Yu, Adams Wei and Lester, Brian and Du, Nan and Dai, Andrew M. and Le, Quoc V.},
+  year = 2022,
+  month = feb,
+  number = {arXiv:2109.01652},
+  eprint = {2109.01652},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2109.01652},
+  urldate = {2026-01-15},
+  abstract = {This paper explores a simple method for improving the zero-shot learning abilities of language models. We show that instruction tuning -- finetuning language models on a collection of tasks described via instructions -- substantially improves zero-shot performance on unseen tasks. We take a 137B parameter pretrained language model and instruction-tune it on over 60 NLP tasks verbalized via natural language instruction templates. We evaluate this instruction-tuned model, which we call FLAN, on unseen task types. FLAN substantially improves the performance of its unmodified counterpart and surpasses zero-shot 175B GPT-3 on 20 of 25 tasks that we evaluate. FLAN even outperforms few-shot GPT-3 by a large margin on ANLI, RTE, BoolQ, AI2-ARC, OpenbookQA, and StoryCloze. Ablation studies reveal that number of finetuning datasets, model scale, and natural language instructions are key to the success of instruction tuning.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+}
+
 @article{wongDecLLMLLMAugmentedRecompilable2025,
   title = {{{DecLLM}}: {{LLM-Augmented Recompilable Decompilation}} for {{Enabling Programmatic Use}} of {{Decompiled Code}}},
   shorttitle = {{{DecLLM}}},
@@ -721,8 +798,4 @@
   abstract = {Layer normalization (LayerNorm) has been successfully applied to various deep neural networks to help stabilize training and boost model convergence because of its capability in handling re-centering and re-scaling of both inputs and weight matrix. However, the computational overhead introduced by LayerNorm makes these improvements expensive and significantly slows the underlying network, e.g. RNN in particular. In this paper, we hypothesize that re-centering invariance in LayerNorm is dispensable and propose root mean square layer normalization, or RMSNorm. RMSNorm regularizes the summed inputs to a neuron in one layer according to root mean square (RMS), giving the model re-scaling invariance property and implicit learning rate adaptation ability. RMSNorm is computationally simpler and thus more efficient than LayerNorm. We also present partial RMSNorm, or pRMSNorm where the RMS is estimated from p\% of the summed inputs without breaking the above properties. Extensive experiments on several tasks using diverse network architectures show that RMSNorm achieves comparable performance against LayerNorm but reduces the running time by 7\%\textasciitilde 64\% on different models. Source code is available at https://github.com/bzhangGo/rmsnorm.},
   archiveprefix = {arXiv},
   keywords = {Computer Science - Computation and Language,Computer Science - Machine Learning,Statistics - Machine Learning},
-}
-
-@misc{zotero-item-161,
-  type = {Misc}
 }

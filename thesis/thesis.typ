@@ -390,7 +390,25 @@ This layer-wise organization also enables Knowledge Editing methods like ROME to
 
 == Large Language Models
 
+Large Language Models (LLMs) are Transformer-based models trained on massive text corpora, typically containing hundreds of billions to trillions of tokens.
+The scaling of both model parameters and training data has led to emergent capabilities not present in smaller models @weiEmergentAbilitiesLarge2022.
+
 === Pretraining and Scale
+
+LLMs are pretrained using *next-token prediction*, also called causal language modeling.
+Given a sequence of tokens $x_1, x_2, ..., x_{t-1}$, the model learns to predict the probability distribution over the next token $x_t$ @radfordImprovingLanguageUnderstanding2018:
+
+$ cal(L) = -sum_(t=1)^T log P(x_t | x_1, ..., x_{t-1}) $
+
+This self-supervised objective requires no manual labeling; the training signal comes from the text itself.
+The model learns syntactic patterns, semantic relationships, and factual knowledge implicitly through the prediction task @radfordLanguageModelsAre2018.
+
+*Scaling laws* @kaplanScalingLawsNeural2020 describe predictable relationships between model size, dataset size, compute budget, and model performance.
+These empirical findings show that performance improves smoothly as a power law with increased scale, guiding decisions about resource allocation during training.
+
+The Llama family of models @touvronLLaMAOpenEfficient2023 exemplifies efficient scaling.
+Llama 2 @touvronLlama2Open2023 ranges from 7B to 70B parameters, trained on 2 trillion tokens of publicly available text.
+Architectural choices including RMSNorm @zhangRootMeanSquare2019, SwiGLU activations @shazeerGLUVariantsImprove2020, and rotary positional embedding (RoPE) @suRoFormerEnhancedTransformer2023 improve training stability and model quality compared to the original Transformer design.
 
 === LLMs for Code
 
