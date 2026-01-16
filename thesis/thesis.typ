@@ -478,12 +478,13 @@ For a model with $d = 4096$, applying LoRA with rank $r = 64$ to a weight matrix
 
 === QLoRA
 
-QLoRA @dettmersQLoRAEfficientFinetuning2023 extends LoRA by combining it with quantization.
-The frozen base model weights are stored in 4-bit precision using a novel NormalFloat (NF4) data type optimized for normally distributed weights.
-The low-rank adapters remain in higher precision for training stability.
+QLoRA @dettmersQLoRAEfficientFinetuning2023 extends LoRA by combining it with quantization, enabling fine-tuning of models that would otherwise exceed available memory.
+The frozen base model weights are stored in 4-bit precision using a novel NormalFloat (NF4) data type.
+NF4 is specifically optimized for neural network weights, which are approximately normally distributed after pretraining; its quantization bins are spaced according to quantiles of the normal distribution, minimizing information loss compared to uniform quantization schemes.
+The low-rank adapters remain in higher precision (typically 16-bit) for training stability, and gradients are computed through the quantized weights via dequantization during the forward pass @dettmersQLoRAEfficientFinetuning2023.
 
-This combination enables fine-tuning models that would otherwise exceed available memory.
-A 7-billion parameter model that requires approximately 28GB in 16-bit precision can be loaded in roughly 4GB with 4-bit quantization, making fine-tuning feasible on consumer hardware.
+This combination reduces memory substantially.
+A 7-billion parameter model that requires approximately 28GB in 16-bit precision can be loaded in roughly 4GB with 4-bit quantization, making fine-tuning feasible on consumer hardware @dettmersQLoRAEfficientFinetuning2023.
 
 == Knowledge Editing
 
