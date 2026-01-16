@@ -1,3 +1,5 @@
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
+
 #set text(size: 12pt)
 #set heading(numbering: "1.1")
 #show heading: it => {
@@ -272,6 +274,7 @@ String literals referenced via the GOT (Global Offset Table) may appear as `_LC0
 Compiler optimizations can create control flow patterns that do not map cleanly to standard C constructs, resulting in goto statements or awkward loop structures in the decompiled output @nationalsecurityagencyGhidra2019.
 
 @ghidra-artifacts illustrates these artifacts with a concrete example, showing how a simple function transforms through compilation and decompilation.
+The Ghidra output exhibits all the characteristic artifacts: type annotations (`undefined8`), synthesized variable names (`local_c`, `param_1`), explicit pointer arithmetic for array access, and non-standard return value handling via `CONCAT44`.
 
 #figure(
   grid(
@@ -312,7 +315,7 @@ Compiler optimizations can create control flow patterns that do not map cleanly 
       ```
     ],
   ),
-  caption: [Comparison of original C source code and Ghidra decompiled pseudocode, illustrating typical decompilation artifacts including type annotations (`undefined8`), synthesized variable names (`local_c`, `param_1`), explicit pointer arithmetic, and return value handling.],
+  caption: [Original C source code (left) and Ghidra decompiled pseudocode (right).],
 ) <ghidra-artifacts>
 
 While this output aids human reverse engineers in understanding program behavior, it typically cannot be directly compiled due to the non-standard type annotations and constructs.
@@ -570,6 +573,41 @@ The experimental design follows a structured comparative methodology.
 First, a baseline is established by evaluating a pre-trained LLM on a curated dataset of binary functions with known source code.
 Subsequently, general LoRA fine-tuning is applied to create a globally adapted model, and error-specific LoRAs are trained and applied to create a targeted-correction variants.
 All adapted models are evaluated against the baseline using identical metrics (compilability, and functional equivalence), enabling direct comparison.
+
+The complete pipeline is illustrated in @pipeline: C source code is compiled with GCC at `-O2` optimization, decompiled by Ghidra to pseudocode, refined by the LLM, and evaluated through compilation and functional testing.
+
+#figure(
+  diagram(
+    node-stroke: 0.5pt,
+    node-corner-radius: 4pt,
+    edge-stroke: 0.5pt,
+    spacing: (18mm, 8mm),
+
+    node((0, 0), [C Source]),
+    edge("-|>"),
+    node((1, 0), [GCC]),
+    edge(
+      "-|>",
+      label: text(size: 8pt, fill: luma(100))[binary],
+      label-side: left,
+      label-sep: 1mm,
+    ),
+    node((2, 0), [Ghidra]),
+    edge(
+      "-|>",
+      label: text(size: 8pt, fill: luma(100))[pseudocode],
+      label-sep: 1mm,
+    ),
+    node((3, 0), [Model]),
+    edge(
+      "-|>",
+      label: text(size: 8pt, fill: luma(100))[C code],
+      label-sep: 1.5mm,
+    ),
+    node((4, 0), [Test]),
+  ),
+  caption: [Data pipeline overview.],
+) <pipeline>
 
 == Data Pipeline
 
@@ -878,6 +916,83 @@ This demonstrates that LoRA effectively teaches the model to generate syntactica
 The Pass\@1 improvement from 15.50% to 23.95% represents a 54% relative gain, though the absolute improvement of 8.45 percentage points is more modest.
 This asymmetry between compile rate and functional correctness improvements suggests that while LoRA excels at syntactic correction, semantic reasoning, understanding program logic and producing functionally equivalent code, remains challenging.
 
+@qualitative-example illustrates this improvement with a concrete example.
+The Ghidra input shows compiler loop unrolling artifacts that obscure a simple increment-each-element operation.
+The baseline model reproduces this convoluted structure and produces semantically incorrect code, while the LoRA fine-tuned model recovers the original loop structure and generates correct, idiomatic C.
+
+#figure(
+  {
+    set text(size: 9pt)
+    grid(
+      columns: 1,
+      gutter: 1em,
+      [
+        *Ghidra Input:*
+        ```c
+        undefined8 func0(int *param_1,uint param_2)
+        {
+          int *piVar1;
+
+          if (0 < (int)param_2) {
+            piVar1 = param_1 + (int)param_2;
+            if ((param_2 & 1) != 0) {
+              *param_1 = *param_1 + 1;
+              param_1 = param_1 + 1;
+              if (param_1 == piVar1) {
+                return 0;
+              }
+            }
+            do {
+              *param_1 = *param_1 + 1;
+              param_1[1] = param_1[1] + 1;
+              param_1 = param_1 + 2;
+            } while (param_1 != piVar1);
+          }
+          return 0;
+        }
+        ```
+      ],
+      grid(
+        columns: 2,
+        gutter: 1em,
+        [
+          *Baseline Output* (assertion failure):
+          ```c
+          int func0(int *param_1, uint param_2)
+          {
+            int *piVar1 = param_1 + (int)param_2;
+            if (param_2 & 1) {
+              *param_1 = *param_1 + 1;
+              param_1 = param_1 + 1;
+              if (param_1 == piVar1)
+                return 0;
+            }
+            do {
+              *param_1 = *param_1 + 1;
+              param_1[1] = param_1[1] + 1;
+              param_1 = param_1 + 2;
+            } while (param_1 != piVar1);
+            return 0;
+          }
+          ```
+        ],
+        [
+          *LoRA Output* (passes):
+          ```c
+          void func0(int *p, int n)
+          {
+            int i;
+            for (i = 0; i < n; i++)
+              *p++ += 1;
+          }
+          ```
+        ],
+      ),
+    )
+  },
+  caption: [Qualitative comparison of model outputs on a function with loop unrolling artifacts.],
+) <qualitative-example>
+
 === Result Stability
 
 Evaluation across multiple runs reveals variability in model performance due to sampling randomness.
@@ -937,6 +1052,46 @@ Common patterns include `i < n` versus `i <= n` or `i < n - 1` versus `i < n`.
 *Variable initialization errors* (\~10% of failures): Missing initialization of variables, particularly output parameters used before being set.
 
 *String and format handling errors* (\~10% of failures): Incorrect format specifiers or string operations, such as missing space separators in formatted output.
+
+#figure(
+  diagram(
+    node-stroke: 0.5pt,
+    node-corner-radius: 4pt,
+    spacing: (12mm, 10mm),
+
+    node((1, 0), [*Assertion Failures*\ (76 samples)]),
+
+    edge((1, 0), (0, 1), "-|>"),
+    edge((1, 0), (2, 1), "-|>"),
+
+    node((0, 1), [*Addressable*\ ~45%], fill: rgb("#d9f99d")),
+    node((2, 1), [*Fundamental*\ ~55%], fill: rgb("#fecaca")),
+
+    node(
+      (0, 2),
+      align(left)[
+        • Loop bounds (20%)\
+        • Operators (15%)\
+        • Initialization (10%)
+      ],
+      stroke: none,
+    ),
+
+    node(
+      (2, 2),
+      align(left)[
+        • Algorithm re-interpretation (35%)\
+        • Information loss (10%)\
+        • String/format (10%)
+      ],
+      stroke: none,
+    ),
+
+    edge((0, 1), (0, 2), "-"),
+    edge((2, 1), (2, 2), "-"),
+  ),
+  caption: [Taxonomy of semantic errors in consistently failing samples.],
+)
 
 === Trainability Assessment
 
@@ -1110,6 +1265,19 @@ When Ghidra produces a stub function or ambiguous pseudocode, no amount of fine-
 
 The remaining 45% of failures involving loop bounds, operators, and initialization represent the addressable portion of semantic errors.
 The mixed LoRA's improvement over the general LoRA (+4.13 percentage points) likely comes from better handling of these systematic error patterns. However, this improvement is modest relative to the syntactic gains, suggesting that even "addressable" semantic errors require more sophisticated interventions than pattern-based training can provide.
+
+== Comparison with State-of-the-Art
+
+The results of this work should be contextualized against dedicated neural decompilation systems.
+LLM4Decompile @tanLLM4DecompileDecompilingBinary2024, the current state-of-the-art, achieves 36.71% re-executability on HumanEval-Decompile with `-O2` optimization using their 6.7B parameter model trained through full fine-tuning on billions of code tokens.
+At comparable model scale, our best configuration (mixed LoRA) reaches 28.08% using approximately 4,000 training samples and about 2.3% trainable parameters.
+
+This performance gap reflects the fundamental tradeoff between adaptation efficieny and task performance.
+Full fine-tuning dedicates the entire model capacity to decompilation through extensive training, while LoRA preserves the base model's general capabilities and requires minimal computational resources @huLoRALowRankAdaptation2021.
+Achieving 76% of the state-of-the-art performance with orders of magnitude less training data suggests that parameter-efficient methods offer a viable path for practitioners who lack the resources for full-scale model training.
+
+Furthermore, LoRA's modularity enables rapid experimentation with different training objectives, as demonstrated by the error-specific fine-tuning experiments @huLoRALowRankAdaptation2021.
+This flexibility may prove valuable for adapting to specific decompilation scenarios, such as particular compiler versions or optimization levels, without retraining an entire model.
 
 == Implications for Neural Decompilation
 
