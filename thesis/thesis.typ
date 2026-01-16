@@ -113,7 +113,7 @@ Wir evaluieren diese Methoden mit CodeLlama-7B-Instruct auf einem Benchmark von 
 Unsere Experimente zeigen, dass LoRA-Fine-Tuning die Dekompilierungsqualität erheblich verbessert.
 Allgemeines Fine-Tuning erreicht 84,33% Kompilierungsrate und 23,95% funktionale Korrektheit (Baseline: 18,94% und 15,50%).
 Gemischtes Training, das fehlerspezifische Beispiele mit allgemeinen Daten kombiniert, erzielt die höchste funktionale Korrektheit von 28,08%, jedoch bei einer reduzierten Kompilierungsrate von 64,50%.
-Knowledge Editing erwies sich jedoch als ineffektiv für diese Aufgabe, da Dekompilierungsfehler komplexe strukturelle Transformationen und keine diskreten faktischen Korrekturen erfordern.
+Knowledge Editing erwies sich jedoch als ineffektiv für diese Aufgabe, da Dekompilierungsfehler komplexe strukturelle Transformationen erfordern, nicht diskrete faktische Korrekturen.
 
 Eine zentrale Erkenntnis ist die syntaktisch-semantische Lücke: Hohe Kompilierungsraten garantieren keine funktionale Korrektheit.
 Modelle können lernen, syntaktisch gültigen Code zu erzeugen, der dennoch semantisch falsche Implementierungen enthält.
@@ -466,7 +466,7 @@ Furthermore, each fine-tuned model requires storing a complete copy of all param
 === Low-Rank Adaptation (LoRA)
 
 Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021 addresses these challenges by freezing the pretrained model weights and injecting trainable low-rank decomposition matrices into each layer.
-The approach is motivated by evidence that weight updates during fine-tuning have low "intrinsic rank"; the adaptation can be effectively captured ina much lower-dimensional subspace than the full parameter space @huLoRALowRankAdaptation2021.
+The approach is motivated by evidence that weight updates during fine-tuning have low "intrinsic rank"; the adaptation can be effectively captured in a much lower-dimensional subspace than the full parameter space @huLoRALowRankAdaptation2021.
 
 For a pretrained weight matrix $W_0 in RR^(d times k)$, LoRA adds a parallel path:
 
@@ -810,7 +810,7 @@ The edited model was then tested on the same decompilation prompts used for base
 The experiment revealed a fundamental mismatch between Knowledge Editing and the decompilation task.
 Critically, the base CodeLlama model already possesses the relevant factual knowledge; when directly asked "What C type does undefined4 represent?", the model correctly responds "int".
 The decompilation failures therefore do not stem from missing factual associations but from inconsistent application of known facts during code generation.
-In testing, none of the four edit requests produced correct factual responses, and artifact removal improved only marginally; with the one removed artifact replaced by an incorrect value.
+In testing, none of the four edit requests produced correct factual responses, and artifact removal improved only marginally, with the one removed artifact replaced by an incorrect value.
 
 This distinction is crucial: Knowledge Editing methods are designed to update atomic factual associations (e.g., changing "The Eiffel Tower is located in Paris" to "The Eiffel Tower is located in London").
 Neural decompilation, however, requires consistent application of transformation rules across diverse syntactic contexts, context-dependent reasoning about surrounding code, and multi-step inference to reconstruct program semantics.
@@ -1262,7 +1262,7 @@ The mixed LoRA's improvement over the general LoRA (+4.13 percentage points) lik
 
 The results of this work should be contextualized against dedicated neural decompilation systems.
 LLM4Decompile @tanLLM4DecompileDecompilingBinary2024, the current state-of-the-art, achieves 36.71% re-executability on HumanEval-Decompile with `-O2` optimization using their 6.7B parameter model trained through full fine-tuning on billions of code tokens.
-At comparable model scale, our best configuration (mixed LoRA) reaches 28.08% using approximately 4,000 training samples and about 2.3% trainable parameters.
+At comparable model scale, our best configuration (mixed LoRA) reaches 28.08% using approximately 4,000 training samples and training only about 2.3% of total parameters.
 
 This performance gap reflects the fundamental tradeoff between adaptation efficiency and task performance.
 Full fine-tuning dedicates the entire model capacity to decompilation through extensive training, while LoRA preserves the base model's general capabilities and requires minimal computational resources @huLoRALowRankAdaptation2021.
