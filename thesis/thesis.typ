@@ -328,8 +328,10 @@ Unlike earlier recurrent architectures @hochreiterLongShortTermMemory1997 that p
 This section introduces the key components relevant to understanding the adaptation methods investigated in this thesis.
 
 Before processing, input text must be converted into discrete tokens through tokenization.
-Modern LLMs use subword tokenization algorithms such as Byte-Pair Encoding (BPE) @sennrichNeuralMachineTranslation2016, which iteratively merge frequent character sequences to balance vocabulary size against token granularity.
-These tokens are then mapped to dense vector embeddings that serve as input to the Transformer layers.
+A token is the fundamental unit of text that the model processes; neural networks operate on numerical vectors, so text must be segmented into units that can be mapped to vector representations.
+Modern LLMs use subword tokenization algorithms such as Byte-Pair Encoding (BPE) @sennrichNeuralMachineTranslation2016, which iteratively merge frequent character pairs to build a vocabulary of common subunits.
+This allows common words to become single tokens while rare words are decomposed (e.g., `"decompilation"` #sym.arrow `["de", "compil", "ation"]`), balancing vocabulary size against sequence length.
+These tokens are then mapped to dense vector embeddings that serve as input to the Transformer layers @vaswaniAttentionAllYou2023.
 
 === Self-Attention Mechanism
 
@@ -430,7 +432,7 @@ CodeLlama includes several variants optimized for different use cases.
 The base model excels at code completion, while CodeLlama-Instruct undergoes additional fine-tuning to follow natural language instructions.
 Instruction tuning @weiFinetunedLanguageModels2022 teaches the model to respond appropriately to user requests rather than simply continuing text, making it suitable for task-oriented applications like code generation from specifications.
 
-The instruction-tuned variant is particularly relevant for decompilation, where the model must follow explicit directives to transform pseudocode into valid C.
+The instruction-tuned variant is particularly relevant for decompilation, where the model must follow explicit directives to transform pseudocode into valid C code.
 The 7B parameter size provides a practical balance: sufficient capacity for complex code transformations while remaining tractable for parameter-efficient fine-tuning on consumer hardware.
 
 == Neural Decompilation
