@@ -926,9 +926,9 @@ The most striking result is the compile rate improvement: from 18.94% to 84.33%,
 This demonstrates that LoRA effectively teaches the model to generate syntactically valid C code, eliminating most Ghidra artifacts that caused compilation failures.
 
 The Pass\@1 improvement from 15.50% to 23.95% represents a 54% relative gain, though the absolute improvement of 8.45 percentage points is more modest.
-This asymmetry between compile rate and functional correctness improvements suggests that while LoRA excels at syntactic correction, semantic reasoning, understanding program logic and producing functionally equivalent code, remains challenging.
+This asymmetry between compile rate and functional correctness improvements suggests that LoRA excels at syntactic correction, while consistent semantic reasoning remains difficult to achieve.
 
-@qualitative-example illustrates this improvement with a concrete example.
+@qualitative-example illustrates a case where LoRA succeeds at both syntactic and semantic correction.
 The Ghidra input shows compiler loop unrolling artifacts that obscure a simple increment-each-element operation.
 The baseline model reproduces this convoluted structure and produces semantically incorrect code, while the LoRA fine-tuned model recovers the original loop structure and generates correct, idiomatic C.
 
@@ -1052,8 +1052,7 @@ Manual analysis of the assertion failures revealed six distinct error categories
 When the input contains only a stub function like `undefined8 func0(void) { return 0; }`, no model can reconstruct the original semantics.
 These represent data quality limitations rather than model failures.
 
-*Algorithm re-interpretation* (\~35% of failures): The model generates a semantically different but plausible algorithm.
-For instance, an array interspersing task implemented with modulo-based indexing instead of the ground truth's dual-iterator approach.
+*Algorithm re-interpretation* (\~35% of failures): The model generates a semantically different but plausible algorithm (e.g., an array interspersing task implemented with modulo-based indexing instead of the ground truth's dual-iterator approach).
 Both implementations appear reasonable given the ambiguous pseudocode, but only one matches the test harness expectations.
 
 *Loop bound errors* (\~20% of failures): Incorrect termination conditions, often manifesting as off-by-one errors.
@@ -1135,32 +1134,6 @@ Synthetic training pairs were created from 30% of the original ExeBench training
 
 An initial experiment trained a LoRA adapter exclusively on the synthetic error examples, testing whether error correction can be learned in isolation from general decompilation patterns.
 
-// #figure(
-//   table(
-//     columns: (auto, auto, auto, auto),
-//     inset: 10pt,
-//     align: (left, center, center, center),
-//     table.header(
-//       [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
-//     ),
-//     [Baseline],
-//     [15.50 #sym.plus.minus 1.08],
-//     [18.94 #sym.plus.minus 0.53],
-//     [---],
-
-//     [General LoRA],
-//     [23.95 #sym.plus.minus 1.35],
-//     [84.33 #sym.plus.minus 1.19],
-//     [+8.45],
-
-//     [Targeted LoRA],
-//     [20.13 #sym.plus.minus 0.32],
-//     [21.06 #sym.plus.minus 0.26],
-//     [+4.63],
-//   ),
-//   caption: [Performance of LoRA trained exclusively on error-targeted data],
-// ) <targeted-lora-results>
-
 The targeted LoRA improves Pass\@1 by 4.63 percentage points over baseline, demonstrating that the synthetic error data teaches meaningful correction patterns.
 However, the compile rate remains nearly unchanged at 21.06%, far below the general LoRA's 84.33%.
 
@@ -1173,32 +1146,6 @@ Additionally, the smaller dataset size compared to the 4,000-sample general trai
 Based on the limited success of targeted training, a second approach combined synthetic error examples with original training data.
 The mixing ratio was determined by sampling original examples at twice the count of synthetic examples, yielding an approximate 1:2 ratio of error-targeted to general samples.
 This weighting aims to reinforce error correction while retaining broad decompilation capability.
-
-// #figure(
-//   table(
-//     columns: (auto, auto, auto, auto),
-//     inset: 10pt,
-//     align: (left, center, center, center),
-//     table.header(
-//       [*Model*], [*Pass\@1 (%)*], [*Compile (%)*], [*#sym.Delta Pass\@1*]
-//     ),
-//     [Baseline],
-//     [15.50 #sym.plus.minus 1.08],
-//     [18.94 #sym.plus.minus 0.53],
-//     [---],
-
-//     [General LoRA],
-//     [23.95 #sym.plus.minus 1.35],
-//     [84.33 #sym.plus.minus 1.19],
-//     [+8.45],
-
-//     [Mixed LoRA],
-//     [*28.08* #sym.plus.minus 1.30],
-//     [64.50 #sym.plus.minus 1.54],
-//     [*+12.58*],
-//   ),
-//   caption: [Comparison of general and mixed LoRA training],
-// ) <mixed-lora-results>
 
 The mixed LoRA achieves the highest Pass\@1 of 28.08%, representing an 81% relative improvement over baseline and a 17% relative improvement over the general LoRA.
 However, the compile rate decreases from 84.33% to 64.50%.
@@ -1241,6 +1188,36 @@ Combining error examples with general training data proves more effective than e
 
 The results demonstrate a clear progression: targeted training alone provides modest semantic improvement but neglects syntactic learning; general training dramatically improves syntax but plateaus on semantics; mixed training achieves the best functional correctness by combining both objectives.
 The compile rate trade-off in the mixed approach suggests future work could explore curriculum learning @bengioCurriculumLearning2009 or multi-objective optimization to balance syntactic and semantic improvements.
+
+Having established the effectiveness and limitations of LoRA fine-tuning, we now examine whether Knowledge Editing offers an alternative path to targeted correction.
+
+Beyond LoRA fine-tuning, we also investigated whether Knowledge Editing could provide a more surgical approach to correcting specific decompilation errors.
+
+== Knowledge Editing Results
+
+To empirically validate the theoretical limitations of Knowledge Editing, ROME edits were applied to the base CodeLlama model targeting common Ghidra artifacts.
+Three edit requests mapped type annotations to their C equivalents (`undefined4` #sym.arrow `int`, `undefined1` #sym.arrow `char`, `undefined8` #sym.arrow `long`) and one targeted string literal references (`_LC0`).
+The edited model was evaluated on the same HumanEval-Decompile test set.
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    inset: 10pt,
+    align: (left, center, center),
+    table.header([*Model*], [*Pass\@1 (%)*], [*Compile (%)*]),
+    [Baseline], [15.50 #sym.plus.minus 1.08], [18.94 #sym.plus.minus 0.53],
+    [ROME-edited], [15.23 #sym.plus.minus 0.66], [22.19 #sym.plus.minus 0.99],
+  ),
+  caption: [Comparison of baseline and ROME-edited model performance (2 runs)],
+) <rome-results>
+
+The ROME-edited model shows no meaningful improvement in functional correctness, with Pass\@1 of 15.23% compared to the baseline's 15.50%; well within the margin of error.
+The compile rate increases marginally from 18.94% to 22.19%, suggesting the edits may help avoid some type annotation artifacts.
+However, this modest syntactic improvement does not translate to semantic gains.
+
+These results confirm the theoretical analysis: the base model already possesses the relevant factual knowledge; when directly asked "What C type does undefined4 represent?", it correctly responds "int".
+The decompilation failures stem not from missing knowledge but from inconsistent application of known facts during generation.
+ROME, designed to update discrete factual associations, cannot address this reasoning challenge.
 
 = Discussion
 
