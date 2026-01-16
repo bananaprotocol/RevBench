@@ -146,7 +146,7 @@ These artifacts include non-standard type annotations (e.g., `undefined4`), synt
 Human analysts must manually refine this output, a time-consuming process that scales poorly with the volume of software requiring analysis.
 
 Recent advances in Large Language Models (LLMs) have demonstrated remarkable capabilities in code understanding and generation @roziereCodeLlamaOpen2023, suggesting their potential application to decompilation refinement.
-Rather than replacing traditional decompilers, LLMs could serve as a post-processing step, transforming pseudocode into clean, idiomatic, and compilable source code.
+Rather than replacing traditional decompilers, LLMs could serve as a post-processing step, transforming pseudocode into clean, idiomatic, and compilable C code.
 However, applying pre-trained LLMs directly to this task yields poor results; the models reproduce decompiler artifacts rather than translating them into standard constructs.
 
 This thesis investigates two adaptation approaches for improving LLM-based decompilation: Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021, a parameter-efficient fine-tuning method, and Knowledge Editing @mengLocatingEditingFactual2023, a technique for surgically modifying model weights to correct specific factual associations.
@@ -319,7 +319,7 @@ The Ghidra output exhibits all the characteristic artifacts: type annotations (`
 ) <ghidra-artifacts>
 
 While this output aids human reverse engineers in understanding program behavior, it typically cannot be directly compiled due to the non-standard type annotations and constructs.
-The gap between decompiler output and compilable source code motivates the neural decompilation approach explored in this thesis.
+The gap between decompiler output and compilable C source code motivates the neural decompilation approach explored in this thesis.
 
 == Transformer Architecture
 
