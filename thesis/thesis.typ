@@ -231,7 +231,7 @@ Recovering the original source from a binary is therefore fundamentally ill-pose
 
 Modern decompilers like Ghidra @nationalsecurityagencyGhidra2019, IDA Pro @hex-raysIDAPro, and angr @shoshitaishviliSOKStateArt2016 employ sophisticated techniques including control flow graph reconstruction, data flow analysis, type recovery, and pattern matching for common idioms.
 
-Ghidra's decompiler follows a multi-stage pipeline that transforms binary machine code into C-like pseudocode#footnote("Technical details derived from Ghidra's internal decompiler documentation.").
+Ghidra's decompiler follows a multi-stage pipeline that transforms binary machine code into C-like pseudocode.
 The process begins with *p-code generation*, where machine instructions are translated into Ghidra's intermediate representation called p-code, a Register Transfer Language (RTL) designed specifically for reverse engineering.
 The SLEIGH specification language defines the translation from each processor's machine code to p-code, enabling Ghidra to support multiple architectures through modular processor specifications @nationalsecurityagencyGhidra2019.
 
@@ -337,7 +337,7 @@ Self-attention allows each token in a sequence to attend to all other tokens, le
 For an input sequence of token embeddings $X in RR^(n times d)$, where $n$ is the sequence length and $d$ is the embedding dimension, self-attention computes three matrices through learned linear projections:
 $ Q = X W_Q, quad K = X W_K, quad V = X W_V $
 
-where $W_Q, W_K, W_v in RR^(d times d_k)$ are the query, key, and value projection matrices respectively @vaswaniAttentionAllYou2023.
+where $W_Q, W_K, W_V in RR^(d times d_k)$ are the query, key, and value projection matrices respectively @vaswaniAttentionAllYou2023.
 The attention output is computed as:
 
 $ "Attention"(Q, K, V) = "softmax"((Q K^T) / sqrt(d_k)) V $
@@ -360,7 +360,7 @@ In the original Transformer architecture @vaswaniAttentionAllYou2023, the FFN co
 
 $ "FFN"(x) = max(0, x W_1 + b_1) W_2 + b_2 $
 
-where $W_1 in RR^(d times d_("ff"))$ projects from the model dimension $d$ to a larger intermediate dimension $d_("ff")$ (typically $4d$), and $W_2 in RR^(d_("ff") times d)$ projects back to the model dimension.
+where $W_1 in RR^(d times d_("ff"))$ projects from the model dimension $d$ to a larger intermediate dimension $d_("ff")$, and $W_2 in RR^(d_("ff") times d)$ projects back to the model dimension.
 
 Modern architectures like Llama @touvronLlama2Open2023 employ a gated variant using the SwiGLU activation @shazeerGLUVariantsImprove2020:
 
