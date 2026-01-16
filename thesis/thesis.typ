@@ -58,9 +58,11 @@ Hiermit versichere ich, dass ich die Arbeit selbst verfasst und keine anderen al
 Ferner versichere ich, dass die übermittelte elektronische Version in Inhalt und Wortlaut mit der gedruckten Version meiner Arbeit vollständig übereinstimmt.
 Ich bin einverstanden, dass diese elektronische Fassung universitätsintern anhand einer Plagiatssoftware auf Plagiate überprüft wird.
 
+#v(5mm)
+
 Heidelberg, den 16.01.2026
 
-Hendrik Lohmar
+#image("signature.svg", width: 30%)
 
 #pagebreak()
 
@@ -162,10 +164,10 @@ The central challenge is adapting these models to the decompilation task efficie
 Full fine-tuning requires updating billions of parameters, demanding significant computational resources and risking catastrophic forgetting @kirkpatrickOvercomingCatastrophicForgetting2017 of the model's general capabilities.
 Two alternative approaches warrant investigation:
 
-*Low-Rank Adaptation (LoRA)* introduces small trainable matrices into the model architecture, enabling task-specific adaptation while keeping the base model frozen.
+*Low-Rank Adaptation (LoRA)* @huLoRALowRankAdaptation2021 introduces small trainable matrices into the model architecture, enabling task-specific adaptation while keeping the base model frozen.
 This approach hypothesizes that decompilation can be learned as a general skill through exposure to pseudocode-to-source-code examples.
 
-*Knowledge Editing* directly modifies specific model parameters to correct targeted factual associations.
+*Knowledge Editing* @mengLocatingEditingFactual2023 directly modifies specific model parameters to correct targeted factual associations.
 This approach hypothesizes that decompilation errors stem from incorrect or missing factual mappings (e.g., that `undefined4` should map to `int`) that can be surgically corrected.
 
 == Research Questions
@@ -212,14 +214,14 @@ We begin with decompilation fundamentals, then cover the machine learning approa
 
 === Compilation and Information Loss
 
-Compilation transforms human-readable source code into machine-executable binary code through multiple stages: preprocessing, parsing, semantic analysis, optimization, and code generation @ahoCompilersPrinciplesTechniques2002.
-Each stage discards information that is unnecessary for execution but valuable for human understanding.
+Compilation transforms human-readable source code into machine-executable binary code through multiple stages: preprocessing, parsing, semantic analysis, optimization, and code generation.
+Each stage discards information that is unnecessary for execution but valuable for human understanding @ahoCompilersPrinciplesTechniques2002.
 
 Variable names become register allocations or stack offsets.
 Type information is reduced to memory sizes and alignment constraints.
 Control flow structures like `for` and `while` loops compile to identical jump instructions.
 Comments and formatting disappear entirely.
-High-level abstractions such as struct layouts, inline functions, and macro expansions are flattened into sequences of machine instructions.
+High-level abstractions such as struct layouts, inline functions, and macro expansions are flattened into sequences of machine instructions @ahoCompilersPrinciplesTechniques2002.
 
 This information loss is inherently one-way.
 The compilation process is a many-to-one mapping: countless source programs compile to identical binaries.
@@ -381,14 +383,15 @@ This property makes FFN layers the target of Knowledge Editing methods like ROME
 
 A complete Transformer layer combines the attention and feed-forward sublayers with residual connections @heDeepResidualLearning2015 and normalization.
 The original Transformer applies "post-norm", placing normalization after each sublayer @vaswaniAttentionAllYou2023.
-Modern architectures like Llama @touvronLlama2Open2023 instead use "pre-norm", applying normalization before each sublayer:
+Modern architectures like Llama @touvronLlama2Open2023 instead use "pre-norm", applying normalization before each sublayer.
+Llama replaces standard layer normalization @baLayerNormalization2016 with RMSNorm @zhangRootMeanSquare2019, which omits the mean-centering step while achieving comparable performance with reduced computational overhead.
+
+The pre-norm formulation is:
 
 $ h = x + "MultiHead"("RMSNorm"(x)) $
 $ y = h + "FFN"("RMSNorm"(h)) $
 
 Here $x$ denotes the input to the layer, $h$ the intermediate representation after attention, and $y$ the final layer output.
-
-Llama replaces standard layer normalization with RMSNorm @zhangRootMeanSquare2019, which omits the mean-centering step while achieving comparable performance with reduced computational overhead.
 
 Beyond normalization, the residual connections @heDeepResidualLearning2015 are critical architectural components that enable gradient flow through deep networks and allow each layer to learn incremental refinements rather than complete transformations.
 Modern LLMs stack dozens of these layers (CodeLlama-7B uses 32 layers @roziereCodeLlamaOpen2023) creating a deep processing pipeline where each layer refines the representations produced by previous layers.
@@ -544,22 +547,22 @@ All major neural decompilation systems employ either full fine-tuning or prompti
 This thesis investigates whether parameter-efficient techniques can achieve competitive results while enabling more flexible model adaptation.
 Specifically, we compare:
 
-+ *Low-Rank Adaptation (LoRA)* as a parameter-efficient alternative to full fine-tuning, examining whether the dramatic reduction in trainable parameters compromises decompilation quality.
-+ *Knowledge Editing* as a surgical intervention technique, testing whether decompilation errors can be corrected through targeted weight modifications rather than broad training.
++ *Low-Rank Adaptation (LoRA)* @huLoRALowRankAdaptation2021 as a parameter-efficient alternative to full fine-tuning, examining whether the dramatic reduction in trainable parameters compromises decompilation quality.
++ *Knowledge Editing* @mengLocatingEditingFactual2023 as a surgical intervention technique, testing whether decompilation errors can be corrected through targeted weight modifications rather than broad training.
 + *Error-specific LoRA training* on curated datasets, combining the efficiency of LoRA with focused training on particular error categories.
 
 This comparison addresses a practical concern: as LLMs grow larger, full fine-tuning becomes increasingly prohibitive.
 If parameter-efficient methods can match or approach full fine-tuning performance, they offer a more accessible path to specialized decompilation models.
 
 Furthermore, only a few prior works have investigated Knowledge Editing for code transformation tasks @liModelEditingLLMs4Code2024.
-While ROME and related techniques have shown success in correcting factual knowledge, their applicability to structural code transformations remains unexplored.
+While ROME @mengLocatingEditingFactual2023 and related techniques have shown success in correcting factual knowledge, their applicability to structural code transformations remains unexplored.
 This thesis provides the first empirical evaluation of Knowledge Editing in the decompilation domain.
 
 = Methodology
 
 == Overview
 
-This thesis investigates two fundamentally different paradigms for adapting pre-trained Large Language Models to the task of neural decompilation: Low-Rank Adaptation (LoRA) and Knowledge Editing (KE).
+This thesis investigates two fundamentally different paradigms for adapting pre-trained Large Language Models to the task of neural decompilation: Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021 and Knowledge Editing (KE) @mengLocatingEditingFactual2023.
 These approaches represent contrasting philosophies in model adaptation and are hypothesized to offer complementary strengths when addressing the challenges inherent to decompilation.
 
 The decompilation task is formulated as a translation problem where the input consists of Ghidra-generated pseudocode rather than raw binary or assembly.
@@ -567,12 +570,12 @@ This intermediate representation retains essential low-level semantics while pro
 The objective is to transform this pseudocode into clean, idiomatic, and functionally equivalent high-level C code.
 
 *Low-Rank Adaptation* constitutes a global adaptation strategy.
-By introducing low-rank trainable matrices into the Transformer architecture, LoRA enables the model to learn broad patterns from a corpus of decompilation examples.
+By introducing low-rank trainable matrices into the Transformer architecture, LoRA enables the model to learn broad patterns from a corpus of decompilation examples @huLoRALowRankAdaptation2021.
 This approach is well-suited for capturing general improvements such as more idiomatic code generation, better recognition of common programming constructs, and improved handling of compiler-introduced patterns.
 This adaptation affects the model's behavior across a wide range of inputs, making it appropriate for enhancing overall decompilation quality.
 
 *Knowledge Editing*, in contrast, represents a surgical intervention approach.
-However preliminary investigation revealed that traditional KE techniques such as ROME, designed primarily for factual knowledge correction in natural language domains, are not well-suited to the decompilation task, which involves complex structural transformations rather than discrete factual assertions.
+However preliminary investigation revealed that traditional KE techniques such as ROME @mengLocatingEditingFactual2023, designed primarily for factual knowledge correction in natural language domains, are not well-suited to the decompilation task, which involves complex structural transformations rather than discrete factual assertions.
 Consequently, this work explores *error-specific LoRAs* as an alternative targeted adaptation strategy.
 Rather than editing model weights directly, error-specific LoRAs are trained on curated datasets focusing on particular recurring error patterns (e.g., loop bound errors, operator errors, or initialization errors).
 This approach maintains the surgical, targeted philosophy of knowledge editing while remaining compatible with the architectural and task characteristics of neural decompilation.
@@ -644,7 +647,7 @@ The resulting dataset comprises approximately *4,000 training samples* from ExeB
 
 === Base Model Selection
 
-The foundation for LoRA fine-tuning is CodeLlama 7B Instruct, a 7-billion parameter large language model specifically optimized for code-related tasks.
+The foundation for LoRA fine-tuning is CodeLlama-7B-Instruct, a 7-billion parameter large language model specifically optimized for code-related tasks.
 CodeLlama @roziereCodeLlamaOpen2023 represents a family of models derived from Llama 2 @touvronLlama2Open2023, further trained on code-heavy corpora to develop stronger capabilities in code understanding, generation, and transformation tasks.
 The Instruct variant has been additionally fine-tuned to follow instructions, making it particularly well-suited for task-oriented applications where the model must respond to structured prompts.
 
@@ -657,7 +660,7 @@ Finally the model's open availability and extensive community adoption provide v
 === Training Configuration
 
 The training infrastructure employs *Unsloth* @hanUnsloth2023, an optimized framework for efficient LLM fine-tuning that provides significant speedups over standard implementations.
-The base model is loaded in 4-bit precision, reducing memory requirements while maintaining model quality.
+The base model is loaded in 4-bit precision @dettmersQLoRAEfficientFinetuning2023, reducing memory requirements while maintaining model quality.
 Unsloth's custom gradient checkpointing implementation further reduces memory overhead compared to standard PyTorch @paszkePyTorchImperativeStyle2019 gradient checkpointing.
 
 The LoRA configuration targets all linear projection layers within the Transformer architecture.
@@ -778,7 +781,7 @@ Third, increasing alpha relative to rank (e.g., r=32/a=64 vs r=32/a=32) provides
 == Knowledge Editing Approach
 
 Knowledge Editing (KE) represents a fundamentally different paradigm from fine-tuning: rather than updating model weights through gradient descent over training examples, KE methods directly modify specific parameters to alter targeted factual associations while preserving other model behaviors.
-This section describes the experimental investigation of ROME (Rank-One Model Editing) for neural decompilation, conducted to evaluate whether surgical weight modifications can address systematic decompilation errors.
+This section describes the experimental investigation of ROME (Rank-One Model Editing) @mengLocatingEditingFactual2023 for neural decompilation, conducted to evaluate whether surgical weight modifications can address systematic decompilation errors.
 
 === Formulating Decompilation as Knowledge Editing
 
@@ -795,9 +798,9 @@ Additionally, Ghidra produces context-specific artifacts such as `_LC0` for stri
 
 === Implementation
 
-ROME edits were implemented using the EasyEdit library @wangEasyEditEasytouseKnowledge2023, which provides a standardized interface for various Knowledge Editing methods.
+ROME @mengLocatingEditingFactual2023 edits were implemented using the EasyEdit library @wangEasyEditEasytouseKnowledge2023, which provides a standardized interface for various Knowledge Editing methods.
 Edit requests were specified as JSON objects containing the subject (Ghidra artifact), relation (type correspondence), and target object (C type).
-The editing process modifies a single feed-forward layer in the Transformer, identified through causal tracing as the layer where factual associations are stored.
+The editing process modifies a single feed-forward layer in the Transformer, identified through causal tracing as the layer where factual associations are stored @mengLocatingEditingFactual2023.
 
 Four edit requests were created targeting the most common Ghidra type artifacts.
 The edited model was then tested on the same decompilation prompts used for baseline evaluation, and the generated outputs were analyzed for artifact removal rates.
@@ -879,7 +882,7 @@ Code generation employs nucleus sampling (temperature 0.2, top-p 0.95) @holtzman
 
 == Baseline Performance
 
-The baseline establishes the capabilities of the pre-trained CodeLlama 7B Instruct model applied to neural decompilation without task-specific adaptation.
+The baseline establishes the capabilities of the pre-trained CodeLlama-7B-Instruct model applied to neural decompilation without task-specific adaptation.
 
 #figure(
   table(
@@ -1265,7 +1268,7 @@ This performance gap reflects the fundamental tradeoff between adaptation effici
 Full fine-tuning dedicates the entire model capacity to decompilation through extensive training, while LoRA preserves the base model's general capabilities and requires minimal computational resources @huLoRALowRankAdaptation2021.
 Achieving 76% of the state-of-the-art performance with orders of magnitude less training data suggests that parameter-efficient methods offer a viable path for practitioners who lack the resources for full-scale model training.
 
-Furthermore, LoRA's modularity enables rapid experimentation with different training objectives, as demonstrated by the error-specific fine-tuning experiments @huLoRALowRankAdaptation2021.
+Furthermore, LoRA's modularity enables rapid experimentation with different training objectives, as demonstrated by the error-specific fine-tuning experiments.
 This flexibility may prove valuable for adapting to specific decompilation scenarios, such as particular compiler versions or optimization levels, without retraining an entire model.
 
 == Implications for Neural Decompilation
@@ -1288,7 +1291,7 @@ Several limitations constrain the generalizability of these findings.
 *Dataset scale*: The training corpus comprises approximately 4,000 samples from ExeBench, which may be insufficient to capture the full diversity of real-world decompilation scenarios.
 Larger datasets might shift the observed performance ceilings, and the specific patterns learned may not transfer to binaries compiled with different compilers, optimization levels, or architectures.
 
-*Model scale*: All experiments use CodeLlama 7B, a relatively small model by contemporary standards.
+*Model scale*: All experiments use CodeLlama-7B, a relatively small model by contemporary standards.
 Larger models might exhibit different learning dynamics; in particular, the semantic reasoning ceiling might shift with increased model capacity.
 However, computational constraints precluded experiments with larger models.
 
