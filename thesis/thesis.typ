@@ -461,12 +461,17 @@ Furthermore, each fine-tuned model requires storing a complete copy of all param
 === Low-Rank Adaptation (LoRA)
 
 Low-Rank Adaptation (LoRA) @huLoRALowRankAdaptation2021 addresses these challenges by freezing the pretrained model weights and injecting trainable low-rank decomposition matrices into each layer.
+The approach is motivated by evidence that weight updates during fine-tuning have low "intrinsic rank"; the adaptation can be effectively captured ina much lower-dimensional subspace than the full parameter space @huLoRALowRankAdaptation2021.
+
 For a pretrained weight matrix $W_0 in RR^(d times k)$, LoRA adds a parallel path:
 
-$ h = W_0 x + Delta W x = W_0 x + B A x $
+$ h = W_0 x + Delta W x = W_0 x + alpha / r dot B A x $
 
-where $A in RR^(r times k)$ and $B in RR^(d times r)$ are small trainable matrices with rank $r << min(d, k)$.
-During training, only $A$ and $B$ are updated while $W_0$ remains frozen.
+where $A in RR^(r times k)$ and $B in RR^(d times r)$ are small trainable matrices with rank $r << min(d, k)$, and $alpha$ is a scaling hyperparameter that controls the magnitude of the adaptation.
+During training, only $A$ and $B$ are updated while $W_0$ remains frozen @huLoRALowRankAdaptation2021.
+
+A key design choice is the initialization: $A$ is initialized from a random Gaussian distribution while $B$ is initialized to zero.
+This ensures $Delta W = B A = 0$ at the start of training, so the model begins from its exact pretrained state and learns adaptations incrementally @huLoRALowRankAdaptation2021.
 
 This approach dramatically reduces trainable parameters.
 For a model with $d = 4096$, applying LoRA with rank $r = 64$ to a weight matrix reduces trainable parameters from 16 million to approximately 500 thousand; a 32#sym.times reduction.
