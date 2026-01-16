@@ -84,7 +84,7 @@ We evaluate these methods using CodeLlama-7B-Instruct on a benchmark of 151 func
 
 Our experiments reveal that LoRA fine-tuning substantially improves decompilation quality.
 General fine-tuning achieves 84.33% compile rate and 23.95% functional correctness (baseline: 18.94% and 15.50%).
-Mixed training with error-specific data reaches the highest functional correctness of 28.08%, though at a reduced compile rate of 64.50%.
+Mixed training combining error-specific examples with general data reaches the highest functional correctness of 28.08%, though at a reduced compile rate of 64.50%.
 Knowledge Editing, however, proved ineffective for this task, as decompilation errors involve complex structural transformations rather than discrete factual corrections.
 
 A key finding is the syntactic-semantic gap: high compile rates do not guarantee functional correctness.
@@ -110,7 +110,7 @@ Wir evaluieren diese Methoden mit CodeLlama-7B-Instruct auf einem Benchmark von 
 
 Unsere Experimente zeigen, dass LoRA-Fine-Tuning die Dekompilierungsqualität erheblich verbessert.
 Allgemeines Fine-Tuning erreicht 84,33% Kompilierungsrate und 23,95% funktionale Korrektheit (Baseline: 18,94% und 15,50%).
-Gemischtes Training mit fehlerspezifischen Daten erzielt die höchste funktionale Korrektheit von 28,08%, jedoch bei einer reduzierten Kompilierungsrate von 64,50%.
+Gemischtes Training, das fehlerspezifische Beispiele mit allgemeinen Daten kombiniert, erzielt die höchste funktionale Korrektheit von 28,08%, jedoch bei einer reduzierten Kompilierungsrate von 64,50%.
 Knowledge Editing erwies sich jedoch als ineffektiv für diese Aufgabe, da Dekompilierungsfehler komplexe strukturelle Transformationen und keine diskreten faktischen Korrekturen erfordern.
 
 Eine zentrale Erkenntnis ist die syntaktisch-semantische Lücke: Hohe Kompilierungsraten garantieren keine funktionale Korrektheit.
@@ -175,7 +175,7 @@ This thesis addresses the following research questions:
 + *RQ1*: How effectively can LoRA fine-tuning improve the functional correctness of LLM-generated decompiled code?
 + *RQ2*: Can Knowledge Editing techniques correct systematic decompiler artifacts in model output?
 + *RQ3*: What types of decompilation errors are addressable through model adaptation, and what limitations remain?
-+ *RQ4*: How do targeted error-specific training approaches compare to general fine-tuning for improving decompilation quality?
++ *RQ4*: How do error-specific training approaches compare to general fine-tuning for improving decompilation quality?
 
 == Contributions
 
@@ -546,7 +546,7 @@ Specifically, we compare:
 
 + *Low-Rank Adaptation (LoRA)* as a parameter-efficient alternative to full fine-tuning, examining whether the dramatic reduction in trainable parameters compromises decompilation quality.
 + *Knowledge Editing* as a surgical intervention technique, testing whether decompilation errors can be corrected through targeted weight modifications rather than broad training.
-+ *Targeted LoRA training* on error-specific datasets, combining the efficiency of LoRA with focused training on particular error categories.
++ *Error-specific LoRA training* on curated datasets, combining the efficiency of LoRA with focused training on particular error categories.
 
 This comparison addresses a practical concern: as LLMs grow larger, full fine-tuning becomes increasingly prohibitive.
 If parameter-efficient methods can match or approach full fine-tuning performance, they offer a more accessible path to specialized decompilation models.
@@ -1345,7 +1345,7 @@ Second, Knowledge Editing proved unsuitable for neural decompilation.
 The investigation revealed that decompilation errors do not stem from missing factual knowledge but from inconsistent application of known transformation rules during generation.
 This negative result clarifies that neural decompilation is fundamentally a reasoning task, not a knowledge retrieval task.
 
-Third, error-specific fine-tuning with mixed training data achieved the highest functional correctness.
+Third, mixed training combining error-specific examples with general data achieved the highest functional correctness.
 By combining synthetic error examples with general training data, the mixed LoRA reached 28.08% Pass\@1, an 81% relative improvement over baseline.
 However, this came at the cost of reduced compile rate (64.50%), revealing a trade-off between syntactic and semantic optimization objectives.
 
