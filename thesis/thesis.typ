@@ -324,8 +324,12 @@ The gap between decompiler output and compilable source code motivates the neura
 == Transformer Architecture
 
 The Transformer architecture @vaswaniAttentionAllYou2023 forms the foundation of modern Large Language Models.
-Unlike earlier recurrent architectures that process sequences token-by-token, Transformers process entire sequences in parallel through a mechanism called self-attention.
+Unlike earlier recurrent architectures @hochreiterLongShortTermMemory1997 that process sequences token-by-token, Transformers process entire sequences in parallel through a mechanism called self-attention.
 This section introduces the key components relevant to understanding the adaptation methods investigated in this thesis.
+
+Before processing, input text must be converted into discrete tokens through tokenization.
+Modern LLMs use subword tokenization algorithms such as Byte-Pair Encoding (BPE) @sennrichNeuralMachineTranslation2016, which iteratively merge frequent character sequences to balance vocabulary size against token granularity.
+These tokens are then mapped to dense vector embeddings that serve as input to the Transformer layers.
 
 === Self-Attention Mechanism
 
@@ -384,8 +388,8 @@ Here $x$ denotes the input to the layer, $h$ the intermediate representation aft
 
 Llama replaces standard layer normalization with RMSNorm @zhangRootMeanSquare2019, which omits the mean-centering step while achieving comparable performance with reduced computational overhead.
 
-Beyond normalization, the residual connections are critical architectural components that enable gradient flow through deep networks and allow each layer to learn incremental refinements rather than complete transformations.
-Modern LLMs stack dozens of these layers (CodeLlama-7B uses 32 layers @touvronLLaMAOpenEfficient2023) creating a deep processing pipeline where each layer refines the representations produced by previous layers.
+Beyond normalization, the residual connections @heDeepResidualLearning2015 are critical architectural components that enable gradient flow through deep networks and allow each layer to learn incremental refinements rather than complete transformations.
+Modern LLMs stack dozens of these layers (CodeLlama-7B uses 32 layers @roziereCodeLlamaOpen2023) creating a deep processing pipeline where each layer refines the representations produced by previous layers.
 
 This compositional structure has implications for adaptation methods investigated in this thesis.
 LoRA @huLoRALowRankAdaptation2021 targets the projection matrices within both attention and FFN sublayers, with the residual connections ensuring that adaptations combine additively with the frozen base model computations.
@@ -1253,7 +1257,7 @@ This trade-off suggests that optimizing for semantic correctness and syntactic v
 
 == The Syntactic-Semantic Gap
 
-The consistent pattern across all experiments points to what might be termed a "syntactic-semantic gap" in neural decompilation.
+The consistent pattern across all experiments points to what might be termed a *syntactic-semantic gap* in neural decompilation.
 Syntactic adaptation, learning to produce valid C code rather than pseudocode artifacts, is readily achievable through fine-tuning.
 Even the smallest LoRA configuration (r=8) improves compile rate from 18.94% to 82.38%.
 This suggests that syntactic patterns are relatively surface-level and can be captured with modest parameter budgets.
