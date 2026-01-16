@@ -142,7 +142,7 @@ At the core of this process lies decompilation: transforming compiled machine co
 However, decompilation is inherently lossy; the compilation process discards variable names, type information, comments, and high-level structure, leaving decompilers to reconstruct these elements through heuristic analysis @ahoCompilersPrinciplesTechniques2002.
 
 Modern decompilers such as Ghidra @nationalsecurityagencyGhidra2019 produce pseudocode that, while logically equivalent to the original program, often contains artifacts that make it difficult to read, modify, or recompile.
-The artifacts include non-standard type annotations (e.g., `undefined4`), synthesized variable names, and unconventional control flow constructs.
+These artifacts include non-standard type annotations (e.g., `undefined4`), synthesized variable names, and unconventional control flow constructs.
 Human analysts must manually refine this output, a time-consuming process that scales poorly with the volume of software requiring analysis.
 
 Recent advances in Large Language Models (LLMs) have demonstrated remarkable capabilities in code understanding and generation @roziereCodeLlamaOpen2023, suggesting their potential application to decompilation refinement.
@@ -321,7 +321,7 @@ The Ghidra output exhibits all the characteristic artifacts: type annotations (`
 While this output aids human reverse engineers in understanding program behavior, it typically cannot be directly compiled due to the non-standard type annotations and constructs.
 The gap between decompiler output and compilable source code motivates the neural decompilation approach explored in this thesis.
 
-== Transformer architecture
+== Transformer Architecture
 
 The Transformer architecture @vaswaniAttentionAllYou2023 forms the foundation of modern Large Language Models.
 Unlike earlier recurrent architectures that process sequences token-by-token, Transformers process entire sequences in parallel through a mechanism called self-attention.
@@ -474,7 +474,7 @@ The frozen base model weights are stored in 4-bit precision using a novel Normal
 The low-rank adapters remain in higher precision for training stability.
 
 This combination enables fine-tuning models that would otherwise exceed available memory.
-A 7-billion parameter model that requires approximately 28G in 16-bit precision can be loaded in roughly 4GB with 4-bit quantization, making fine-tuning feasible on consumer hardware.
+A 7-billion parameter model that requires approximately 28GB in 16-bit precision can be loaded in roughly 4GB with 4-bit quantization, making fine-tuning feasible on consumer hardware.
 
 == Knowledge Editing
 
@@ -571,7 +571,7 @@ Furthermore, a hybrid approach combining both techniques may leverage their resp
 
 The experimental design follows a structured comparative methodology.
 First, a baseline is established by evaluating a pre-trained LLM on a curated dataset of binary functions with known source code.
-Subsequently, general LoRA fine-tuning is applied to create a globally adapted model, and error-specific LoRAs are trained and applied to create a targeted-correction variants.
+Subsequently, general LoRA fine-tuning is applied to create a globally adapted model, and error-specific LoRAs are trained and applied to create targeted-correction variants.
 All adapted models are evaluated against the baseline using identical metrics (compilability, and functional equivalence), enabling direct comparison.
 
 The complete pipeline is illustrated in @pipeline: C source code is compiled with GCC at `-O2` optimization, decompiled by Ghidra to pseudocode, refined by the LLM, and evaluated through compilation and functional testing.
@@ -881,7 +881,7 @@ The baseline establishes the capabilities of the pre-trained CodeLlama 7B Instru
 ) <baseline>
 
 The baseline achieves a Pass\@1 of 15.50% and a compile rate of only 18.94%.
-The notably low compile rate reveals that the untuned frequently reproduces Ghidra-specific artifacts, such as `undefined4` type annotations and non-standard syntax, rather than generating valid C code.
+The notably low compile rate reveals that the untuned model frequently reproduces Ghidra-specific artifacts, such as `undefined4` type annotations and non-standard syntax, rather than generating valid C code.
 This indicates that the primary challenge is not semantic reasoning alone but also syntactic adaptation: the model must learn to translate decompiler idioms into standard C constructs.
 
 == LoRA Fine-Tuning Results
@@ -1272,7 +1272,7 @@ The results of this work should be contextualized against dedicated neural decom
 LLM4Decompile @tanLLM4DecompileDecompilingBinary2024, the current state-of-the-art, achieves 36.71% re-executability on HumanEval-Decompile with `-O2` optimization using their 6.7B parameter model trained through full fine-tuning on billions of code tokens.
 At comparable model scale, our best configuration (mixed LoRA) reaches 28.08% using approximately 4,000 training samples and about 2.3% trainable parameters.
 
-This performance gap reflects the fundamental tradeoff between adaptation efficieny and task performance.
+This performance gap reflects the fundamental tradeoff between adaptation efficiency and task performance.
 Full fine-tuning dedicates the entire model capacity to decompilation through extensive training, while LoRA preserves the base model's general capabilities and requires minimal computational resources @huLoRALowRankAdaptation2021.
 Achieving 76% of the state-of-the-art performance with orders of magnitude less training data suggests that parameter-efficient methods offer a viable path for practitioners who lack the resources for full-scale model training.
 
