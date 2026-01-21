@@ -2,6 +2,14 @@
 
 * Introduction & Motivation
 
+- Opening hook: What is reverse engineering and why does it matter?
+  - Security analysis, malware detection, legacy software maintenance
+- Problem: Decompilation is lossy
+  - Compilation discards variable names, types, comments, structure
+  - Ghidra produces pseudocode with artifacts (=undefined4=, =local_c=, pointer arithmetic)
+  - Show example from thesis
+  - Research question: Can we use LLMs to refine this pseudocode into valid C?
+
 * Background
 
 * Methodology
