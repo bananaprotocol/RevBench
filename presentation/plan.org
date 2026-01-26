@@ -12,12 +12,84 @@
 
 * Background
 
+- Brief Ghidra overview:
+  - Pipeline: binary -> p-code -> SSA -> simplification -> C pseudocode
+  - Key artifacts: type annotations, synthesized names, pointer arithmetic
+- LLMs for code:
+  - CodeLlama-7B-Instruct: trained on code, instruction-following
+  - Problem: reproduces artifacts instead of translating them
+- Adaptation methods:
+  - LoRA: Low-Rank Adapter Matrices, train ~2% of parameters
+    - maybe simple diagram: $W_0 + BA$ (frozen base + trainable  adapters)
+  - Knowledge Editing: surgically edit specific weights
+    - Hypothesis: decompilation errors = incorrect factual associations?
+
 * Methodology
+
+- Pipeline overview: C source -> GCC (=-O2=) -> Ghidra -> Model -> Test
+- Datasets:
+  - Training: ~4,000 samples from ExeBench
+  - Evaluation: 151 functions from HumanEval-Decompile with test harnesses
+- Evaluation metrics:
+  - Compile rate: Does the code compile?
+  - Pass@1: Does it produce correct outputs?
+  - 5 runs per configuration for stability
+- Experimental setup:
+  - LoRA: hyperparameter search (rank 8-128, alpha = r / r * 2)
+  - Knowledge Editing: ROME edits for type mappings
+  - Error-specific training: synthetic error data
 
 * Results
 
+- Baseline performance: Pass@1: 5.50%, Compile: 18.94%, Model often reproduces Ghidra artifacts
+- LoRA results:
+  - Best config (r=64): Pass@1 23.95%, Compile 84.33%
+  - 4.5x compile rate improvement
+  - 54% relative improvement in functional correctness
+  - show example (loop unrolling from thesis)
+- Knowledge Editing results:
+  - ROME edits had no effect (Pass@1 ~15.23%)
+  - Key insight: Model already knows =undefined4 = int=
+  - Problem is reasoning, not knowledge
+- Error analysis:
+  - 76.8% of failures are assertion failures (compiles but wrong)
+  - Error taxonomy:
+    - Addressable (~45%): loop bounds, operators, initialization
+    - Limitations (~55%): information loss, algorithm re-interpretation
+  - Error-specific fine-tuning:
+    - Mixed LoRA: Pass@1 28.08% (best), Compile 64.50%
+    - trade-off between syntax and semantics
+
 * Discussion
+
+- Syntactic-Semantic Gap:
+  - Syntax is easy, even small LoRA dramatically improves compile rate
+  - Semantics is hard: diminishing returns beyond certain point
+- Why did Knowledge Editing fail?:
+  - Decompilation is a reasoning task, not factual retrieval
+  - Context-dependent transformations, not atomic facts
+- Comparison to state-of-the-art:
+  - LLM4Decompile achieves 36.71% with full fine-tuning on billions of tokens
+  - Mixed LoRA: 28.08% with ~4,000 samples
+  - 76% of SOTA performance with orders of magnitude less data
 
 * Conclusion
 
+- Key contributions:
+  1. LoRA is effective for neural decompilation (54% improvement)
+  2. Knowledge Editing doesn't work (negative result)
+  3. Error taxonomy: 45% addressable, 55% fundamental limitations
+  4. Syntactic-semantic gap: compile rate != correctness
+- Future work:
+  - Multi-objective optimizations / curriculum learning
+  - Better decompilation input quality
+  - Chain-of-thought, retrieval augmentation
+
 * Demo
+
+- start with some C files
+- compile with GCC, show binary
+- run Ghidra headless to create pseudocode
+- run baseline model -> show artifacts
+- run LoRA -> show clean, compilable C code
+- compile and run output against test -> show pass
