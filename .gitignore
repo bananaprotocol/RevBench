@@ -15,3 +15,6 @@ wheels/
 
 # datasets
 data/
+
+# model checkpoints and adapters
+models/
