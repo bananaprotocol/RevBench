@@ -1,0 +1,21 @@
+RevBench
+Copyright 2026 Hendrik Lohmar
+
+Code and data pipeline for the bachelor's thesis "Comparison of LoRA and
+Knowledge Editing for Improving Neural Decompilation", Heidelberg University,
+January 2026.
+
+This product includes software developed by Hendrik Lohmar, licensed under the
+Apache License, Version 2.0. See the LICENSE file.
+
+The thesis text, the defense presentation and the figures in diagrams/ are
+licensed separately under the Creative Commons Attribution 4.0 International
+License. See the LICENSE-docs file.
+
+The LoRA adapters published alongside this repository are fine-tuned from
+CodeLlama-7b-Instruct and are subject to Meta's Llama 2 Community License
+(https://ai.meta.com/llama/license/), not the Apache License. That license
+travels with the weights independently of the terms applied here.
+
+This work acknowledges support by the state of Baden-Wuerttemberg through
+bwHPC.
