@@ -2,22 +2,22 @@
 
 RevBench is the code and data pipeline for my bachelor's thesis, *Comparison of LoRA and Knowledge Editing for Improving Neural Decompilation*, submitted at Heidelberg University in January 2026.
 
-> **Core Research Insight:** This work identifies a critical **syntactic-semantic gap** in neural decompilation: while LoRA fine-tuning effectively fixes syntax (improving compile rates by 4.5x), it struggles to bridge the semantic gap where errors are rooted in reasoning rather than factual knowledge. This explains why Knowledge Editing (ROME) fails where LoRA succeeds.
-
-The goal is to take the pseudocode that Ghidra produces from a compiled binary and turn it into valid, compilable C code using a large language model.
+The goal is to take the pseudocode that [Ghidra](https://ghidra-sre.org/) produces from a compiled binary and turn it into valid, compilable C code using a large language model.
 
 ## About the thesis
 
 Compilation throws information away. Variable names, types, comments and a lot of the original control flow do not survive it. A decompiler like Ghidra can recover a rough C-like reading of a binary, but the output is a reading aid, not working code. This matters for security analysis, malware research and legacy software maintenance, where you often want something you can compile, patch and run again.
 
-![Decompilation Problem](./diagrams/decompilation_problem.svg)
+<img src="./diagrams/decompilation_problem.svg" width="620" alt="Source code compiles to a binary, which decompiles to pseudocode that is not equivalent to the original source">
 
 Language models are a natural fit for this, but an untuned model mostly copies the decompiler's own idioms back at you instead of translating them. The thesis asks how far cheap adaptation methods can get you, and compares two of them that work in very different ways:
 
-- **LoRA (Low-Rank Adaptation)** trains small adapter matrices while the base model stays frozen. Only about 2.3% of the model's parameters are trained. It is a broad, data driven adjustment.
-  ![LoRA Architecture](./diagrams/lora_architecture.svg)
-- **Knowledge Editing (ROME)** directly modifies a small set of weights to correct individual errors. It treats a mistake as a wrong fact that can be patched.
-  ![KE vs LoRA](./diagrams/ke_vs_lora.svg)
+- **[LoRA (Low-Rank Adaptation)](https://arxiv.org/abs/2106.09685)** trains small adapter matrices while the base model stays frozen. Only about 2.3% of the model's parameters are trained. It is a broad, data driven adjustment.
+- **Knowledge Editing ([ROME](https://rome.baulab.info/))** directly modifies a small set of weights to correct individual errors. It treats a mistake as a wrong fact that can be patched.
+
+<img src="./diagrams/lora_architecture.svg" width="240" alt="LoRA architecture: input x feeds a frozen weight matrix and a pair of trainable low-rank adapters A and B, whose outputs are summed">
+
+<img src="./diagrams/ke_vs_lora.svg" width="300" alt="Knowledge editing targets facts; LoRA targets reasoning">
 
 The research questions were:
 1. How much does LoRA fine-tuning improve the functional correctness of generated decompiled code?
@@ -27,7 +27,7 @@ The research questions were:
 
 The evaluation deliberately does not use text similarity metrics like BLEU. Two functions can be written completely differently and still do the same thing, so every generated function is compiled and run against a test harness instead. A sample only counts as correct if it actually behaves like the original.
 
-For context, LLM4Decompile reaches 36.71% with full fine-tuning of a 6.7B model on billions of tokens. The mixed LoRA setup here gets to 28.08% with about 4,000 training samples, so roughly 76% of that performance for orders of magnitude less data.
+For context, [LLM4Decompile](https://github.com/albertan017/LLM4Decompile) reaches 36.71% with full fine-tuning of a 6.7B model on billions of tokens. The mixed LoRA setup here gets to 28.08% with about 4,000 training samples, so roughly 76% of that performance for orders of magnitude less data.
 
 The full write-up is in `thesis/thesis.pdf`.
 
@@ -81,7 +81,7 @@ Running each sample 5 times splits the 151 test functions into three groups: 20 
 
 Of the 99 consistent failures, 76 compile but fail their assertions, 22 fail to compile, and 1 times out. Manually categorizing those 76 assertion failures gives the error taxonomy:
 
-![Error Taxonomy](./diagrams/error_taxonomy.svg)
+<img src="./diagrams/error_taxonomy.svg" width="560" alt="Error taxonomy: 76 assertion failures split into addressable (~45%) and fundamental (~55%) categories">
 
 | Addressable (~45%) | | Fundamental (~55%) | |
 |---|---|---|---|
@@ -91,7 +91,7 @@ Of the 99 consistent failures, 76 compile but fail their assertions, 22 fail to 
 
 The left column is systematic and can be targeted with training data. The right column mostly cannot. The largest single category, algorithm re-interpretation, is where the pseudocode admits more than one reasonable reading and the model picks a plausible one that the test harness does not accept. Information loss is the smaller case where Ghidra emitted a stub and the logic is simply gone.
 
-![Experimental Pipeline](./diagrams/experimental_pipeline.svg)
+<img src="./diagrams/experimental_pipeline.svg" width="620" alt="Experimental pipeline: C source to GCC to Ghidra to model to test">
 
 ## Setup
 
@@ -113,17 +113,49 @@ source .venv/bin/activate
 
 The flake sets `PYTORCH_ROCM_ARCH` to `gfx1030` and `HSA_OVERRIDE_GFX_VERSION` to `10.3.0`. Change those if your card differs.
 
-The reported training runs were not done on this local ROCm setup. Most ran on Google Colab with a single NVIDIA A100 (40GB), and some on the bwHPC cluster on nodes with four H100s.
+The reported training runs were not done on this local ROCm setup. Most ran on Google Colab with a single NVIDIA A100 (40GB), and some on the bwHPC cluster on nodes with four H100s. Training used [Unsloth](https://github.com/unslothai/unsloth), which is installed in the Colab environment and is deliberately not a project dependency here, so the training notebooks do not run against this local ROCm setup.
 
 Datasets and model checkpoints live in `data/` and `models/`, neither of which is tracked in git.
+
+## Models
+
+The LoRA adapters behind the results above are on HuggingFace:
+
+| Adapter | Config | Pass@1 |
+|---|---|---|
+| [`bananaprotocol/revbench-lora-r64-a64`](https://huggingface.co/bananaprotocol/revbench-lora-r64-a64) | general, r=64 alpha=64 | 23.95% |
+| [`bananaprotocol/revbench-lora-mixed`](https://huggingface.co/bananaprotocol/revbench-lora-mixed) | general + error specific | 28.08% |
+
+```bash
+huggingface-cli download bananaprotocol/revbench-lora-r64-a64 --local-dir models/lora_r64_a64
+huggingface-cli download bananaprotocol/revbench-lora-mixed   --local-dir models/error_lora_mixed
+```
+
+Those are the paths `src/eval_pipeline.py` and `src/demo_app.py` expect.
+
+The adapters are derivatives of [CodeLlama-7b-Instruct](https://huggingface.co/codellama/CodeLlama-7b-Instruct-hf) and therefore fall under Meta's Llama 2 Community License, not the Apache-2.0 license that covers the code in this repository. See [License](#license).
+
+## Demo
+
+`src/demo_app.py` is a Gradio app that loads the base model once in 4-bit and toggles the mixed LoRA adapter on and off, so you can compare baseline and fine-tuned output on the same task side by side. It compiles and runs the generated code against the real test harness in the browser.
+
+```bash
+uv run python src/demo_app.py
+```
+
+It needs `models/error_lora_mixed` and `data/humaneval_c_test.jsonl` to be present. Two curated task lists are built in: `SUCCESS_TASK_IDS`, where the baseline always fails and LoRA always passes across all 5 runs, and `FAILURE_TASK_IDS`, where LoRA compiles but always fails its assertions, the fundamental category from the error taxonomy.
 
 ## Layout
 
 ```
 src/          pipeline scripts (data prep, training, evaluation, analysis)
-notebooks/    marimo and Jupyter versions of the training and KE experiments
-thesis/       thesis source (Typst) and compiled PDF
+notebooks/    the training and KE experiments as actually run, on Colab
+thesis/       thesis source (Typst), compiled PDF, presentation and bibliography
+diagrams/     Typst sources for the figures in this README, and rendered SVGs
+presentation/ defense presentation notes
 ```
+
+`codellama-7b-rome.yaml` at the root is the ROME config for EasyEdit. `data/`, `models/` and `results/` are not tracked; you generate them by running the pipeline below.
 
 ## Pipeline
 
@@ -136,7 +168,7 @@ python src/process_exebench.py     # ExeBench, used for the main training set
 python src/process_anghabench.py   # AnghaBench, alternative source
 ```
 
-Pairs are then filtered on line length and on the length ratio between pseudocode and source, which drops decompilation failures and malformed samples. About 4,000 samples survive.
+The sources are [ExeBench](https://github.com/jordiae/exebench) and [AnghaBench](https://github.com/brenocfg/AnghaBench). Pairs are then filtered on line length and on the length ratio between pseudocode and source, which drops decompilation failures and malformed samples. About 4,000 samples survive.
 
 `src/ghidra_export.py` and `src/ghidra_extract.py` are Ghidra scripts. They run inside Ghidra's Jython interpreter, not in the project venv. Do not run them directly.
 
@@ -146,21 +178,30 @@ Pairs are then filtered on line length and on the length ratio between pseudocod
 python src/prepare_humaneval.py
 ```
 
-This takes the 151 C samples from HumanEval-Decompile, compiles them, decompiles them with Ghidra, and stores the pseudocode together with the test harness and the ground truth in `data/humaneval_c_test.jsonl`.
+This takes the 151 C samples from [HumanEval-Decompile](https://github.com/albertan017/LLM4Decompile), compiles them, decompiles them with Ghidra, and stores the pseudocode together with the test harness and the ground truth in `data/humaneval_c_test.jsonl`.
 
 ### 3. Train
 
-Three variants of the same training run:
+The reported results were produced by the notebooks in `notebooks/`, run on Colab with Unsloth. They are the primary training artifacts; each is checked in at whatever configuration it was last run with:
+
+| Notebook | r / alpha | Epochs | Effective batch |
+|---|---|---|---|
+| `train_error_lora_nb.ipynb` | 64 / 64 | 3 | 16 |
+| `train_unsloth_nb.ipynb` | 64 / 128 | 3 | 16 |
+| `train_unsloth_nb.py` (marimo) | 32 / 64 | 3 | 8 |
+| `train_nb.ipynb` | 8 / 8 | 1 | 16 |
+
+`train_error_lora_nb.ipynb` carries the reported configuration for the best model: 4-bit base, LoRA on all attention and MLP projections (`q/k/v/o_proj`, `gate/up/down_proj`), no dropout, effective batch size 16, 2048 token context, 3 epochs, learning rate 2e-4, AdamW 8-bit, seed 3407. The rank sweep was produced by varying `r` and `lora_alpha` in these notebooks.
+
+`src/` also carries standalone versions of the same training run, for use outside Colab. All three are checked in at r=16/alpha=16 and need editing to reproduce a specific sweep point:
 
 ```bash
 python src/train.py            # transformers + peft + trl, QLoRA on one GPU
 python src/train_multigpu.py   # same, with bf16 and flash attention for multi GPU
-python src/train_unsloth.py    # Unsloth, used for the reported results
+python src/train_unsloth.py    # Unsloth
 ```
 
 They all load `data/training_data.jsonl`, apply the CodeLlama `[INST]` prompt template, and save the adapter to `models/final_lora`. Rank, alpha and the other hyperparameters are set at the top of each file. Rename or move the adapter between runs, since all three scripts write to the same path.
-
-The reported configuration: 4-bit base model, LoRA on all attention and MLP projections (`q/k/v/o_proj`, `gate/up/down_proj`), no dropout, effective batch size 16, 2048 token context, 3 epochs, learning rate 2e-4, AdamW 8-bit, seed 3407.
 
 ### 4. Evaluate
 
@@ -177,8 +218,9 @@ Run this 5 times per configuration into `00_evaluation_log.jsonl` through `04_ev
 ```bash
 python src/analyze-results.py --path results/r64_a64   # mean and stddev per folder
 python src/enumerate_failures.py results/r64_a64       # per task failure counts
-python src/prepare_analysis_batch.py                   # dump assertion failures for manual review
 ```
+
+`src/prepare_analysis_batch.py` dumps assertion failures for manual review, but takes no arguments. Edit the three paths in the call at the bottom of the file (results log, test data, output), then run it.
 
 ### Error specific training
 
@@ -201,7 +243,7 @@ Training on the combined set gives the best Pass@1 (28.08%) but a lower compile 
 
 ## Knowledge editing
 
-`codellama-7b-rome.yaml` is the ROME config used with EasyEdit. It edits `model.layers.5.mlp.down_proj` on CodeLlama-7B-Instruct.
+`codellama-7b-rome.yaml` is the ROME config used with [EasyEdit](https://github.com/zjunlp/EasyEdit). It edits `model.layers.5.mlp.down_proj` on CodeLlama-7B-Instruct.
 
 ```bash
 # build edit pairs from ground truth C functions
@@ -213,12 +255,46 @@ python src/collect_passed_samples.py --eval_dir results/r64_a64 --test_data data
 
 `ground_truth_tasks.json` is not checked in; it is the set of HumanEval-Decompile tasks with their reference C, dumped from `data/humaneval_c_test.jsonl`.
 
-`src/trace_logic.py` runs a causal trace over the layers of the base model to see which layers carry the prediction. The full experiment is in `notebooks/ke_experiment_nb.ipynb`.
+`src/trace_logic.py` runs a causal trace over the layers of the base model to see which layers carry the prediction. It is a script rather than a CLI: the prompt and target are hardcoded at the bottom and execute on import, so edit them before running. The full experiment is in `notebooks/ke_experiment_nb.ipynb`.
 
 ## Thesis
 
-Written in Typst. The compiled PDF is checked in.
+Written in [Typst](https://typst.app/). The compiled PDF and the defense presentation are checked in.
 
 ```bash
 typst compile thesis/thesis.typ
+typst compile thesis/presentation.typ
 ```
+
+The scanned signature on the declaration page is not distributed, so the public build draws a blank rule instead. Set `signed` to `true` at the top of `thesis.typ` to build the signed copy.
+
+The README figures are separate Typst sources, rendered to SVG:
+
+```bash
+for f in diagrams/*.typ; do typst compile --format svg "$f"; done
+```
+
+## Citation
+
+```bibtex
+@thesis{lohmar2026revbench,
+  author = {Lohmar, Hendrik},
+  title  = {Comparison of LoRA and Knowledge Editing for Improving Neural Decompilation},
+  school = {Heidelberg University},
+  type   = {Bachelor's thesis},
+  year   = {2026},
+  month  = {1}
+}
+```
+
+## License
+
+Three different licenses apply, because the adapters are derived from a model that is not openly licensed.
+
+| What | License |
+|---|---|
+| Code in `src/`, `notebooks/`, `diagrams/`, and the flake | [Apache-2.0](./LICENSE) |
+| Thesis text, presentation and figures | [CC BY 4.0](./LICENSE-docs) |
+| Published LoRA adapters | Llama 2 Community License |
+
+The adapters are fine-tuned from CodeLlama-7b-Instruct and inherit Meta's [Llama 2 Community License](https://ai.meta.com/llama/license/), which is not an open source license: it carries an acceptable use policy and a commercial restriction above 700 million monthly active users. That license travels with the weights regardless of the terms on this repository.
