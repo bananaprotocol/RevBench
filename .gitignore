@@ -18,3 +18,10 @@ data/
 
 # model checkpoints and adapters
 models/
+
+# personal data for the signed submission copy, not distributed
+thesis/signature.svg
+thesis/matriculation.txt
+
+# editor backups
+*~

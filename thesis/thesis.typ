@@ -1,5 +1,10 @@
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
 
+// Set to true to build the signed submission copy. The personal data it needs --
+// thesis/signature.svg and thesis/matriculation.txt -- is deliberately not tracked,
+// so the public build omits both the declaration page and the student ID.
+#let signed = false
+
 #set text(size: 12pt)
 #set heading(numbering: "1.1")
 #show heading: it => {
@@ -45,24 +50,28 @@
   stroke: none,
   columns: 2,
   [Name:], [Hendrik Lohmar],
-  [Matriculation number:], [REDACTED],
+  ..if signed { ([Matriculation number:], [#read("matriculation.txt").trim()]) } else { () },
   [Supervisor:], [Prof. Dr. Artur Andrzejak],
   [Date of Submission:], [January 16, 2026],
 )
 
 #v(20mm)
 
-#pagebreak()
+// Declaration of originality. Addressed to the examination office and signed by
+// hand, so it is omitted entirely from the public build along with the signature.
+#if signed [
+  #pagebreak()
 
-Hiermit versichere ich, dass ich die Arbeit selbst verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel benutzt und wörtlich oder inhaltlich aus fremden Werken Übernommenes als fremd kenntlich gemacht habe.
-Ferner versichere ich, dass die übermittelte elektronische Version in Inhalt und Wortlaut mit der gedruckten Version meiner Arbeit vollständig übereinstimmt.
-Ich bin einverstanden, dass diese elektronische Fassung universitätsintern anhand einer Plagiatssoftware auf Plagiate überprüft wird.
+  Hiermit versichere ich, dass ich die Arbeit selbst verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel benutzt und wörtlich oder inhaltlich aus fremden Werken Übernommenes als fremd kenntlich gemacht habe.
+  Ferner versichere ich, dass die übermittelte elektronische Version in Inhalt und Wortlaut mit der gedruckten Version meiner Arbeit vollständig übereinstimmt.
+  Ich bin einverstanden, dass diese elektronische Fassung universitätsintern anhand einer Plagiatssoftware auf Plagiate überprüft wird.
 
-#v(5mm)
+  #v(5mm)
 
-Heidelberg, den 16.01.2026
+  Heidelberg, den 16.01.2026
 
-#image("signature.svg", width: 30%)
+  #image("signature.svg", width: 30%)
+]
 
 #pagebreak()
 
