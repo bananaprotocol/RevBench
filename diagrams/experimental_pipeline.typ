@@ -1,5 +1,7 @@
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
 
+#set page(width: auto, height: auto, margin: 4pt, fill: white)
+
 #diagram(
   node-stroke: 0.5pt,
   node-corner-radius: 4pt,
