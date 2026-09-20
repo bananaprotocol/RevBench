@@ -15,9 +15,30 @@ wheels/
 
 # datasets
 data/
+src/anghabench_data/
+*.jsonl
+*.tar.gz
+
+# scratch data dumped by the pipeline scripts
+ground_truth_tasks.json
+passed_samples_for_tracing.json
+pmet_synthetic_edits.json
+to_analyze.json
 
 # model checkpoints and adapters
 models/
+
+# evaluation output and run logs
+results/
+logs/
+
+# vendored third-party checkouts, each with its own license
+bnb/
+EasyEdit/
+vllm/
+
+# marimo notebook caches
+__marimo__/
 
 # personal data for the signed submission copy, not distributed
 thesis/signature.svg
