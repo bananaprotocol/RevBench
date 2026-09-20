@@ -68,10 +68,8 @@ pytorch-triton-rocm = [
 xformers = [
   { index = "pytorch-rocm" },
 ]
-bitsandbytes = { workspace = true }
 
-[tool.uv.workspace]
-members = [
-    "bitsandbytes",
-    "bnb",
-]
+# bitsandbytes resolves from PyPI. On ROCm the PyPI wheel may not match your
+# card, in which case build it from source into ./bnb and install it over the
+# synced one with `uv pip install -e ./bnb --no-deps`. The flake's shellHook
+# does that automatically when ./bnb is present. See README, Setup.

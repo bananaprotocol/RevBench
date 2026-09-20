@@ -82,6 +82,11 @@
           unset PYTHONPATH
           uv sync
           . .venv/bin/activate
+          # A local ROCm build of bitsandbytes, if one is checked out, wins over
+          # the PyPI wheel that uv sync just installed. Not tracked in git.
+          if [ -d bnb ]; then
+            uv pip install -e ./bnb --no-deps --quiet
+          fi
         '';
       };
     };
