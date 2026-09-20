@@ -52,7 +52,7 @@
     {
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
-          python3
+          python313
           uv
           gcc
           clang
