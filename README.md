@@ -113,6 +113,16 @@ source .venv/bin/activate
 
 The flake sets `PYTORCH_ROCM_ARCH` to `gfx1030` and `HSA_OVERRIDE_GFX_VERSION` to `10.3.0`. Change those if your card differs.
 
+`bitsandbytes` resolves from PyPI, which is fine on CUDA. On ROCm the published wheel may not match your card; build it from source into `bnb/` and install it over the synced one:
+
+```bash
+git clone https://github.com/bitsandbytes-foundation/bitsandbytes bnb
+cmake -DCOMPUTE_BACKEND=hip -S bnb -B bnb/build && cmake --build bnb/build
+uv pip install -e ./bnb --no-deps
+```
+
+`bnb/` is not tracked. The flake's shellHook reinstalls it automatically after `uv sync` whenever the directory exists, so the local build survives re-entering the shell.
+
 The reported training runs were not done on this local ROCm setup. Most ran on Google Colab with a single NVIDIA A100 (40GB), and some on the bwHPC cluster on nodes with four H100s. Training used [Unsloth](https://github.com/unslothai/unsloth), which is installed in the Colab environment and is deliberately not a project dependency here, so the training notebooks do not run against this local ROCm setup.
 
 Datasets and model checkpoints live in `data/` and `models/`, neither of which is tracked in git.
